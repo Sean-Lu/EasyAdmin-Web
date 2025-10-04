@@ -1,0 +1,132 @@
+#calendar-container{
+    font-size: 0.24rem;
+}
+
+#calendar-container .calendar-fl {
+    float: left;
+}
+
+#calendar-container .calendar-fr {
+    float: right;
+}
+
+#calendar-container .calendar-tc {
+    text-align: center;
+}
+
+.mem-sign-st {
+    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#f48b73+0,fbaf74+100 */
+    background: #f48b73; /* Old browsers */
+    background: -moz-linear-gradient(top, #f48b73 0%, #fbaf74 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #f48b73 0%,#fbaf74 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #f48b73 0%,#fbaf74 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f48b73', endColorstr='#fbaf74',GradientType=0 ); /* IE6-9 */
+    height: 4.93rem;
+    position: relative;
+    text-align: center;
+    color: #fff;
+}
+
+.mem-sign-st-detail {
+    line-height: 0.5rem;
+    font-size: 0.3rem;
+    padding: 0.2rem;
+}
+
+.mem-sign-circle {
+    width: 2.34rem;
+    height: 2.34rem;
+    padding: 0.16rem;
+    background: rgba(0,0,0,0.3);
+    border-radius: 50%;
+    margin-left: 2.56rem;
+    margin-top: 0.2rem;
+}
+
+.mem-sign-before.mem-sign-circle {
+    background: rgba(255,255,255,0.3);
+}
+
+.mem-sign-circle-text {
+    width: 2.04rem;
+    height: 2.04rem;
+    background: #efe2dc;
+    border-radius: 50%;
+    font-size: 0.48rem;
+    line-height: 2.04rem;
+    color: #919191;
+}
+
+.mem-sign-before .mem-sign-circle-text {
+    background: #fff;
+    color: #ffa895;
+}
+
+.mem-sign-tips {
+    display: inline-block;
+    width: 2.94rem;
+    line-height: 0.5rem;
+    background: rgba(0,0,0,0.3);
+    border-radius: 0.25rem;
+    margin-top: 0.4rem;
+}
+
+/*签到*/
+.sign-date-wrap {
+    margin: 0.2rem;
+    background: #fff;
+    border: 1px solid #dddee0;
+    border-radius: 0.04rem;
+    font-size: 0.3rem;
+}
+
+.sign-date-top {
+    line-height: 0.7rem;
+    font-size: 0.28rem;
+    padding: 0 0.4rem;
+    padding-top: 0.1rem;
+}
+
+    .sign-date-top i {
+        color: #bebec1;
+        font-size: 0.4rem;
+    }
+
+.sign-date-week, .sign-date-days {
+    padding-left: 0.35rem;
+}
+
+.sign-date-days {
+    padding-bottom: 0.2rem;
+}
+
+    .sign-date-week span, .sign-date-days span {
+        float: left;
+        width: 0.9rem;
+        line-height: 0.8rem;
+        text-align: center;
+    }
+/*IE7不支持的清除浮动*/
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: ".";
+    clear: both;
+    height: 0;
+}
+
+/*.today {
+    font-weight: bold;
+}*/
+
+.calendar-day-checkin {
+    border-radius: 100%;
+    color: white;
+    background-color: #fbaf74;
+}
+
+.calendar-day {
+    border-radius: 100%;
+    border: 0.5px solid transparent;
+}

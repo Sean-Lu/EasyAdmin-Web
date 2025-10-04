@@ -1,0 +1,10 @@
+.checkIn-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* .checkIn-content {
+    width: 400px;
+    height: 655px;
+} */

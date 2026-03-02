@@ -151,13 +151,14 @@ const Calendar = () => {
 		const firstDayOfMonth = new Date(year, month, 1).getDay();
 		const lastDayOfMonth = new Date(year, month + 1, 0).getDate(); // 当前月最后一天
 		const lastDayOfPrevMonth = new Date(year, month, 0).getDate(); // 上个月最后一天
+		const offset = (firstDayOfMonth + 6) % 7; // 默认是周一作为第一天
 
 		// console.log(`firstDayOfMonth: ${firstDayOfMonth}`);
 		// console.log(`lastDayOfMonth: ${lastDayOfMonth}`);
 		// console.log(`lastDayOfPrevMonth: ${lastDayOfPrevMonth}`);
 
 		// Add previous month's days
-		for (let i = firstDayOfMonth - 2; i >= 0; i--) {
+		for (let i = offset - 1; i >= 0; i--) {
 			daysArray.push(
 				<span key={`prev-${i}`} className="calendar-day" style={{ color: "#c4c4c4" }}>
 					{lastDayOfPrevMonth - i}

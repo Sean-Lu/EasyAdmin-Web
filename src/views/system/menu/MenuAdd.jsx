@@ -5,8 +5,8 @@ import axios from "../../../api/index";
 import { api } from "../../../actions/system/api";
 
 export default class MenuAdd extends React.Component {
-	constructor(prors) {
-		super(prors);
+	constructor(props) {
+		super(props);
 
 		this.state = {
 			menuTreeData: [],
@@ -32,7 +32,7 @@ export default class MenuAdd extends React.Component {
 	loadMenuTreeData = async () => {
 		this.setState({ menuTreeLoading: true });
 		try {
-			const res = await axios.get(api.menu.listTree, { includeTopMenu: true });
+			const res = await axios.get(api.menu.listTree, { all: true, includeTopMenu: true });
 			if (res.success) {
 				this.setState({
 					menuTreeData: this.mapMenuTreeData(res.data),

@@ -26,8 +26,8 @@ export default class UserList extends React.Component {
 					</Form.Item>
 				</Col>
 				<Col md={6} sm={24}>
-					<Form.Item label="邮箱地址" name="email">
-						{<Input placeholder="请输入邮箱地址" />}
+					<Form.Item label="邮箱" name="email">
+						{<Input placeholder="请输入邮箱" />}
 					</Form.Item>
 				</Col>
 				<Col>
@@ -115,13 +115,13 @@ export default class UserList extends React.Component {
 				title: "用户名称",
 				dataIndex: "userName",
 				align: tableColumnAlign,
-				width: 150
+				width: 100
 			},
 			{
 				title: "昵称",
 				dataIndex: "nickName",
 				align: tableColumnAlign,
-				width: 150
+				width: 100
 			},
 			{
 				title: "手机号码",
@@ -130,7 +130,19 @@ export default class UserList extends React.Component {
 				width: 150
 			},
 			{
-				title: "邮箱地址",
+				title: "部门",
+				dataIndex: "departmentName",
+				align: tableColumnAlign,
+				width: 100
+			},
+			{
+				title: "岗位",
+				dataIndex: "positionName",
+				align: tableColumnAlign,
+				width: 100
+			},
+			{
+				title: "邮箱",
 				dataIndex: "email",
 				align: tableColumnAlign,
 				width: 150
@@ -146,7 +158,7 @@ export default class UserList extends React.Component {
 					renderSearchForm={this.renderSearchForm}
 					renderModal={this.renderModal}
 					renderRecordOperate={this.renderRecordOperate}
-					recordOperateColWidth={160}
+					recordOperateColWidth={190}
 					apiAdd={api.user.add}
 					apiDelete={api.user.delete}
 					apiUpdate={api.user.update}

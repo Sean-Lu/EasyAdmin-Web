@@ -17,7 +17,13 @@ export default class UserDetail extends React.Component {
 					<Form.Item label="手机号码">
 						<span>{record.phoneNumber}</span>
 					</Form.Item>
-					<Form.Item label="邮箱地址">
+					<Form.Item label="部门">
+						<span>{record.departmentName}</span>
+					</Form.Item>
+					<Form.Item label="岗位">
+						<span>{record.positionName}</span>
+					</Form.Item>
+					<Form.Item label="邮箱">
 						<span>{record.email}</span>
 					</Form.Item>
 					<Form.Item label="状态">

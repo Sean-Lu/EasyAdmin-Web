@@ -25,8 +25,27 @@ export const api = {
 		delete: "/menu/delete",
 		update: "/menu/update",
 		updateState: "/menu/updateState",
-		listTree: "/menu/listTree?all=true", // 查询所有菜单（包含被禁用的）
+		listTree: "/menu/listTree",
 		detail: "/menu/detail"
+	},
+	// 部门管理
+	department: {
+		add: "/department/add",
+		delete: "/department/delete",
+		update: "/department/update",
+		updateState: "/department/updateState",
+		listTree: "/department/listTree",
+		detail: "/department/detail"
+	},
+	// 岗位管理
+	position: {
+		add: "/position/add",
+		delete: "/position/delete",
+		update: "/position/update",
+		updateState: "/position/updateState",
+		page: "/position/page",
+		list: "/position/list",
+		detail: "/position/detail"
 	},
 	// 参数管理
 	param: {

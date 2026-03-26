@@ -9,8 +9,8 @@ import axios from "../../api/index";
 import "./index.less";
 
 class StandardTable extends React.Component {
-	constructor(prors) {
-		super(prors);
+	constructor(props) {
+		super(props);
 
 		this.state = {
 			pageNumber: 1, // 当前页

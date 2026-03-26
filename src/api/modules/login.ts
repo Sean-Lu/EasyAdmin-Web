@@ -36,4 +36,8 @@ export interface UserInfo {
 	phoneNumber: string; // 手机号
 	email: string; // 邮箱
 	userRole: number; // 用户角色
+	departmentId: string; // 所属部门ID
+	departmentName: string; // 所属部门名称
+	positionId: string; // 所属岗位ID
+	positionName: string; // 所属岗位名称
 }

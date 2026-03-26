@@ -10,8 +10,8 @@ import moment from "moment";
 export default class OperateLogList extends React.Component {
 	searchFormRef = React.createRef();
 
-	constructor(prors) {
-		super(prors);
+	constructor(props) {
+		super(props);
 
 		this.state = {
 			userSelectData: []

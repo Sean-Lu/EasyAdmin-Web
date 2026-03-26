@@ -37,24 +37,24 @@ const systemRouter = [
 			// 		key: "system-role"
 			// 	}
 			// },
-			// {
-			// 	path: "/system/dept",
-			// 	element: lazyLoad(React.lazy(() => import("@/views/system/dept/Dept"))),
-			// 	meta: {
-			// 		requiresAuth: true,
-			// 		title: "部门管理",
-			// 		key: "system-dept"
-			// 	}
-			// },
-			// {
-			// 	path: "/system/post",
-			// 	element: lazyLoad(React.lazy(() => import("@/views/system/post/Post"))),
-			// 	meta: {
-			// 		requiresAuth: true,
-			// 		title: "岗位管理",
-			// 		key: "system-post"
-			// 	}
-			// },
+			{
+				path: "/system/department",
+				element: lazyLoad(React.lazy(() => import("@/views/system/department/Department"))),
+				meta: {
+					requiresAuth: true,
+					title: "部门管理",
+					key: "system-department"
+				}
+			},
+			{
+				path: "/system/position",
+				element: lazyLoad(React.lazy(() => import("@/views/system/position/Position"))),
+				meta: {
+					requiresAuth: true,
+					title: "岗位管理",
+					key: "system-position"
+				}
+			},
 			{
 				path: "/system/menu",
 				element: lazyLoad(React.lazy(() => import("@/views/system/menu/Menu"))),

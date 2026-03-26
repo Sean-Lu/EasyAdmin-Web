@@ -1,13 +1,13 @@
 import React from "react";
 import { Button, Col, Form, Input, Row } from "antd";
 import StandardTable from "../../../components/StandardTable";
-import MenuAdd from "./MenuAdd";
-import MenuEdit from "./MenuEdit";
-import MenuDetail from "./MenuDetail";
+import DepartmentAdd from "./DepartmentAdd";
+import DepartmentEdit from "./DepartmentEdit";
+import DepartmentDetail from "./DepartmentDetail";
 import { api } from "../../../actions/system/api";
 
-// 菜单列表
-export default class MenuList extends React.Component {
+// 部门列表
+export default class DepartmentList extends React.Component {
 	searchFormRef = React.createRef();
 
 	// ============ 查询表单 ===============
@@ -15,13 +15,8 @@ export default class MenuList extends React.Component {
 		return (
 			<Row gutter={{ md: 8, lg: 24, xl: 48 }}>
 				<Col md={6} sm={24}>
-					<Form.Item label="菜单名称" name="title">
-						{<Input placeholder="请输入菜单名称" />}
-					</Form.Item>
-				</Col>
-				<Col md={6} sm={24}>
-					<Form.Item label="菜单路由" name="path">
-						{<Input placeholder="请输入菜单路由" />}
+					<Form.Item label="部门名称" name="name">
+						<Input placeholder="请输入部门名称" />
 					</Form.Item>
 				</Col>
 				<Col>
@@ -53,16 +48,16 @@ export default class MenuList extends React.Component {
 		return (
 			<>
 				{/*新增信息弹框*/}
-				<MenuAdd modalVisible={addModalVisible} handleCancel={hideAddModal} handleFinish={onAddFinish} />
+				<DepartmentAdd modalVisible={addModalVisible} handleCancel={hideAddModal} handleFinish={onAddFinish} />
 				{/*修改信息弹框*/}
-				<MenuEdit
+				<DepartmentEdit
 					modalVisible={updateModalVisible}
 					record={record}
 					handleCancel={hideUpdateModal}
 					handleFinish={onUpdateFinish}
 				/>
 				{/*查看详情弹框*/}
-				<MenuDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
+				<DepartmentDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
 			</>
 		);
 	};
@@ -78,28 +73,22 @@ export default class MenuList extends React.Component {
 		const tableColumnAlign = "left";
 		const columns = [
 			{
-				title: "菜单名称",
-				dataIndex: "title",
+				title: "部门名称",
+				dataIndex: "name",
 				align: tableColumnAlign,
 				width: 150
 			},
 			{
-				title: "菜单路由",
-				dataIndex: "path",
+				title: "负责人",
+				dataIndex: "leaderName",
 				align: tableColumnAlign,
-				width: 150
+				width: 100
 			},
 			{
-				title: "外部链接",
-				dataIndex: "outLink",
+				title: "联系电话",
+				dataIndex: "phone",
 				align: tableColumnAlign,
-				width: 150
-			},
-			{
-				title: "图标",
-				dataIndex: "icon",
-				align: tableColumnAlign,
-				width: 150
+				width: 130
 			},
 			{
 				title: "排序",
@@ -112,18 +101,18 @@ export default class MenuList extends React.Component {
 		return (
 			<>
 				<StandardTable
-					code={"system.menu"}
+					code={"system.department"}
 					searchFormRef={this.searchFormRef}
 					columns={columns}
 					renderSearchForm={this.renderSearchForm}
 					renderModal={this.renderModal}
 					handleSearchValues={this.handleSearchValues}
-					apiAdd={api.menu.add}
-					apiDelete={api.menu.delete}
-					apiUpdate={api.menu.update}
-					apiUpdateState={api.menu.updateState}
-					apiList={api.menu.listTree}
-					apiDetail={api.menu.detail}
+					apiAdd={api.department.add}
+					apiDelete={api.department.delete}
+					apiUpdate={api.department.update}
+					apiUpdateState={api.department.updateState}
+					apiList={api.department.listTree}
+					apiDetail={api.department.detail}
 					disablePageSearch={true}
 				></StandardTable>
 			</>

@@ -1,26 +1,26 @@
 import React from "react";
-import { Button, Form, Input, Modal, Select, Spin, Switch, TreeSelect } from "antd";
+import { Button, Form, Input, InputNumber, Modal, Spin, Switch, TreeSelect, Select } from "antd";
 
 import axios from "../../../api/index";
 import { api } from "../../../actions/system/api";
 
-export default class UserEdit extends React.Component {
+export default class DepartmentAdd extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			departmentTreeData: [],
-			departmentTreeLoading: false,
-			positionListData: [],
-			positionListLoading: false
+			departmentTreeData: [], // 部门树数据
+			departmentTreeLoading: false, // 部门树加载状态
+			userSelectData: [], // 用户列表数据
+			userSelectLoading: false // 用户列表加载状态
 		};
 	}
 
 	// 当modalVisible从false变为true时加载数据
 	componentDidUpdate(prevProps) {
 		if (!prevProps.modalVisible && this.props.modalVisible) {
-			this.loadDepartmentTreeData();
-			this.loadPositionListData();
+			this.loadDepartmentTreeData(); // 加载部门树
+			this.loadUserSelectData(); // 加载用户列表
 		}
 	}
 
@@ -28,7 +28,7 @@ export default class UserEdit extends React.Component {
 	loadDepartmentTreeData = async () => {
 		this.setState({ departmentTreeLoading: true });
 		try {
-			const res = await axios.get(api.department.listTree);
+			const res = await axios.get(api.department.listTree, { all: true, includeTopDepartment: true });
 			if (res.success) {
 				this.setState({
 					departmentTreeData: this.mapTreeData(res.data),
@@ -43,26 +43,26 @@ export default class UserEdit extends React.Component {
 		}
 	};
 
-	// 异步加载岗位列表
-	loadPositionListData = async () => {
-		this.setState({ positionListLoading: true });
+	// 异步加载用户列表数据
+	loadUserSelectData = async () => {
+		this.setState({ userSelectLoading: true });
 		try {
-			const res = await axios.get(api.position.list);
+			const res = await axios.get(api.user.list);
 			if (res.success) {
 				this.setState({
-					positionListData: res.data || [],
-					positionListLoading: false
+					userSelectData: this.mapUserSelectData(res.data),
+					userSelectLoading: false
 				});
 			} else {
-				this.setState({ positionListLoading: false });
+				this.setState({ userSelectLoading: false });
 			}
 		} catch (err) {
-			console.log("查询岗位列表异常", err);
-			this.setState({ positionListLoading: false });
+			console.log("查询用户列表异常", err);
+			this.setState({ userSelectLoading: false });
 		}
 	};
 
-	// 字段映射
+	// 部门树字段映射
 	mapTreeData = nodes => {
 		return nodes.map(node => ({
 			key: node.id,
@@ -72,45 +72,33 @@ export default class UserEdit extends React.Component {
 		}));
 	};
 
+	// 用户下拉字段映射
+	mapUserSelectData = nodes => {
+		return nodes.map(node => ({
+			key: node.id,
+			value: node.id,
+			label: node.nickName
+		}));
+	};
+
 	render() {
-		const { modalVisible, record, handleCancel, handleFinish } = this.props;
-		const { departmentTreeData, departmentTreeLoading, positionListData, positionListLoading } = this.state;
+		const { modalVisible, handleCancel, handleFinish } = this.props;
+		const { departmentTreeData, departmentTreeLoading, userSelectData, userSelectLoading } = this.state;
 		return (
-			<Modal open={modalVisible} title="修改用户信息" footer={null} destroyOnClose={true} onCancel={handleCancel}>
+			<Modal open={modalVisible} title="新增部门信息" footer={null} destroyOnClose={true} onCancel={handleCancel}>
 				<Form
 					labelCol={{ span: 6 }}
 					wrapperCol={{ span: 17 }}
 					layout="horizontal"
 					onFinish={handleFinish}
 					initialValues={{
-						...record
+						state: true,
+						sort: 1
 					}}
 				>
 					<Form.Item
-						name="userName"
-						label="用户名称"
-						rules={[
-							{
-								required: true
-							}
-						]}
-					>
-						<Input placeholder="请输入用户名称" />
-					</Form.Item>
-					<Form.Item
-						name="nickName"
-						label="昵称"
-						rules={[
-							{
-								required: false
-							}
-						]}
-					>
-						<Input placeholder="请输入昵称" />
-					</Form.Item>
-					<Form.Item
-						name="departmentId"
-						label="部门"
+						name="pId"
+						label="上级部门"
 						rules={[
 							{
 								required: false
@@ -121,7 +109,7 @@ export default class UserEdit extends React.Component {
 							<Spin tip="加载部门数据..." />
 						) : (
 							<TreeSelect
-								placeholder="请选择部门"
+								placeholder="请选择上级部门"
 								treeData={departmentTreeData}
 								allowClear
 								showSearch
@@ -131,50 +119,59 @@ export default class UserEdit extends React.Component {
 						)}
 					</Form.Item>
 					<Form.Item
-						name="positionId"
-						label="岗位"
+						name="name"
+						label="部门名称"
+						rules={[
+							{
+								required: true,
+								message: "请输入部门名称"
+							}
+						]}
+					>
+						<Input placeholder="请输入部门名称" />
+					</Form.Item>
+					<Form.Item
+						name="leaderId"
+						label="负责人"
 						rules={[
 							{
 								required: false
 							}
 						]}
 					>
-						{positionListLoading ? (
-							<Spin tip="加载岗位数据..." />
+						{userSelectLoading ? (
+							<Spin tip="加载用户数据..." />
 						) : (
 							<Select
-								placeholder="请选择岗位"
+								placeholder="请选择负责人"
+								options={userSelectData}
 								allowClear
 								showSearch
-								optionFilterProp="children"
-								options={positionListData.map(item => ({
-									value: item.id,
-									label: item.name
-								}))}
+								filterOption={(input, option) => (option?.label ?? "").includes(input)}
 							/>
 						)}
 					</Form.Item>
 					<Form.Item
-						name="phoneNumber"
-						label="手机号码"
+						name="phone"
+						label="联系电话"
 						rules={[
 							{
 								required: false
 							}
 						]}
 					>
-						<Input placeholder="请输入手机号码" />
+						<Input placeholder="请输入联系电话" />
 					</Form.Item>
 					<Form.Item
-						name="email"
-						label="邮箱"
+						name="sort"
+						label="排序"
 						rules={[
 							{
 								required: false
 							}
 						]}
 					>
-						<Input placeholder="请输入邮箱" />
+						<InputNumber min={1} />
 					</Form.Item>
 					<Form.Item
 						name="state"
@@ -187,6 +184,17 @@ export default class UserEdit extends React.Component {
 						]}
 					>
 						<Switch checkedChildren="启用" unCheckedChildren="禁用" />
+					</Form.Item>
+					<Form.Item
+						name="remark"
+						label="备注"
+						rules={[
+							{
+								required: false
+							}
+						]}
+					>
+						<Input.TextArea placeholder="请输入备注" rows={3} />
 					</Form.Item>
 					<Form.Item style={{ margin: "20px 0 0 120px" }}>
 						<Button key="cancel" onClick={handleCancel}>

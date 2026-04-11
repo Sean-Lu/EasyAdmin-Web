@@ -93,8 +93,7 @@ export default class LoginLogList extends React.Component {
 	) => {
 		return (
 			<>
-				{/*查看详情弹框*/}
-				<LoginLogDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
+				<LoginLogDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
@@ -138,7 +137,7 @@ export default class LoginLogList extends React.Component {
 					apiDelete={api.loginLog.delete}
 					apiPage={api.loginLog.page}
 					apiDetail={api.loginLog.detail}
-				></StandardTable>
+				/>
 			</>
 		);
 	}

@@ -4,6 +4,7 @@ import { Button, Form, Input, InputNumber, Modal, Spin, Switch, TreeSelect } fro
 import axios from "../../../api/index";
 import { api } from "../../../actions/system/api";
 
+// 菜单新增弹窗
 export default class MenuAdd extends React.Component {
 	constructor(props) {
 		super(props);
@@ -58,15 +59,15 @@ export default class MenuAdd extends React.Component {
 	};
 
 	render() {
-		const { modalVisible, handleCancel, handleFinish } = this.props;
+		const { modalVisible, onCancel, onFinish } = this.props;
 		const { menuTreeData, menuTreeLoading } = this.state;
 		return (
-			<Modal open={modalVisible} title="新增菜单信息" footer={null} destroyOnClose={true} onCancel={handleCancel}>
+			<Modal open={modalVisible} title="新增菜单信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
 				<Form
 					labelCol={{ span: 6 }}
 					wrapperCol={{ span: 17 }}
 					layout="horizontal"
-					onFinish={handleFinish}
+					onFinish={onFinish}
 					initialValues={{
 						state: true, // 设置默认为启用状态
 						sort: 1
@@ -162,7 +163,7 @@ export default class MenuAdd extends React.Component {
 						<Switch checkedChildren="启用" unCheckedChildren="禁用" />
 					</Form.Item>
 					<Form.Item style={{ margin: "20px 0 0 120px" }}>
-						<Button key="cancel" onClick={handleCancel}>
+						<Button key="cancel" onClick={onCancel}>
 							取消
 						</Button>
 						<Button key="submit" type="primary" htmlType="submit" style={{ marginLeft: 4 }}>

@@ -19,6 +19,19 @@ export const api = {
 		detail: "/user/detail",
 		resetPassword: "/user/resetPassword" // 重置密码
 	},
+	// 角色管理
+	role: {
+		add: "/role/add",
+		delete: "/role/delete",
+		update: "/role/update",
+		updateState: "/role/updateState",
+		page: "/role/page",
+		list: "/role/list",
+		detail: "/role/detail",
+		assignMenus: "/role/assignMenus", // 分配角色菜单权限
+		getRoleMenuIds: "/role/getRoleMenuIds", // 查询角色已分配的菜单ID列表
+		getRoleMenus: "/role/getRoleMenus" // 查询角色已分配的菜单列表
+	},
 	// 菜单管理
 	menu: {
 		add: "/menu/add",

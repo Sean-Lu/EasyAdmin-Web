@@ -1,12 +1,13 @@
 import React from "react";
 import { Form, Modal } from "antd";
 
+// 用户详情弹窗
 export default class UserDetail extends React.Component {
 	render() {
-		const { modalVisible, record, handleCancel } = this.props;
+		const { modalVisible, onCancel, record } = this.props;
 
 		return (
-			<Modal open={modalVisible} title="查看用户信息" footer={null} destroyOnClose={true} onCancel={handleCancel}>
+			<Modal open={modalVisible} title="查看用户信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
 				<Form labelCol={{ span: 6 }} wrapperCol={{ span: 17 }} layout="horizontal">
 					<Form.Item label="用户名称">
 						<span>{record.userName}</span>

@@ -4,6 +4,7 @@ import { Button, Form, Input, InputNumber, Modal, Spin, Switch, TreeSelect, Sele
 import axios from "../../../api/index";
 import { api } from "../../../actions/system/api";
 
+// 部门新增弹窗
 export default class DepartmentAdd extends React.Component {
 	constructor(props) {
 		super(props);
@@ -82,15 +83,15 @@ export default class DepartmentAdd extends React.Component {
 	};
 
 	render() {
-		const { modalVisible, handleCancel, handleFinish } = this.props;
+		const { modalVisible, onCancel, onFinish } = this.props;
 		const { departmentTreeData, departmentTreeLoading, userSelectData, userSelectLoading } = this.state;
 		return (
-			<Modal open={modalVisible} title="新增部门信息" footer={null} destroyOnClose={true} onCancel={handleCancel}>
+			<Modal open={modalVisible} title="新增部门信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
 				<Form
 					labelCol={{ span: 6 }}
 					wrapperCol={{ span: 17 }}
 					layout="horizontal"
-					onFinish={handleFinish}
+					onFinish={onFinish}
 					initialValues={{
 						state: true,
 						sort: 1
@@ -197,7 +198,7 @@ export default class DepartmentAdd extends React.Component {
 						<Input.TextArea placeholder="请输入备注" rows={3} />
 					</Form.Item>
 					<Form.Item style={{ margin: "20px 0 0 120px" }}>
-						<Button key="cancel" onClick={handleCancel}>
+						<Button key="cancel" onClick={onCancel}>
 							取消
 						</Button>
 						<Button key="submit" type="primary" htmlType="submit" style={{ marginLeft: 4 }}>

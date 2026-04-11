@@ -6,6 +6,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 
 import "./index.css";
 
+// 待办事项底部操作栏组件
 export default class TodoFooter extends Component {
 	// 使用 PropTypes 进行类型检查
 	static propTypes = {

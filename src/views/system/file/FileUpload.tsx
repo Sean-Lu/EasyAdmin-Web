@@ -10,6 +10,7 @@ interface FileUploadProps {
 	onSuccess: () => void;
 }
 
+// 文件上传弹窗
 const FileUpload: React.FC<FileUploadProps> = ({ onSuccess }) => {
 	const [visible, setVisible] = useState(false);
 	const [fileList, setFileList] = useState<UploadFile[]>([]);

@@ -11,6 +11,7 @@ interface FileDetailProps {
 	onDownload: (id: string) => void;
 }
 
+// 文件详情弹窗
 const FileDetail: React.FC<FileDetailProps> = ({ visible, file, onClose, onDownload }) => {
 	if (!file) return null;
 

@@ -6,9 +6,10 @@ import "moment/locale/zh-cn";
 
 moment.locale("zh-cn");
 
+// 任务详情弹窗
 export default class TaskDetail extends React.Component {
 	render() {
-		const { modalVisible, record, handleCancel } = this.props;
+		const { modalVisible, onCancel, record } = this.props;
 
 		const taskTypeEnumMap = {
 			1: "新手任务",
@@ -17,7 +18,7 @@ export default class TaskDetail extends React.Component {
 		};
 
 		return (
-			<Modal open={modalVisible} title="查看任务信息" footer={null} destroyOnClose={true} onCancel={handleCancel}>
+			<Modal open={modalVisible} title="查看任务信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
 				<Form labelCol={{ span: 6 }} wrapperCol={{ span: 17 }} layout="horizontal">
 					<Form.Item label="任务名称">
 						<span>{record.taskName}</span>
@@ -40,7 +41,7 @@ export default class TaskDetail extends React.Component {
 						<span>{record.state === 1 ? "启用" : "禁用"}</span>
 					</Form.Item>
 					{/* <Form.Item style={{ margin: "20px 0 0 120px" }}>
-						<Button key="close" onClick={handleCancel}>
+						<Button key="close" onClick={onCancel}>
 							关闭
 						</Button>
 					</Form.Item> */}

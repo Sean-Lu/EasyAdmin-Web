@@ -5,6 +5,7 @@ import Calendar from "./Calendar";
 
 import "./index.css";
 
+// 签到组件
 export default class CheckIn extends Component {
 	render() {
 		return (

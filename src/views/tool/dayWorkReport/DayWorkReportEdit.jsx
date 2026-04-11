@@ -10,23 +10,17 @@ const { TextArea } = Input;
 
 moment.locale("zh-cn");
 
+// 日报编辑弹窗
 export default class DayWorkReportEdit extends React.Component {
 	render() {
-		const { modalVisible, record, handleCancel, handleFinish } = this.props;
+		const { modalVisible, onCancel, onFinish, record } = this.props;
 		return (
-			<DragableModal
-				open={modalVisible}
-				title="修改日报信息"
-				footer={null}
-				destroyOnClose={true}
-				onCancel={handleCancel}
-				width={800}
-			>
+			<DragableModal open={modalVisible} title="修改日报信息" footer={null} destroyOnClose={true} onCancel={onCancel} width={800}>
 				<Form
 					labelCol={{ span: 4 }}
 					wrapperCol={{ span: 20 }}
 					layout="horizontal"
-					onFinish={handleFinish}
+					onFinish={onFinish}
 					initialValues={{
 						...record,
 						recordTime: moment(record.recordTime)
@@ -58,7 +52,7 @@ export default class DayWorkReportEdit extends React.Component {
 						<TextArea autoSize={{ minRows: 5, maxRows: 10 }} />
 					</Form.Item>
 					<Form.Item style={{ margin: "20px 0 0 120px" }}>
-						<Button key="cancel" onClick={handleCancel}>
+						<Button key="cancel" onClick={onCancel}>
 							取消
 						</Button>
 						<Button key="submit" type="primary" htmlType="submit" style={{ marginLeft: 4 }}>

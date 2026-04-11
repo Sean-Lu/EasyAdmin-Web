@@ -57,17 +57,9 @@ export default class ParamList extends React.Component {
 	) => {
 		return (
 			<>
-				{/*新增信息弹框*/}
-				<ParamAdd modalVisible={addModalVisible} handleCancel={hideAddModal} handleFinish={onAddFinish} />
-				{/*修改信息弹框*/}
-				<ParamEdit
-					modalVisible={updateModalVisible}
-					record={record}
-					handleCancel={hideUpdateModal}
-					handleFinish={onUpdateFinish}
-				/>
-				{/*查看详情弹框*/}
-				<ParamDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
+				<ParamAdd modalVisible={addModalVisible} onCancel={hideAddModal} onSubmit={onAddFinish} />
+				<ParamEdit modalVisible={updateModalVisible} onCancel={hideUpdateModal} onSubmit={onUpdateFinish} record={record} />
+				<ParamDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
@@ -109,7 +101,7 @@ export default class ParamList extends React.Component {
 					apiUpdateState={api.param.updateState}
 					apiPage={api.param.page}
 					apiDetail={api.param.detail}
-				></StandardTable>
+				/>
 			</>
 		);
 	}

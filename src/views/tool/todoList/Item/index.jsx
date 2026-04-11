@@ -6,6 +6,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 
 import "./index.css";
 
+// 待办事项列表组件
 export default class TodoItem extends Component {
 	// 使用 PropTypes 进行类型检查
 	static propTypes = {

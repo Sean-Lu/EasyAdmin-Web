@@ -5,6 +5,7 @@ import axios from "../../../api/index";
 
 import "./Calendar.css";
 
+// 签到日历组件
 const Calendar = () => {
 	const [curDate, setCurDate] = useState(new Date()); // 当前日期
 	const [curMonthCheckInDateArray, setCurMonthCheckInDateArray] = useState<String[]>([]); // 当前月份签到数据

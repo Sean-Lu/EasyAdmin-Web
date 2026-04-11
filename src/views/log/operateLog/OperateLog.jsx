@@ -93,8 +93,7 @@ export default class OperateLogList extends React.Component {
 	) => {
 		return (
 			<>
-				{/*查看详情弹框*/}
-				<OperateLogDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
+				<OperateLogDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
@@ -133,7 +132,7 @@ export default class OperateLogList extends React.Component {
 					apiDelete={api.operateLog.delete}
 					apiPage={api.operateLog.page}
 					apiDetail={api.operateLog.detail}
-				></StandardTable>
+				/>
 			</>
 		);
 	}

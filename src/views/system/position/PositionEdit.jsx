@@ -1,16 +1,17 @@
 import React from "react";
 import { Button, Form, Input, InputNumber, Modal, Switch } from "antd";
 
+// 岗位编辑弹窗
 export default class PositionEdit extends React.Component {
 	render() {
-		const { modalVisible, record, handleCancel, handleFinish } = this.props;
+		const { modalVisible, onCancel, onSubmit, record } = this.props;
 		return (
-			<Modal open={modalVisible} title="修改岗位信息" footer={null} destroyOnClose={true} onCancel={handleCancel}>
+			<Modal open={modalVisible} title="修改岗位信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
 				<Form
 					labelCol={{ span: 6 }}
 					wrapperCol={{ span: 17 }}
 					layout="horizontal"
-					onFinish={handleFinish}
+					onFinish={onSubmit}
 					initialValues={{
 						...record
 					}}
@@ -74,7 +75,7 @@ export default class PositionEdit extends React.Component {
 						<Input.TextArea placeholder="请输入备注" rows={3} />
 					</Form.Item>
 					<Form.Item style={{ margin: "20px 0 0 120px" }}>
-						<Button key="cancel" onClick={handleCancel}>
+						<Button key="cancel" onClick={onCancel}>
 							取消
 						</Button>
 						<Button key="submit" type="primary" htmlType="submit" style={{ marginLeft: 4 }}>

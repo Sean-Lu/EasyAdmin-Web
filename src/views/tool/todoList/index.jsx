@@ -39,6 +39,7 @@ import "./index.css";
 
 // 5. 状态在哪里，操作状态的方法就在哪里
 
+// 待办事项列表组件
 export default class TodoList extends Component {
 	state = {
 		todoList: [

@@ -3,16 +3,17 @@ import { Button, Form, Input, Modal, Switch } from "antd";
 
 const { TextArea } = Input;
 
+// 参数编辑弹窗
 export default class ParamEdit extends React.Component {
 	render() {
-		const { modalVisible, record, handleCancel, handleFinish } = this.props;
+		const { modalVisible, onCancel, onSubmit, record } = this.props;
 		return (
-			<Modal open={modalVisible} title="修改参数信息" footer={null} destroyOnClose={true} onCancel={handleCancel}>
+			<Modal open={modalVisible} title="修改参数信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
 				<Form
 					labelCol={{ span: 6 }}
 					wrapperCol={{ span: 17 }}
 					layout="horizontal"
-					onFinish={handleFinish}
+					onFinish={onSubmit}
 					initialValues={{
 						...record
 					}}
@@ -66,7 +67,7 @@ export default class ParamEdit extends React.Component {
 						<Switch checkedChildren="启用" unCheckedChildren="禁用" />
 					</Form.Item>
 					<Form.Item style={{ margin: "20px 0 0 120px" }}>
-						<Button key="cancel" onClick={handleCancel}>
+						<Button key="cancel" onClick={onCancel}>
 							取消
 						</Button>
 						<Button key="submit" type="primary" htmlType="submit" style={{ marginLeft: 4 }}>

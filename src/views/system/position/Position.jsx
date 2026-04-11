@@ -52,17 +52,9 @@ export default class PositionList extends React.Component {
 	) => {
 		return (
 			<>
-				{/*新增信息弹框*/}
-				<PositionAdd modalVisible={addModalVisible} handleCancel={hideAddModal} handleFinish={onAddFinish} />
-				{/*修改信息弹框*/}
-				<PositionEdit
-					modalVisible={updateModalVisible}
-					record={record}
-					handleCancel={hideUpdateModal}
-					handleFinish={onUpdateFinish}
-				/>
-				{/*查看详情弹框*/}
-				<PositionDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
+				<PositionAdd modalVisible={addModalVisible} onCancel={hideAddModal} onSubmit={onAddFinish} />
+				<PositionEdit modalVisible={updateModalVisible} onCancel={hideUpdateModal} onSubmit={onUpdateFinish} record={record} />
+				<PositionDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
@@ -104,7 +96,7 @@ export default class PositionList extends React.Component {
 					apiUpdateState={api.position.updateState}
 					apiPage={api.position.page}
 					apiDetail={api.position.detail}
-				></StandardTable>
+				/>
 			</>
 		);
 	}

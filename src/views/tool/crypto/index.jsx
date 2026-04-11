@@ -29,6 +29,7 @@ const api = {
 	rsaDecrypt: "/encrypt/rsaDecrypt"
 };
 
+// 加密组件
 const EncryptionComponent = () => {
 	const [inputText, setInputText] = useState("");
 	const [key, setKey] = useState("");

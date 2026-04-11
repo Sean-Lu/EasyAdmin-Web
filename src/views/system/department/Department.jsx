@@ -47,17 +47,9 @@ export default class DepartmentList extends React.Component {
 	) => {
 		return (
 			<>
-				{/*新增信息弹框*/}
-				<DepartmentAdd modalVisible={addModalVisible} handleCancel={hideAddModal} handleFinish={onAddFinish} />
-				{/*修改信息弹框*/}
-				<DepartmentEdit
-					modalVisible={updateModalVisible}
-					record={record}
-					handleCancel={hideUpdateModal}
-					handleFinish={onUpdateFinish}
-				/>
-				{/*查看详情弹框*/}
-				<DepartmentDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
+				<DepartmentAdd modalVisible={addModalVisible} onCancel={hideAddModal} onFinish={onAddFinish} />
+				<DepartmentEdit modalVisible={updateModalVisible} onCancel={hideUpdateModal} onFinish={onUpdateFinish} record={record} />
+				<DepartmentDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
@@ -114,7 +106,7 @@ export default class DepartmentList extends React.Component {
 					apiList={api.department.listTree}
 					apiDetail={api.department.detail}
 					disablePageSearch={true}
-				></StandardTable>
+				/>
 			</>
 		);
 	}

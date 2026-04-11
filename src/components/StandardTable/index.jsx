@@ -8,6 +8,20 @@ import axios from "../../api/index";
 
 import "./index.less";
 
+/**
+ * 通用标准表格组件
+ *
+ * 功能特性：
+ * - 支持分页查询和不分页查询
+ * - 支持搜索表单
+ * - 支持新增、编辑、删除、查看详情操作
+ * - 支持批量删除
+ * - 支持状态切换
+ * - 支持自定义操作按钮
+ * - 支持自定义模态框
+ *
+ * 详细使用说明请参考 README.md 文件
+ */
 class StandardTable extends React.Component {
 	constructor(props) {
 		super(props);

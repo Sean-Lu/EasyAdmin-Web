@@ -58,22 +58,14 @@ export default class UserList extends React.Component {
 	) => {
 		return (
 			<>
-				{/*新增信息弹框*/}
-				<UserAdd modalVisible={addModalVisible} handleCancel={hideAddModal} handleFinish={onAddFinish} />
-				{/*修改信息弹框*/}
-				<UserEdit
-					modalVisible={updateModalVisible}
-					record={record}
-					handleCancel={hideUpdateModal}
-					handleFinish={onUpdateFinish}
-				/>
-				{/*查看详情弹框*/}
-				<UserDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
+				<UserAdd modalVisible={addModalVisible} onCancel={hideAddModal} onSubmit={onAddFinish} />
+				<UserEdit modalVisible={updateModalVisible} onCancel={hideUpdateModal} onSubmit={onUpdateFinish} record={record} />
+				<UserDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
 
-	// ============ 行数据操作 ===============
+	// ============ 行数据操作列功能扩展 ===============
 	renderRecordOperate = record => {
 		return (
 			<>
@@ -165,7 +157,7 @@ export default class UserList extends React.Component {
 					apiUpdateState={api.user.updateState}
 					apiPage={api.user.page}
 					apiDetail={api.user.detail}
-				></StandardTable>
+				/>
 			</>
 		);
 	}

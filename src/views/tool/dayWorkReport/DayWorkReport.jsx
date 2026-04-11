@@ -56,17 +56,14 @@ export default class DayWorkReportList extends React.Component {
 	) => {
 		return (
 			<>
-				{/*新增信息弹框*/}
-				<DayWorkReportAdd modalVisible={addModalVisible} handleCancel={hideAddModal} handleFinish={onAddFinish} />
-				{/*修改信息弹框*/}
+				<DayWorkReportAdd modalVisible={addModalVisible} onCancel={hideAddModal} onFinish={onAddFinish} />
 				<DayWorkReportEdit
 					modalVisible={updateModalVisible}
+					onCancel={hideUpdateModal}
+					onFinish={onUpdateFinish}
 					record={record}
-					handleCancel={hideUpdateModal}
-					handleFinish={onUpdateFinish}
 				/>
-				{/*查看详情弹框*/}
-				<DayWorkReportDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
+				<DayWorkReportDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
@@ -163,7 +160,7 @@ export default class DayWorkReportList extends React.Component {
 					apiUpdate={api.dayWorkReport.update}
 					apiPage={api.dayWorkReport.page}
 					apiDetail={api.dayWorkReport.detail}
-				></StandardTable>
+				/>
 			</>
 		);
 	}

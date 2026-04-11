@@ -28,15 +28,15 @@ const systemRouter = [
 					key: "system-user"
 				}
 			},
-			// {
-			// 	path: "/system/role",
-			// 	element: lazyLoad(React.lazy(() => import("@/views/system/role/Role"))),
-			// 	meta: {
-			// 		requiresAuth: true,
-			// 		title: "角色管理",
-			// 		key: "system-role"
-			// 	}
-			// },
+			{
+				path: "/system/role",
+				element: lazyLoad(React.lazy(() => import("@/views/system/role/Role"))),
+				meta: {
+					requiresAuth: true,
+					title: "角色管理",
+					key: "system-role"
+				}
+			},
 			{
 				path: "/system/department",
 				element: lazyLoad(React.lazy(() => import("@/views/system/department/Department"))),

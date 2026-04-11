@@ -47,17 +47,9 @@ export default class TenantList extends React.Component {
 	) => {
 		return (
 			<>
-				{/*新增信息弹框*/}
-				<TenantAdd modalVisible={addModalVisible} handleCancel={hideAddModal} handleFinish={onAddFinish} />
-				{/*修改信息弹框*/}
-				<TenantEdit
-					modalVisible={updateModalVisible}
-					record={record}
-					handleCancel={hideUpdateModal}
-					handleFinish={onUpdateFinish}
-				/>
-				{/*查看详情弹框*/}
-				<TenantDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
+				<TenantAdd modalVisible={addModalVisible} onCancel={hideAddModal} onSubmit={onAddFinish} />
+				<TenantEdit modalVisible={updateModalVisible} onCancel={hideUpdateModal} onSubmit={onUpdateFinish} record={record} />
+				<TenantDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
@@ -99,7 +91,7 @@ export default class TenantList extends React.Component {
 					apiUpdateState={api.tenant.updateState}
 					apiPage={api.tenant.page}
 					apiDetail={api.tenant.detail}
-				></StandardTable>
+				/>
 			</>
 		);
 	}

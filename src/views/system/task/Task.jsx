@@ -75,17 +75,9 @@ export default class TaskList extends React.Component {
 	) => {
 		return (
 			<>
-				{/*新增信息弹框*/}
-				<TaskAdd modalVisible={addModalVisible} handleCancel={hideAddModal} handleFinish={onAddFinish} />
-				{/*修改信息弹框*/}
-				<TaskEdit
-					modalVisible={updateModalVisible}
-					record={record}
-					handleCancel={hideUpdateModal}
-					handleFinish={onUpdateFinish}
-				/>
-				{/*查看详情弹框*/}
-				<TaskDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
+				<TaskAdd modalVisible={addModalVisible} onCancel={hideAddModal} onSubmit={onAddFinish} />
+				<TaskEdit modalVisible={updateModalVisible} onCancel={hideUpdateModal} onSubmit={onUpdateFinish} record={record} />
+				<TaskDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
@@ -198,7 +190,7 @@ export default class TaskList extends React.Component {
 					apiUpdateState={api.task.updateState}
 					apiPage={api.task.page}
 					apiDetail={api.task.detail}
-				></StandardTable>
+				/>
 			</>
 		);
 	}

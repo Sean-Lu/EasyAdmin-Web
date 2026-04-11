@@ -52,17 +52,9 @@ export default class MenuList extends React.Component {
 	) => {
 		return (
 			<>
-				{/*新增信息弹框*/}
-				<MenuAdd modalVisible={addModalVisible} handleCancel={hideAddModal} handleFinish={onAddFinish} />
-				{/*修改信息弹框*/}
-				<MenuEdit
-					modalVisible={updateModalVisible}
-					record={record}
-					handleCancel={hideUpdateModal}
-					handleFinish={onUpdateFinish}
-				/>
-				{/*查看详情弹框*/}
-				<MenuDetail modalVisible={detailModalVisible} record={record} handleCancel={hideDetailModal} />
+				<MenuAdd modalVisible={addModalVisible} onCancel={hideAddModal} onFinish={onAddFinish} />
+				<MenuEdit modalVisible={updateModalVisible} onCancel={hideUpdateModal} onFinish={onUpdateFinish} record={record} />
+				<MenuDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
@@ -125,7 +117,7 @@ export default class MenuList extends React.Component {
 					apiList={api.menu.listTree}
 					apiDetail={api.menu.detail}
 					disablePageSearch={true}
-				></StandardTable>
+				/>
 			</>
 		);
 	}

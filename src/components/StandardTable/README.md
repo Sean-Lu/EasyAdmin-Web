@@ -3,12 +3,14 @@
 ## 功能特性
 
 - 支持分页查询和不分页查询
-- 支持搜索表单
+- 支持搜索表单（带防抖处理（300ms））
 - 支持新增、编辑、删除、查看详情操作
 - 支持批量删除
 - 支持状态切换
 - 支持自定义操作按钮
 - 支持自定义模态框
+- 支持加载状态显示
+- 支持统一的错误处理
 
 ## 技术优势
 
@@ -16,7 +18,9 @@
 2. **交互风格统一**：提供标准化的操作界面
 3. **灵活性强**：支持自定义表单、模态框和操作按钮
 4. **易于维护**：代码结构清晰，注释完善
-5. **性能优化**：使用 React Hooks 和缓存策略提高性能
+5. **性能优化**：使用防抖处理和公共 API 请求方法提高性能
+6. **用户体验友好**：添加加载状态和错误提示
+7. **代码健壮性**：完善的错误处理和边界情况处理
 
 ## 安装和使用
 
@@ -213,12 +217,63 @@ const MyComponent = () => {
 				// 处理编辑表单值
 				return values;
 			}}
+			onSearchFormReset={() => {
+				// 搜索表单重置后的回调
+				console.log("搜索表单已重置");
+			}}
 		/>
 	);
 };
 
 export default MyComponent;
 ```
+
+### 高级使用示例
+
+#### 1. 带排序功能的表格
+
+```jsx
+const columns = [
+	{
+		title: "ID",
+		dataIndex: "id",
+		key: "id",
+		sorter: (a, b) => a.id - b.id,
+		sortDirections: ["ascend", "descend", "default"]
+	},
+	{
+		title: "名称",
+		dataIndex: "name",
+		key: "name",
+		sorter: (a, b) => a.name.localeCompare(b.name),
+		sortDirections: ["ascend", "descend", "default"]
+	},
+	{ title: "描述", dataIndex: "description", key: "description" }
+];
+```
+
+#### 2. 带自定义行样式的表格
+
+```jsx
+// 在 Table 组件中添加 rowClassName 属性
+// 注意：需要在 StandardTable 组件中添加对 rowClassName 的支持
+<Table
+	// ... 其他属性
+	rowClassName={record => (record.status === "error" ? "error-row" : "")}
+/>
+```
+
+#### 3. 带空状态的表格
+
+````jsx
+// 在 Table 组件中添加 locale 属性
+// 注意：需要在 StandardTable 组件中添加对 locale 的支持
+<Table
+	// ... 其他属性
+	locale={{
+		nodata: '暂无数据'
+	}}
+/>
 
 ## API 文档
 
@@ -245,6 +300,9 @@ export default MyComponent;
 | `handleAddValues`         | `Function`        | 处理新增表单值      | 否                   |
 | `handleUpdateValues`      | `Function`        | 处理编辑表单值      | 否                   |
 | `onSearchFormReset`       | `Function`        | 搜索表单重置回调    | 否                   |
+| `rowKey`                  | `FunctionString` | 行数据的 Key        | 否                   |
+| `rowClassName`            | `FunctionString` | 行样式类名          | 否                   |
+| `locale`                  | `Object`          | 表格国际化配置      | 否                   |
 
 ### renderSearchForm 函数
 
@@ -290,26 +348,95 @@ const renderCustomTableButton = ({ pageNumber, pageSize, total, getSearchInfo })
 
 ## 注意事项
 
-1. 确保提供正确的 API 地址，组件会根据传入的 API 地址执行相应的操作
-2. 搜索表单需要使用`Form`组件，并通过`searchFormRef`引用
-3. 模态框需要自行实现，组件会提供相应的状态和回调函数
-4. 表格列配置需要符合 Ant Design 的`columns`配置格式
-5. 当同时提供`apiPage`和`apiList`时，优先使用`apiPage`
+1. **API 地址配置**：确保提供正确的 API 地址，组件会根据传入的 API 地址执行相应的操作
+2. **搜索表单**：搜索表单需要使用`Form`组件，并通过`searchFormRef`引用
+3. **模态框实现**：模态框需要自行实现，组件会提供相应的状态和回调函数
+4. **表格列配置**：表格列配置需要符合 Ant Design 的`columns`配置格式
+5. **API 优先级**：当同时提供`apiPage`和`apiList`时，优先使用`apiPage`
+6. **API 返回格式**：
+   - 通用接口返回格式：`{ success: boolean, data: any, message?: string }`
+   - 分页接口返回格式：`{ success: true, data: { list: array, total: number } }`
+   - 状态更新接口返回格式：`{ success: true, data: boolean }`
+   - 删除接口支持：单个删除（`{ id: number }`）和批量删除（`{ ids: array }`）
+7. **性能优化**：搜索操作已添加防抖处理（300ms），避免频繁请求接口
 
 ## 常见问题
 
 ### Q: 为什么表格没有数据？
 
-A: 请检查`apiPage`或`apiList`是否正确，以及 API 返回的数据格式是否符合要求。
+A: 请检查以下几点：
+
+- `apiPage`或`apiList`是否正确配置
+- API 返回的数据格式是否符合要求
+- 网络连接是否正常
+- 控制台是否有错误信息
 
 ### Q: 为什么新增/编辑/删除操作没有反应？
 
-A: 请检查相应的 API 地址是否正确，以及 API 返回的数据格式是否符合要求。
+A: 请检查以下几点：
+
+- 相应的 API 地址是否正确配置
+- API 返回的数据格式是否符合要求
+- 控制台是否有错误信息
+- 权限是否足够
 
 ### Q: 如何自定义操作按钮？
 
-A: 通过`renderRecordOperate`属性可以自定义行操作按钮，通过`renderCustomTableButton`属性可以自定义表格顶部按钮。
+A: 通过以下属性可以自定义操作按钮：
+
+- `renderRecordOperate`：自定义行操作按钮
+- `renderCustomTableButton`：自定义表格顶部按钮
 
 ### Q: 如何处理表单值？
 
-A: 通过`handleSearchValues`、`handleAddValues`、`handleUpdateValues`属性可以分别处理搜索、新增、编辑的表单值。
+A: 通过以下属性可以处理表单值：
+
+- `handleSearchValues`：处理搜索表单值
+- `handleAddValues`：处理新增表单值
+- `handleUpdateValues`：处理编辑表单值
+
+### Q: 如何添加排序功能？
+
+A: 在`columns`配置中添加`sorter`属性，例如：
+
+```jsx
+const columns = [
+	{
+		title: "ID",
+		dataIndex: "id",
+		key: "id",
+		sorter: (a, b) => a.id - b.id
+	}
+];
+```
+
+### Q: 如何自定义行样式？
+
+A: 需要在 StandardTable 组件中添加对`rowClassName`的支持，然后在使用时传入该属性。
+
+### Q: 如何修改空状态提示？
+
+A: 需要在 StandardTable 组件中添加对`locale`的支持，然后在使用时传入该属性。
+
+## 版本更新日志
+
+### v1.0.0
+
+- 初始版本
+- 支持分页查询和不分页查询
+- 支持搜索表单
+- 支持新增、编辑、删除、查看详情操作
+- 支持批量删除
+- 支持状态切换
+- 支持自定义操作按钮
+- 支持自定义模态框
+
+### v1.1.0
+
+- 添加加载状态显示
+- 添加统一的错误处理
+- 添加搜索防抖处理（300ms）
+- 提取公共 API 请求方法
+- 优化代码结构和性能
+- 完善 README.md 文档
+````

@@ -1,6 +1,5 @@
 import React from "react";
-import { Button, Card, Col, Form, message, Modal, Pagination, Row, Space, Table, Switch } from "antd";
-// import { DeleteOutlined, EditOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { Button, Card, Col, Form, message, Modal, Pagination, Row, Space, Table, Switch, Spin } from "antd";
 
 import moment from "moment";
 
@@ -13,14 +12,55 @@ import "./index.less";
  *
  * 功能特性：
  * - 支持分页查询和不分页查询
- * - 支持搜索表单
+ * - 支持搜索表单（带防抖处理（300ms））
  * - 支持新增、编辑、删除、查看详情操作
  * - 支持批量删除
  * - 支持状态切换
  * - 支持自定义操作按钮
  * - 支持自定义模态框
+ * - 支持加载状态显示
+ * - 支持统一的错误处理
  *
  * 详细使用说明请参考 README.md 文件
+ *
+ * 1. 基本使用
+ *
+ * ```jsx
+ *    <StandardTable
+ *      searchFormRef={searchFormRef}
+ *      columns={columns}
+ *      renderSearchForm={renderSearchForm}
+ *      renderModal={renderModal}
+ *      apiPage="/api/page"
+ *    />
+ * ```
+ *
+ * 2. 配置项说明：
+ *    - columns: 表格列配置，同 Ant Design Table
+ *    - apiPage: 分页查询接口地址
+ *    - apiList: 不分页查询接口地址（当设置了 apiList 时，会忽略 apiPage）
+ *    - apiAdd: 新增接口地址
+ *    - apiUpdate: 编辑接口地址
+ *    - apiDelete: 删除接口地址
+ *    - apiDetail: 详情接口地址
+ *    - apiUpdateState: 状态更新接口地址
+ *    - disablePageSearch: 是否禁用分页查询，默认为 false
+ *    - searchFormRef: 搜索表单引用
+ *    - renderSearchForm: 渲染搜索表单的函数
+ *    - renderModal: 渲染模态框的函数
+ *    - renderCustomTableButton: 渲染自定义表格按钮的函数
+ *    - renderRecordOperate: 渲染行操作按钮的函数
+ *    - recordOperateColWidth: 操作列宽度，默认为 130
+ *    - handleAddValues: 处理新增表单值的函数
+ *    - handleUpdateValues: 处理编辑表单值的函数
+ *    - handleSearchValues: 处理搜索表单值的函数
+ *    - onSearchFormReset: 搜索表单重置后的回调函数
+ *
+ * 3. 注意事项：
+ *    - 接口返回格式需统一：{ success: boolean, data: any }
+ *    - 分页接口返回格式需包含：{ list: array, total: number }
+ *    - 状态切换接口返回格式需为：{ data: boolean }
+ *    - 删除接口支持单个删除（id 参数）和批量删除（ids 参数）
  */
 class StandardTable extends React.Component {
 	constructor(props) {
@@ -35,12 +75,41 @@ class StandardTable extends React.Component {
 			updateModalVisible: false, // 是否显示编辑信息弹窗
 			detailModalVisible: false, // 是否显示查看信息弹窗
 			selectedRowKeys: [], // 用于保存用户选择的行的Key
-			record: {} // 当前编辑或查看的对象
+			record: {}, // 当前编辑或查看的对象
+			loading: false // 加载状态
 		};
 
 		this.OnSearchFormFinish = this.OnSearchFormFinish.bind(this);
 		this.handleFormReset = this.handleFormReset.bind(this);
+		this.debouncedSearch = this.debounce(this.handleSearch, 300);
 	}
+
+	// 防抖函数
+	debounce(func, wait) {
+		let timeout;
+		return function executedFunction(...args) {
+			const later = () => {
+				clearTimeout(timeout);
+				func(...args);
+			};
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+		};
+	}
+
+	// 公共 API 请求方法
+	requestApi = (method, url, params) => {
+		this.setState({ loading: true });
+		return axios[method](url, params)
+			.then(res => {
+				this.setState({ loading: false });
+				return res;
+			})
+			.catch(err => {
+				this.handleApiError(err);
+				throw err;
+			});
+	};
 
 	componentDidMount() {
 		this.handleSearch();
@@ -73,44 +142,53 @@ class StandardTable extends React.Component {
 		});
 	};
 
+	// 处理API错误
+	handleApiError = (err, messageText = "操作异常") => {
+		console.error(messageText, err);
+		message.error(messageText);
+		this.setState({ loading: false });
+	};
+
 	// 新增
 	onAddFinish = values => {
 		const { apiAdd, handleAddValues } = this.props;
-		axios
-			.post(apiAdd, {
-				...(handleAddValues ? handleAddValues(values) : values)
-			})
+		this.requestApi("post", apiAdd, {
+			...(handleAddValues ? handleAddValues(values) : values)
+		})
 			.then(res => {
 				if (res.success === true) {
 					this.hideAddModal();
 					message.success("操作成功");
 					this.handleSearch();
+				} else {
+					message.error(res.message || "操作失败");
 				}
 			})
 			.catch(err => {
-				console.log("新增异常", err);
+				this.handleApiError(err, "新增异常");
 			});
 	};
 
 	// 显示编辑信息弹窗
-	showUpdateModal(text, record, index) {
+	showUpdateModal = (text, record, index) => {
 		const { apiDetail } = this.props;
-		axios
-			.get(apiDetail, {
-				id: record.id
-			})
+		this.requestApi("get", apiDetail, {
+			id: record.id
+		})
 			.then(res => {
 				if (res.success === true) {
 					this.setState({
 						updateModalVisible: true,
 						record: res.data
 					});
+				} else {
+					message.error(res.message || "获取详情失败");
 				}
 			})
 			.catch(err => {
-				console.log("查询详情异常", err);
+				this.handleApiError(err, "查询详情异常");
 			});
-	}
+	};
 	// 隐藏编辑信息弹窗
 	hideUpdateModal = () => {
 		this.setState({
@@ -122,40 +200,42 @@ class StandardTable extends React.Component {
 	// 编辑
 	onUpdateFinish = values => {
 		const { apiUpdate, handleUpdateValues } = this.props;
-		axios
-			.post(apiUpdate, {
-				...this.state.record,
-				...(handleUpdateValues ? handleUpdateValues(values) : values)
-			})
+		this.requestApi("post", apiUpdate, {
+			...this.state.record,
+			...(handleUpdateValues ? handleUpdateValues(values) : values)
+		})
 			.then(res => {
 				if (res.success === true) {
 					this.hideUpdateModal();
 					message.success("操作成功");
 					this.handleSearch();
+				} else {
+					message.error(res.message || "操作失败");
 				}
 			})
 			.catch(err => {
-				console.log("修改异常", err);
+				this.handleApiError(err, "修改异常");
 			});
 	};
 
 	// 显示查看详情弹窗
 	showDetailModal = (text, record, index) => {
 		const { apiDetail } = this.props;
-		axios
-			.get(apiDetail, {
-				id: record.id
-			})
+		this.requestApi("get", apiDetail, {
+			id: record.id
+		})
 			.then(res => {
 				if (res.success === true) {
 					this.setState({
 						detailModalVisible: true,
 						record: res.data
 					});
+				} else {
+					message.error(res.message || "获取详情失败");
 				}
 			})
 			.catch(err => {
-				console.log("查询详情异常", err);
+				this.handleApiError(err, "查询详情异常");
 			});
 	};
 	// 隐藏查看详情弹窗
@@ -169,27 +249,27 @@ class StandardTable extends React.Component {
 	// 删除
 	deleteItem = (text, record, index) => {
 		const { apiDelete } = this.props;
-		const refThis = this;
 		Modal.confirm({
 			title: "是否确认删除?",
 			okText: "确认",
 			okType: "danger",
 			cancelText: "取消",
 			// 点击确认触发
-			onOk() {
-				axios
-					.post(apiDelete, {
-						id: record.id
-					})
+			onOk: () => {
+				this.requestApi("post", apiDelete, {
+					id: record.id
+				})
 					.then(res => {
 						if (res.data === true) {
 							message.success("操作成功");
-							refThis.handleSearch();
+							this.handleSearch();
+						} else {
+							message.error(res.message || "删除失败");
 						}
 					})
 					.catch(err => {
-						console.log("删除异常", err);
-						refThis.handleSearch(); // 刷新
+						this.handleApiError(err, "删除异常");
+						this.handleSearch(); // 刷新
 					});
 			},
 			// 点击取消触发
@@ -207,28 +287,28 @@ class StandardTable extends React.Component {
 			return;
 		}
 
-		const refThis = this;
 		Modal.confirm({
 			title: "是否确认删除?",
 			okText: "确认",
 			okType: "danger",
 			cancelText: "取消",
 			// 点击确认触发
-			onOk() {
-				axios
-					.post(apiDelete, {
-						ids: selectedRowKeys
-					})
+			onOk: () => {
+				this.requestApi("post", apiDelete, {
+					ids: selectedRowKeys
+				})
 					.then(res => {
 						if (res.data === true) {
-							refThis.setState({ selectedRowKeys: [] });
+							this.setState({ selectedRowKeys: [] });
 							message.success("操作成功");
-							refThis.handleSearch();
+							this.handleSearch();
+						} else {
+							message.error(res.message || "删除失败");
 						}
 					})
 					.catch(err => {
-						console.log("批量删除异常", err);
-						refThis.handleSearch(); // 刷新
+						this.handleApiError(err, "批量删除异常");
+						this.handleSearch(); // 刷新
 					});
 			},
 			// 点击取消触发
@@ -238,19 +318,19 @@ class StandardTable extends React.Component {
 
 	// 分页操作
 	onChangePage = (page, pageSize) => {
-		new Promise((resolve, reject) => {
-			this.setState({
+		this.setState(
+			{
 				pageNumber: page,
 				pageSize: pageSize
-			});
-			resolve();
-		}).then(() => {
-			this.handleSearch();
-		});
+			},
+			() => {
+				this.handleSearch();
+			}
+		);
 	};
 
 	OnSearchFormFinish = values => {
-		this.handleSearch();
+		this.debouncedSearch();
 	};
 
 	/** 查询 */
@@ -258,38 +338,40 @@ class StandardTable extends React.Component {
 		const { apiPage, apiList, disablePageSearch } = this.props;
 		if (apiPage !== undefined && (disablePageSearch === undefined || disablePageSearch === false)) {
 			// 分页查询
-			axios
-				.get(apiPage, {
-					pageNumber: this.state.pageNumber,
-					pageSize: this.state.pageSize,
-					...this.getSearchFields()
-				})
+			this.requestApi("get", apiPage, {
+				pageNumber: this.state.pageNumber,
+				pageSize: this.state.pageSize,
+				...this.getSearchFields()
+			})
 				.then(res => {
 					if (res.success === true) {
 						this.setState({
-							data: res.data.list,
-							total: res.data.total
+							data: res.data.list || [],
+							total: res.data.total || 0
 						});
+					} else {
+						message.error(res.message || "查询失败");
 					}
 				})
 				.catch(err => {
-					console.log("查询列表异常", err);
+					this.handleApiError(err, "查询列表异常");
 				});
 		} else if (apiList !== undefined) {
 			// 列表查询（不分页）
-			axios
-				.get(apiList, {
-					...this.getSearchFields()
-				})
+			this.requestApi("get", apiList, {
+				...this.getSearchFields()
+			})
 				.then(res => {
 					if (res.success === true) {
 						this.setState({
-							data: res.data
+							data: res.data || []
 						});
+					} else {
+						message.error(res.message || "查询失败");
 					}
 				})
 				.catch(err => {
-					console.log("查询列表异常", err);
+					this.handleApiError(err, "查询列表异常");
 				});
 		}
 	};
@@ -301,17 +383,21 @@ class StandardTable extends React.Component {
 	};
 
 	/** 重置 */
-	handleFormReset = async () => {
+	handleFormReset = () => {
 		const { searchFormRef, onSearchFormReset } = this.props;
 		searchFormRef.current.resetFields();
-		await this.setState({
-			pageNumber: 1,
-			pageSize: this.state.pageSize
-		});
-		if (onSearchFormReset) {
-			onSearchFormReset();
-		}
-		this.handleSearch();
+		this.setState(
+			{
+				pageNumber: 1,
+				pageSize: this.state.pageSize
+			},
+			() => {
+				if (onSearchFormReset) {
+					onSearchFormReset();
+				}
+				this.handleSearch();
+			}
+		);
 	};
 
 	// 选中项发生变化时的回调
@@ -324,19 +410,20 @@ class StandardTable extends React.Component {
 	handleUpdateState = (checked, record) => {
 		const { apiUpdateState } = this.props;
 		let state = checked ? 1 : 0;
-		axios
-			.post(apiUpdateState, {
-				id: record.id,
-				state: state
-			})
+		this.requestApi("post", apiUpdateState, {
+			id: record.id,
+			state: state
+		})
 			.then(res => {
 				if (res.data === true) {
 					message.success("操作成功");
 					this.handleSearch();
+				} else {
+					message.error(res.message || "操作失败");
 				}
 			})
 			.catch(err => {
-				console.log("切换状态异常", err);
+				this.handleApiError(err, "切换状态异常");
 				this.handleSearch(); // 刷新
 			});
 	};
@@ -489,21 +576,23 @@ class StandardTable extends React.Component {
 										})}
 								</Space>
 							)}
-							<Table
-								columns={columns}
-								dataSource={this.state.data}
-								pagination={false}
-								rowKey={record => record.id}
-								rowSelection={{
-									// type: "checkbox",
-									fixed: "left",
-									...rowSelection
-								}}
-								bordered={true}
-								scroll={{
-									x: "max-content"
-								}}
-							/>
+							<Spin spinning={this.state.loading}>
+								<Table
+									columns={columns}
+									dataSource={this.state.data}
+									pagination={false}
+									rowKey={record => record.id}
+									rowSelection={{
+										// type: "checkbox",
+										fixed: "left",
+										...rowSelection
+									}}
+									bordered={true}
+									scroll={{
+										x: "max-content"
+									}}
+								/>
+							</Spin>
 							{(disablePageSearch === undefined || disablePageSearch === false) && (
 								<Pagination
 									current={this.state.pageNumber} // 总条数 绑定state中的值

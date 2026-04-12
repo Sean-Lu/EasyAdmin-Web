@@ -17,7 +17,9 @@ export const api = {
 		page: "/user/page",
 		list: "/user/list",
 		detail: "/user/detail",
-		resetPassword: "/user/resetPassword" // 重置密码
+		resetPassword: "/user/resetPassword", // 重置密码
+		assignRoles: "/user/assignRoles", // 分配用户角色
+		getUserRoleIds: "/user/getUserRoleIds" // 查询用户已分配的角色ID列表
 	},
 	// 角色管理
 	role: {

@@ -4,12 +4,22 @@ import StandardTable from "../../../components/StandardTable";
 import UserAdd from "./UserAdd";
 import UserEdit from "./UserEdit";
 import UserDetail from "./UserDetail";
+import UserRolePermission from "./UserRolePermission";
 import { api } from "../../../actions/system/api";
 import axios from "../../../api/index";
 
 // 用户列表
 export default class UserList extends React.Component {
 	searchFormRef = React.createRef();
+
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			rolePermissionModalVisible: false, // 角色权限设置弹窗是否可见
+			currentRecord: null // 当前选中的用户记录
+		};
+	}
 
 	// ============ 查询表单 ===============
 	renderSearchForm = onSearchFormReset => {
@@ -70,6 +80,7 @@ export default class UserList extends React.Component {
 		return (
 			<>
 				<span onClick={() => this.resetUserPassword(record)}>重置密码</span>
+				<span onClick={() => this.handleRolePermission(record)}>分配角色</span>
 			</>
 		);
 	};
@@ -97,6 +108,33 @@ export default class UserList extends React.Component {
 			},
 			// 点击取消触发
 			onCancel() {}
+		});
+	};
+
+	// 处理角色权限提交
+	handleRolePermissionSubmit = async (userId, roleIds) => {
+		try {
+			const res = await axios.post(api.user.assignRoles, {
+				userId,
+				roleIds
+			});
+			if (res.success) {
+				message.success("更新角色权限成功 🎉");
+				this.setState({ rolePermissionModalVisible: false });
+			} else {
+				message.error(res.message || "更新角色权限失败");
+			}
+		} catch (err) {
+			console.log("更新角色权限异常", err);
+			message.error("更新角色权限异常");
+		}
+	};
+
+	// 角色权限设置
+	handleRolePermission = record => {
+		this.setState({
+			rolePermissionModalVisible: true,
+			currentRecord: record
 		});
 	};
 
@@ -150,13 +188,19 @@ export default class UserList extends React.Component {
 					renderSearchForm={this.renderSearchForm}
 					renderModal={this.renderModal}
 					renderRecordOperate={this.renderRecordOperate}
-					recordOperateColWidth={190}
+					recordOperateColWidth={250}
 					apiAdd={api.user.add}
 					apiDelete={api.user.delete}
 					apiUpdate={api.user.update}
 					apiUpdateState={api.user.updateState}
 					apiPage={api.user.page}
 					apiDetail={api.user.detail}
+				/>
+				<UserRolePermission
+					modalVisible={this.state?.rolePermissionModalVisible || false}
+					onCancel={() => this.setState({ rolePermissionModalVisible: false })}
+					onSubmit={this.handleRolePermissionSubmit}
+					record={this.state?.currentRecord || null}
 				/>
 			</>
 		);

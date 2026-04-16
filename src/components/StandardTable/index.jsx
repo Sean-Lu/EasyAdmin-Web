@@ -144,9 +144,9 @@ class StandardTable extends React.Component {
 
 	// 处理API错误
 	handleApiError = (err, messageText = "操作异常") => {
-		console.error(messageText, err);
-		// 如果是401状态码（token过期），不显示错误消息，因为系统会自动跳转到登录页
-		if (err.response && err.response.status !== 401) {
+		if (err.response && err.response.status === 200) {
+			// 这里只处理成功返回的错误，非200状态码的请求异常会统一处理
+			console.error(messageText, err);
 			message.error(messageText);
 		}
 		this.setState({ loading: false });

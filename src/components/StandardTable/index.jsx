@@ -84,6 +84,10 @@ class StandardTable extends React.Component {
 		this.debouncedSearch = this.debounce(this.handleSearch, 300);
 	}
 
+	componentDidMount() {
+		this.handleSearch();
+	}
+
 	// 防抖函数
 	debounce(func, wait) {
 		let timeout;
@@ -98,22 +102,51 @@ class StandardTable extends React.Component {
 	}
 
 	// 公共 API 请求方法
-	requestApi = (method, url, params) => {
+	requestApi = (method, url, params, options = {}) => {
+		const {
+			onSuccess = null, // 业务成功回调
+			onFail = null, // 业务失败回调
+			failMsg = "操作失败", // 业务失败提示
+			onError = null, // 请求异常回调
+			errorMsg = "操作异常" // 请求异常提示
+		} = options;
+
 		this.setState({ loading: true });
 		return axios[method](url, params)
 			.then(res => {
 				this.setState({ loading: false });
+				if (res.success === true) {
+					// 处理业务成功回调
+					if (onSuccess) {
+						onSuccess(res);
+					}
+				} else {
+					console.error(res.message || failMsg, res);
+					message.error(res.message || failMsg);
+
+					// 处理业务失败回调
+					if (onFail) {
+						onFail(res);
+					}
+				}
 				return res;
 			})
 			.catch(err => {
-				this.handleApiError(err);
-				throw err;
+				this.setState({ loading: false });
+
+				// 处理接口请求异常（已经在响应拦截器中做了统一处理）
+				// 如果是401状态码（token过期），不显示错误消息，因为系统会自动跳转到登录页
+				if (err.response && err.response.status !== 401) {
+					console.error(errorMsg, err);
+					message.error(errorMsg);
+				}
+
+				// 处理接口请求异常回调
+				if (onError) {
+					onError(err);
+				}
 			});
 	};
-
-	componentDidMount() {
-		this.handleSearch();
-	}
 
 	// 显示新增信息弹窗
 	showAddModal = () => {
@@ -142,55 +175,47 @@ class StandardTable extends React.Component {
 		});
 	};
 
-	// 处理API错误
-	handleApiError = (err, messageText = "操作异常") => {
-		if (err.response && err.response.status === 200) {
-			// 这里只处理成功返回的错误，非200状态码的请求异常会统一处理
-			console.error(messageText, err);
-			message.error(messageText);
-		}
-		this.setState({ loading: false });
-	};
-
 	// 新增
 	onAddFinish = values => {
 		const { apiAdd, handleAddValues } = this.props;
-		this.requestApi("post", apiAdd, {
-			...(handleAddValues ? handleAddValues(values) : values)
-		})
-			.then(res => {
-				if (res.success === true) {
+		this.requestApi(
+			"post",
+			apiAdd,
+			{
+				...(handleAddValues ? handleAddValues(values) : values)
+			},
+			{
+				onSuccess: res => {
 					this.hideAddModal();
 					message.success("操作成功");
 					this.handleSearch();
-				} else {
-					message.error(res.message || "操作失败");
-				}
-			})
-			.catch(err => {
-				this.handleApiError(err, "新增异常");
-			});
+				},
+				failMsg: "新增失败",
+				errorMsg: "新增异常"
+			}
+		);
 	};
 
 	// 显示编辑信息弹窗
 	showUpdateModal = (text, record, index) => {
 		const { apiDetail } = this.props;
-		this.requestApi("get", apiDetail, {
-			id: record.id
-		})
-			.then(res => {
-				if (res.success === true) {
+		this.requestApi(
+			"get",
+			apiDetail,
+			{
+				id: record.id
+			},
+			{
+				onSuccess: res => {
 					this.setState({
 						updateModalVisible: true,
 						record: res.data
 					});
-				} else {
-					message.error(res.message || "获取详情失败");
-				}
-			})
-			.catch(err => {
-				this.handleApiError(err, "查询详情异常");
-			});
+				},
+				failMsg: "查询详情失败",
+				errorMsg: "查询详情异常"
+			}
+		);
 	};
 	// 隐藏编辑信息弹窗
 	hideUpdateModal = () => {
@@ -203,43 +228,45 @@ class StandardTable extends React.Component {
 	// 编辑
 	onUpdateFinish = values => {
 		const { apiUpdate, handleUpdateValues } = this.props;
-		this.requestApi("post", apiUpdate, {
-			...this.state.record,
-			...(handleUpdateValues ? handleUpdateValues(values) : values)
-		})
-			.then(res => {
-				if (res.success === true) {
+		this.requestApi(
+			"post",
+			apiUpdate,
+			{
+				...this.state.record,
+				...(handleUpdateValues ? handleUpdateValues(values) : values)
+			},
+			{
+				onSuccess: res => {
 					this.hideUpdateModal();
 					message.success("操作成功");
 					this.handleSearch();
-				} else {
-					message.error(res.message || "操作失败");
-				}
-			})
-			.catch(err => {
-				this.handleApiError(err, "修改异常");
-			});
+				},
+				failMsg: "更新失败",
+				errorMsg: "更新异常"
+			}
+		);
 	};
 
 	// 显示查看详情弹窗
 	showDetailModal = (text, record, index) => {
 		const { apiDetail } = this.props;
-		this.requestApi("get", apiDetail, {
-			id: record.id
-		})
-			.then(res => {
-				if (res.success === true) {
+		this.requestApi(
+			"get",
+			apiDetail,
+			{
+				id: record.id
+			},
+			{
+				onSuccess: res => {
 					this.setState({
 						detailModalVisible: true,
 						record: res.data
 					});
-				} else {
-					message.error(res.message || "获取详情失败");
-				}
-			})
-			.catch(err => {
-				this.handleApiError(err, "查询详情异常");
-			});
+				},
+				failMsg: "查询详情失败",
+				errorMsg: "查询详情异常"
+			}
+		);
 	};
 	// 隐藏查看详情弹窗
 	hideDetailModal = () => {
@@ -259,21 +286,21 @@ class StandardTable extends React.Component {
 			cancelText: "取消",
 			// 点击确认触发
 			onOk: () => {
-				this.requestApi("post", apiDelete, {
-					id: record.id
-				})
-					.then(res => {
-						if (res.data === true) {
+				this.requestApi(
+					"post",
+					apiDelete,
+					{
+						id: record.id
+					},
+					{
+						onSuccess: res => {
 							message.success("操作成功");
 							this.handleSearch();
-						} else {
-							message.error(res.message || "删除失败");
-						}
-					})
-					.catch(err => {
-						this.handleApiError(err, "删除异常");
-						this.handleSearch(); // 刷新
-					});
+						},
+						failMsg: "删除失败",
+						errorMsg: "删除异常"
+					}
+				);
 			},
 			// 点击取消触发
 			onCancel() {}
@@ -297,22 +324,22 @@ class StandardTable extends React.Component {
 			cancelText: "取消",
 			// 点击确认触发
 			onOk: () => {
-				this.requestApi("post", apiDelete, {
-					ids: selectedRowKeys
-				})
-					.then(res => {
-						if (res.data === true) {
+				this.requestApi(
+					"post",
+					apiDelete,
+					{
+						ids: selectedRowKeys
+					},
+					{
+						onSuccess: res => {
 							this.setState({ selectedRowKeys: [] });
 							message.success("操作成功");
 							this.handleSearch();
-						} else {
-							message.error(res.message || "删除失败");
-						}
-					})
-					.catch(err => {
-						this.handleApiError(err, "批量删除异常");
-						this.handleSearch(); // 刷新
-					});
+						},
+						failMsg: "删除失败",
+						errorMsg: "删除异常"
+					}
+				);
 			},
 			// 点击取消触发
 			onCancel() {}
@@ -341,41 +368,43 @@ class StandardTable extends React.Component {
 		const { apiPage, apiList, disablePageSearch } = this.props;
 		if (apiPage !== undefined && (disablePageSearch === undefined || disablePageSearch === false)) {
 			// 分页查询
-			this.requestApi("get", apiPage, {
-				pageNumber: this.state.pageNumber,
-				pageSize: this.state.pageSize,
-				...this.getSearchFields()
-			})
-				.then(res => {
-					if (res.success === true) {
+			this.requestApi(
+				"get",
+				apiPage,
+				{
+					pageNumber: this.state.pageNumber,
+					pageSize: this.state.pageSize,
+					...this.getSearchFields()
+				},
+				{
+					onSuccess: res => {
 						this.setState({
 							data: res.data.list || [],
 							total: res.data.total || 0
 						});
-					} else {
-						message.error(res.message || "查询失败");
-					}
-				})
-				.catch(err => {
-					this.handleApiError(err, "查询列表异常");
-				});
+					},
+					failMsg: "查询失败",
+					errorMsg: "查询异常"
+				}
+			);
 		} else if (apiList !== undefined) {
 			// 列表查询（不分页）
-			this.requestApi("get", apiList, {
-				...this.getSearchFields()
-			})
-				.then(res => {
-					if (res.success === true) {
+			this.requestApi(
+				"get",
+				apiList,
+				{
+					...this.getSearchFields()
+				},
+				{
+					onSuccess: res => {
 						this.setState({
 							data: res.data || []
 						});
-					} else {
-						message.error(res.message || "查询失败");
-					}
-				})
-				.catch(err => {
-					this.handleApiError(err, "查询列表异常");
-				});
+					},
+					failMsg: "查询失败",
+					errorMsg: "查询异常"
+				}
+			);
 		}
 	};
 
@@ -413,22 +442,28 @@ class StandardTable extends React.Component {
 	handleUpdateState = (checked, record) => {
 		const { apiUpdateState } = this.props;
 		let state = checked ? 1 : 0;
-		this.requestApi("post", apiUpdateState, {
-			id: record.id,
-			state: state
-		})
-			.then(res => {
-				if (res.data === true) {
+		this.requestApi(
+			"post",
+			apiUpdateState,
+			{
+				id: record.id,
+				state: state
+			},
+			{
+				onSuccess: res => {
 					message.success("操作成功");
 					this.handleSearch();
-				} else {
-					message.error(res.message || "操作失败");
-				}
-			})
-			.catch(err => {
-				this.handleApiError(err, "切换状态异常");
-				this.handleSearch(); // 刷新
-			});
+				},
+				onFail: res => {
+					this.handleSearch(); // 刷新数据（还原状态）
+				},
+				failMsg: "操作失败",
+				onError: res => {
+					this.handleSearch(); // 刷新数据（还原状态）
+				},
+				errorMsg: "操作异常"
+			}
+		);
 	};
 
 	render() {

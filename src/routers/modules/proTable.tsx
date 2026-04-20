@@ -19,15 +19,6 @@ const proTableRouter: Array<RouteObject> = [
 					title: "使用 Hooks",
 					key: "useHooks"
 				}
-			},
-			{
-				path: "/proTable/useComponent",
-				element: lazyLoad(React.lazy(() => import("@/views/proTable/useComponent/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "使用 Component",
-					key: "useComponent"
-				}
 			}
 		]
 	}

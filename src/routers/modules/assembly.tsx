@@ -28,24 +28,6 @@ const assemblyRouter: Array<RouteObject> = [
 					title: "SVG 图标",
 					key: "svgIcon"
 				}
-			},
-			{
-				path: "/assembly/selectIcon",
-				element: lazyLoad(React.lazy(() => import("@/views/assembly/selectIcon/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "Icon 选择",
-					key: "selectIcon"
-				}
-			},
-			{
-				path: "/assembly/batchImport",
-				element: lazyLoad(React.lazy(() => import("@/views/assembly/batchImport/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "批量导入数据",
-					key: "selectIcon"
-				}
 			}
 		]
 	}

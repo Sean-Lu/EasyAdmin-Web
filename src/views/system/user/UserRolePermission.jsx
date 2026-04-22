@@ -28,11 +28,7 @@ export default class UserRolePermission extends React.Component {
 	loadRoleList = async () => {
 		this.setState({ loading: true });
 		try {
-			const res = await axios.get(api.role.list, {
-				params: {
-					all: true // 包含所有角色，包括禁用的
-				}
-			});
+			const res = await axios.get(api.role.list, {});
 			if (res.success) {
 				this.setState({
 					roleList: res.data || [],

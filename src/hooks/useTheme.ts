@@ -18,12 +18,15 @@ const useTheme = (themeConfig: ThemeConfigProp) => {
 		let head = document.getElementsByTagName("head")[0];
 		const getStyle = head.getElementsByTagName("style");
 		if (getStyle.length > 0) {
-			for (let i = 0, l = getStyle.length; i < l; i++) {
-				if (getStyle[i]?.getAttribute("data-type") === "dark") getStyle[i].remove();
+			for (let i = getStyle.length - 1; i >= 0; i--) {
+				const styleTag = getStyle[i];
+				if (styleTag?.getAttribute("data-type") === "dark" || styleTag?.getAttribute("data-type") === "theme") {
+					styleTag.remove();
+				}
 			}
 		}
 		let styleDom = document.createElement("style");
-		styleDom.dataset.type = "dark";
+		styleDom.dataset.type = "theme";
 		styleDom.innerHTML = isDark ? darkTheme : defaultTheme;
 		head.appendChild(styleDom);
 	};

@@ -62,6 +62,26 @@ export const api = {
 		list: "/position/list",
 		detail: "/position/detail"
 	},
+	// 字典类型管理
+	dictType: {
+		add: "/sysDictType/add",
+		delete: "/sysDictType/delete",
+		update: "/sysDictType/update",
+		updateState: "/sysDictType/updateState",
+		page: "/sysDictType/page",
+		list: "/sysDictType/list",
+		detail: "/sysDictType/detail"
+	},
+	// 字典数据管理
+	dictData: {
+		add: "/sysDictData/add",
+		delete: "/sysDictData/delete",
+		update: "/sysDictData/update",
+		updateState: "/sysDictData/updateState",
+		page: "/sysDictData/page",
+		getByTypeCode: "/sysDictData/getByTypeCode",
+		detail: "/sysDictData/detail"
+	},
 	// 参数管理
 	param: {
 		add: "/param/add",

@@ -30,10 +30,8 @@ export default class RoleMenuPermission extends React.Component {
 		this.setState({ loading: true });
 		try {
 			const res = await axios.get(api.menu.listTree, {
-				params: {
-					includeTopMenu: false, // 不包含顶级菜单
-					all: true // 包含所有菜单，包括禁用的
-				}
+				includeTopMenu: false, // 不包含顶级菜单
+				all: true // 包含所有菜单，包括禁用的
 			});
 			if (res.success) {
 				const menuTreeData = this.mapMenuTreeData(res.data || []);

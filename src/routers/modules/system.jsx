@@ -64,15 +64,15 @@ const systemRouter = [
 					key: "system-menu"
 				}
 			},
-			// {
-			// 	path: "/system/dict",
-			// 	element: lazyLoad(React.lazy(() => import("@/views/system/dict/Dict"))),
-			// 	meta: {
-			// 		requiresAuth: true,
-			// 		title: "字典管理",
-			// 		key: "system-dict"
-			// 	}
-			// },
+			{
+				path: "/system/dict",
+				element: lazyLoad(React.lazy(() => import("@/views/system/dict/DictType"))),
+				meta: {
+					requiresAuth: true,
+					title: "字典管理",
+					key: "system-dict"
+				}
+			},
 			{
 				path: "/system/param",
 				element: lazyLoad(React.lazy(() => import("@/views/system/param/Param"))),

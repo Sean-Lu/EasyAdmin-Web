@@ -86,7 +86,7 @@ export default class DepartmentEdit extends React.Component {
 		const { modalVisible, onCancel, onFinish, record } = this.props;
 		const { departmentTreeData, departmentTreeLoading, userSelectData, userSelectLoading } = this.state;
 		return (
-			<Modal open={modalVisible} title="修改部门信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
+			<Modal open={modalVisible} title="修改部门信息" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form
 					labelCol={{ span: 6 }}
 					wrapperCol={{ span: 17 }}
@@ -106,7 +106,7 @@ export default class DepartmentEdit extends React.Component {
 						]}
 					>
 						{departmentTreeLoading ? (
-							<Spin tip="加载部门数据..." />
+							<Spin description="加载部门数据..." />
 						) : (
 							<TreeSelect
 								placeholder="请选择上级部门"
@@ -114,7 +114,7 @@ export default class DepartmentEdit extends React.Component {
 								allowClear
 								showSearch
 								filterTreeNode={(input, treeNode) => (treeNode?.title ?? "").includes(input)}
-								dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+								styles={{ popup: { root: { maxHeight: 400, overflow: "auto" } } }}
 							/>
 						)}
 					</Form.Item>
@@ -140,7 +140,7 @@ export default class DepartmentEdit extends React.Component {
 						]}
 					>
 						{userSelectLoading ? (
-							<Spin tip="加载用户数据..." />
+							<Spin description="加载用户数据..." />
 						) : (
 							<Select
 								placeholder="请选择负责人"

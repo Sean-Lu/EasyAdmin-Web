@@ -28,7 +28,7 @@ const InfoModal = (props: Props) => {
 	};
 
 	return (
-		<Modal title="个人信息" open={modalVisible} onOk={handleOk} onCancel={handleCancel} destroyOnClose={true}>
+		<Modal title="个人信息" open={modalVisible} onOk={handleOk} onCancel={handleCancel} destroyOnHidden={true}>
 			<p>昵称：{props.userInfo?.nickName}</p>
 			<p>手机号码：{props.userInfo?.phoneNumber}</p>
 			<p>邮箱：{props.userInfo?.email}</p>

@@ -1,4 +1,4 @@
-@import "antd/dist/antd.dark.less";
+// @import "antd/dist/antd.dark.less";
 
 /* 自定义 antd 暗黑模式样式 */
 @dark-main-bg-color: #141414;
@@ -44,8 +44,10 @@ body {
 .container {
 	/* sider */
 	.ant-layout-sider {
+		background-color: @dark-bg-color !important;
 		border-right: 1px solid @dark-border-color !important;
 		.ant-menu {
+			background-color: @dark-bg-color !important;
 			&::-webkit-scrollbar {
 				background-color: @dark-bg-color !important;
 			}

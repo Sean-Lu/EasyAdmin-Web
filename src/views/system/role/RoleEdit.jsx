@@ -7,7 +7,7 @@ export default function RoleEdit({ modalVisible = false, onCancel = () => {}, on
 	};
 
 	return (
-		<Modal open={modalVisible} title="编辑角色信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
+		<Modal open={modalVisible} title="编辑角色信息" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 			<Form
 				labelCol={{ span: 6 }}
 				wrapperCol={{ span: 17 }}

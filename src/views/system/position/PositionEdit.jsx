@@ -6,7 +6,7 @@ export default class PositionEdit extends React.Component {
 	render() {
 		const { modalVisible, onCancel, onSubmit, record } = this.props;
 		return (
-			<Modal open={modalVisible} title="修改岗位信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
+			<Modal open={modalVisible} title="修改岗位信息" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form
 					labelCol={{ span: 6 }}
 					wrapperCol={{ span: 17 }}

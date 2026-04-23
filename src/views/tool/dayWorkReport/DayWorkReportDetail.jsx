@@ -13,7 +13,14 @@ export default class DayWorkReportDetail extends React.Component {
 		const { modalVisible, onCancel, record } = this.props;
 
 		return (
-			<DragableModal open={modalVisible} title="查看日报信息" footer={null} destroyOnClose={true} onCancel={onCancel} width={800}>
+			<DragableModal
+				open={modalVisible}
+				title="查看日报信息"
+				footer={null}
+				destroyOnHidden={true}
+				onCancel={onCancel}
+				width={800}
+			>
 				<Form labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} layout="horizontal">
 					<Form.Item label="日期">
 						<span>{moment(record.recordTime).format("YYYY-MM-DD")}</span>

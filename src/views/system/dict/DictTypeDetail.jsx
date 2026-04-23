@@ -6,7 +6,7 @@ export default class DictTypeDetail extends React.Component {
 		const { modalVisible, onCancel, record } = this.props;
 
 		return (
-			<Modal open={modalVisible} title="查看字典类型" footer={null} destroyOnClose={true} onCancel={onCancel}>
+			<Modal open={modalVisible} title="查看字典类型" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form labelCol={{ span: 6 }} wrapperCol={{ span: 17 }} layout="horizontal">
 					<Form.Item label="类型名称">
 						<span>{record.name}</span>

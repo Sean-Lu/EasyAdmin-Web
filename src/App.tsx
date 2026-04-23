@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { getBrowserLang } from "@/utils/util";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, theme } from "antd";
 import { connect } from "react-redux";
 import { setLanguage } from "@/redux/modules/global/action";
 import { HashRouter } from "react-router-dom";
 import AuthRouter from "@/routers/utils/authRouter";
 import Router from "@/routers/index";
 import useTheme from "@/hooks/useTheme";
-import zhCN from "antd/lib/locale/zh_CN";
-import enUS from "antd/lib/locale/en_US";
+import zhCN from "antd/locale/zh_CN";
+import enUS from "antd/locale/en_US";
 import i18n from "i18next";
 import "moment/dist/locale/zh-cn";
 
@@ -37,7 +37,16 @@ const App = (props: any) => {
 
 	return (
 		<HashRouter>
-			<ConfigProvider locale={i18nLocale} componentSize={assemblySize}>
+			<ConfigProvider
+				locale={i18nLocale}
+				componentSize={assemblySize}
+				theme={{
+					token: {
+						colorPrimary: themeConfig.primary
+					},
+					algorithm: themeConfig.isDark ? theme.darkAlgorithm : theme.defaultAlgorithm // antd 从 5.x 开始正式内置了主题切换功能（基于 CSS-in-JS 提供预设算法）
+				}}
+			>
 				<AuthRouter>
 					<Router />
 				</AuthRouter>

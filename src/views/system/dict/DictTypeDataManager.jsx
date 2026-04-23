@@ -244,7 +244,7 @@ class DictDataAdd extends React.Component {
 	render() {
 		const { modalVisible, onCancel, onSubmit } = this.props;
 		return (
-			<Modal open={modalVisible} title="新增字典数据" footer={null} destroyOnClose={true} onCancel={onCancel}>
+			<Modal open={modalVisible} title="新增字典数据" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form
 					labelCol={{ span: 6 }}
 					wrapperCol={{ span: 17 }}
@@ -310,7 +310,7 @@ class DictDataEdit extends React.Component {
 	render() {
 		const { modalVisible, onCancel, onSubmit, record } = this.props;
 		return (
-			<Modal open={modalVisible} title="修改字典数据" footer={null} destroyOnClose={true} onCancel={onCancel}>
+			<Modal open={modalVisible} title="修改字典数据" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form labelCol={{ span: 6 }} wrapperCol={{ span: 17 }} layout="horizontal" onFinish={onSubmit} initialValues={record}>
 					<Form.Item
 						name="dictKey"

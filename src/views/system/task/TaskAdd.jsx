@@ -14,7 +14,7 @@ export default class TaskAdd extends React.Component {
 	render() {
 		const { modalVisible, onCancel, onSubmit } = this.props;
 		return (
-			<Modal open={modalVisible} title="新增任务信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
+			<Modal open={modalVisible} title="新增任务信息" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form
 					labelCol={{ span: 6 }}
 					wrapperCol={{ span: 17 }}

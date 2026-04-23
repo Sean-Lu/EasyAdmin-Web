@@ -7,7 +7,7 @@ export default class UserDetail extends React.Component {
 		const { modalVisible, onCancel, record } = this.props;
 
 		return (
-			<Modal open={modalVisible} title="查看用户信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
+			<Modal open={modalVisible} title="查看用户信息" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form labelCol={{ span: 6 }} wrapperCol={{ span: 17 }} layout="horizontal">
 					<Form.Item label="用户名称">
 						<span>{record.userName}</span>

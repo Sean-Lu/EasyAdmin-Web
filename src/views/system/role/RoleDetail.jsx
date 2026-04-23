@@ -8,7 +8,7 @@ export default function RoleDetail({ modalVisible = false, onCancel = () => {}, 
 	};
 
 	return (
-		<Modal open={modalVisible} title="查看角色信息" footer={null} destroyOnClose={true} onCancel={onCancel} width={600}>
+		<Modal open={modalVisible} title="查看角色信息" footer={null} destroyOnHidden={true} onCancel={onCancel} width={600}>
 			<div style={{ paddingLeft: 24 }}>
 				<div style={{ marginBottom: 16 }}>
 					<label style={{ display: "inline-block", width: 80, fontWeight: "bold" }}>角色名称:</label>

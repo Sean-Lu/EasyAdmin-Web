@@ -62,7 +62,7 @@ export default class MenuAdd extends React.Component {
 		const { modalVisible, onCancel, onFinish } = this.props;
 		const { menuTreeData, menuTreeLoading } = this.state;
 		return (
-			<Modal open={modalVisible} title="新增菜单信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
+			<Modal open={modalVisible} title="新增菜单信息" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form
 					labelCol={{ span: 6 }}
 					wrapperCol={{ span: 17 }}
@@ -83,7 +83,7 @@ export default class MenuAdd extends React.Component {
 						]}
 					>
 						{menuTreeLoading ? (
-							<Spin tip="加载菜单数据..." />
+							<Spin description="加载菜单数据..." />
 						) : (
 							<TreeSelect
 								placeholder="请选择上级菜单"
@@ -91,7 +91,7 @@ export default class MenuAdd extends React.Component {
 								allowClear
 								showSearch
 								filterTreeNode={(input, treeNode) => (treeNode?.title ?? "").includes(input)}
-								dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+								styles={{ popup: { root: { maxHeight: 400, overflow: "auto" } } }}
 							/>
 						)}
 					</Form.Item>

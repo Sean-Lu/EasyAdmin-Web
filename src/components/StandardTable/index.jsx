@@ -537,7 +537,7 @@ class StandardTable extends React.Component {
 							color: "#2378f7"
 							// fontSize: "15px"
 						}}
-						// split={<Divider type="vertical" />}
+						// split={<Divider orientation="vertical" />}
 					>
 						{apiUpdate !== undefined && (
 							<span onClick={() => this.showUpdateModal(text, record, index)}>
@@ -588,7 +588,7 @@ class StandardTable extends React.Component {
 				)}
 				<Row>
 					<Col span={24}>
-						<Card bordered={false}>
+						<Card>
 							{/* 查询表单 */}
 							<Form ref={searchFormRef} onFinish={this.OnSearchFormFinish}>
 								{renderSearchForm(this.handleFormReset)}

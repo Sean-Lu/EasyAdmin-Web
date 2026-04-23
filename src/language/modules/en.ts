@@ -8,9 +8,9 @@ export default {
 	},
 	tabs: {
 		more: "More",
-		closeCurrent: "Current",
-		closeOther: "Other",
-		closeAll: "All"
+		closeCurrent: "Close Current",
+		closeOther: "Close Other",
+		closeAll: "Close All"
 	},
 	header: {
 		componentSize: "Component Size",

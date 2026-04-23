@@ -102,8 +102,8 @@ export default class UserRolePermission extends React.Component {
 			<Modal
 				open={modalVisible}
 				title={`为用户「${record?.userName || ""}」分配角色`}
-				destroyOnClose={true}
-				maskClosable={false}
+				destroyOnHidden={true}
+				mask={{ closable: false }}
 				width={600}
 				height={500}
 				onCancel={this.handleCancel}
@@ -118,7 +118,7 @@ export default class UserRolePermission extends React.Component {
 			>
 				{loading ? (
 					<div style={{ textAlign: "center", padding: "40px" }}>
-						<Spin tip="加载角色数据中..." />
+						<Spin description="加载角色数据中..." />
 					</div>
 				) : (
 					<div

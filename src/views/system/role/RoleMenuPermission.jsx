@@ -112,8 +112,8 @@ export default class RoleMenuPermission extends React.Component {
 			<Modal
 				open={modalVisible}
 				title={`为角色「${record?.name || ""}」分配菜单权限`}
-				destroyOnClose={true}
-				maskClosable={false}
+				destroyOnHidden={true}
+				mask={{ closable: false }}
 				width={800}
 				height={600}
 				onCancel={this.handleCancel}
@@ -128,7 +128,7 @@ export default class RoleMenuPermission extends React.Component {
 			>
 				{loading ? (
 					<div style={{ textAlign: "center", padding: "40px" }}>
-						<Spin tip="加载菜单数据中..." />
+						<Spin description="加载菜单数据中..." />
 					</div>
 				) : (
 					<div

@@ -18,7 +18,7 @@ export default class TaskDetail extends React.Component {
 		};
 
 		return (
-			<Modal open={modalVisible} title="查看任务信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
+			<Modal open={modalVisible} title="查看任务信息" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form labelCol={{ span: 6 }} wrapperCol={{ span: 17 }} layout="horizontal">
 					<Form.Item label="任务名称">
 						<span>{record.taskName}</span>

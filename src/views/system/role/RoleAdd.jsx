@@ -3,7 +3,7 @@ import { Button, Form, Input, Modal, Switch } from "antd";
 // 角色新增弹窗
 export default function RoleAdd({ modalVisible = false, onCancel = () => {}, onSubmit = () => {} }) {
 	return (
-		<Modal open={modalVisible} title="新增角色信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
+		<Modal open={modalVisible} title="新增角色信息" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 			<Form
 				labelCol={{ span: 6 }}
 				wrapperCol={{ span: 17 }}

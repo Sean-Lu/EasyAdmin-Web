@@ -37,7 +37,7 @@ const Theme = (props: any) => {
 					setOpen(false);
 				}}
 				open={open}
-				width={320}
+				size={320}
 			>
 				{/* 全局主题 */}
 				<Divider className="divider">

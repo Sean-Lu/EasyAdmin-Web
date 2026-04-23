@@ -77,7 +77,7 @@ export default class UserAdd extends React.Component {
 		const { modalVisible, onCancel, onSubmit } = this.props;
 		const { departmentTreeData, departmentTreeLoading, positionListData, positionListLoading } = this.state;
 		return (
-			<Modal open={modalVisible} title="新增用户信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
+			<Modal open={modalVisible} title="新增用户信息" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form
 					labelCol={{ span: 6 }}
 					wrapperCol={{ span: 17 }}
@@ -119,7 +119,7 @@ export default class UserAdd extends React.Component {
 						]}
 					>
 						{departmentTreeLoading ? (
-							<Spin tip="加载部门数据..." />
+							<Spin description="加载部门数据..." />
 						) : (
 							<TreeSelect
 								placeholder="请选择部门"
@@ -127,7 +127,7 @@ export default class UserAdd extends React.Component {
 								allowClear
 								showSearch
 								filterTreeNode={(input, treeNode) => (treeNode?.title ?? "").includes(input)}
-								dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+								styles={{ popup: { root: { maxHeight: 400, overflow: "auto" } } }}
 							/>
 						)}
 					</Form.Item>
@@ -141,7 +141,7 @@ export default class UserAdd extends React.Component {
 						]}
 					>
 						{positionListLoading ? (
-							<Spin tip="加载岗位数据..." />
+							<Spin description="加载岗位数据..." />
 						) : (
 							<Select
 								placeholder="请选择岗位"

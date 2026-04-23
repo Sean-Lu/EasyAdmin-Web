@@ -18,7 +18,7 @@
 		"commit": "git pull && git add -A && git-cz && git push"
 	},
 	"dependencies": {
-		"antd": "^4.24.16",
+		"antd": "^6.3.6",
 		"axios": "^0.27.2",
 		"copy-to-clipboard": "^3.3.3",
 		"crypto-js": "^4.2.0",

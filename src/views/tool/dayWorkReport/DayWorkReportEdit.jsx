@@ -15,7 +15,14 @@ export default class DayWorkReportEdit extends React.Component {
 	render() {
 		const { modalVisible, onCancel, onFinish, record } = this.props;
 		return (
-			<DragableModal open={modalVisible} title="修改日报信息" footer={null} destroyOnClose={true} onCancel={onCancel} width={800}>
+			<DragableModal
+				open={modalVisible}
+				title="修改日报信息"
+				footer={null}
+				destroyOnHidden={true}
+				onCancel={onCancel}
+				width={800}
+			>
 				<Form
 					labelCol={{ span: 4 }}
 					wrapperCol={{ span: 20 }}

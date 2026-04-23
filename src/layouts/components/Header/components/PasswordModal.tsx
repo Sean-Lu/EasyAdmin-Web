@@ -24,7 +24,7 @@ const PasswordModal = (props: Props) => {
 	};
 
 	const handleCancel = () => {
-		form.resetFields(); // destroyOnClose 没有生效，临时先这么解决
+		form.resetFields(); // destroyOnHidden 没有生效，临时先这么解决
 		setIsModalVisible(false);
 	};
 
@@ -35,7 +35,7 @@ const PasswordModal = (props: Props) => {
 				newPassword: md5(values.newPassword)
 			});
 			if (apiRes.success) {
-				form.resetFields(); // destroyOnClose 没有生效，临时先这么解决
+				form.resetFields(); // destroyOnHidden 没有生效，临时先这么解决
 				setIsModalVisible(false);
 				message.success("修改密码成功 🎉🎉🎉");
 			} else {
@@ -53,7 +53,7 @@ const PasswordModal = (props: Props) => {
 	const [form] = Form.useForm();
 
 	return (
-		<Modal title="修改密码" open={isModalVisible} onOk={handleOk} onCancel={handleCancel} destroyOnClose={true}>
+		<Modal title="修改密码" open={isModalVisible} onOk={handleOk} onCancel={handleCancel} destroyOnHidden={true}>
 			<Form form={form} name="passwordForm" onFinish={onFinish} onFinishFailed={onFinishFailed}>
 				<Form.Item name="oldPassword" label="旧密码" rules={[{ required: true, message: "请输入旧密码!" }]}>
 					<Input.Password placeholder="请输入旧密码" />

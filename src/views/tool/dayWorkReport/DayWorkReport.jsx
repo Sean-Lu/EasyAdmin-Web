@@ -71,7 +71,7 @@ export default class DayWorkReportList extends React.Component {
 	renderCustomTableButton = pageInfo => {
 		return (
 			<>
-				<Divider type="vertical" />
+				<Divider orientation="vertical" />
 				<ExportButton pageInfo={pageInfo} apiUrl={api.dayWorkReport.export} />
 			</>
 		);

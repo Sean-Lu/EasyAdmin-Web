@@ -7,7 +7,7 @@ export default class PositionDetail extends React.Component {
 		const { modalVisible, onCancel, record } = this.props;
 
 		return (
-			<Modal open={modalVisible} title="查看岗位信息" footer={null} destroyOnClose={true} onCancel={onCancel}>
+			<Modal open={modalVisible} title="查看岗位信息" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form labelCol={{ span: 6 }} wrapperCol={{ span: 17 }} layout="horizontal">
 					<Form.Item label="岗位名称">
 						<span>{record.name}</span>

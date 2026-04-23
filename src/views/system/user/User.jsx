@@ -151,7 +151,7 @@ export default class UserList extends React.Component {
 				title: "昵称",
 				dataIndex: "nickName",
 				align: tableColumnAlign,
-				width: 100
+				width: 120
 			},
 			{
 				title: "手机号码",
@@ -188,7 +188,7 @@ export default class UserList extends React.Component {
 					renderSearchForm={this.renderSearchForm}
 					renderModal={this.renderModal}
 					renderRecordOperate={this.renderRecordOperate}
-					recordOperateColWidth={250}
+					recordOperateColWidth={265}
 					apiAdd={api.user.add}
 					apiDelete={api.user.delete}
 					apiUpdate={api.user.update}

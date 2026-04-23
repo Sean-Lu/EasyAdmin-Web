@@ -78,7 +78,7 @@ export default class PositionList extends React.Component {
 				title: "排序",
 				dataIndex: "sort",
 				align: tableColumnAlign,
-				width: 60
+				width: 65
 			}
 		];
 

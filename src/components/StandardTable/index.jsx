@@ -488,7 +488,7 @@ class StandardTable extends React.Component {
 				title: "状态",
 				dataIndex: "state",
 				align: "center",
-				width: 80,
+				width: 90,
 				render: (text, record) => {
 					return (
 						<Switch
@@ -506,7 +506,7 @@ class StandardTable extends React.Component {
 				title: "创建时间",
 				dataIndex: "createTime",
 				align: "center",
-				width: 150,
+				width: 160,
 				render: text => {
 					return {
 						children: text !== null ? moment(text).format("YYYY-MM-DD HH:mm:ss") : ""
@@ -517,7 +517,7 @@ class StandardTable extends React.Component {
 				title: "更新时间",
 				dataIndex: "updateTime",
 				align: "center",
-				width: 150,
+				width: 160,
 				render: text => {
 					return {
 						children: text !== null ? moment(text).format("YYYY-MM-DD HH:mm:ss") : ""
@@ -529,7 +529,7 @@ class StandardTable extends React.Component {
 				key: "operation",
 				fixed: "right",
 				align: "center",
-				width: recordOperateColWidth ?? 130,
+				width: recordOperateColWidth ?? 135,
 				render: (text, record, index) => (
 					<Space
 						style={{

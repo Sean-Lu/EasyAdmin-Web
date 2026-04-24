@@ -223,7 +223,6 @@ export default class TodoListWithPriority extends Component {
 		const samePriorityTodos = todoList
 			.filter(todo => todo.priority === priority && todo.done === done)
 			.sort((a, b) => a.sortOrder - b.sortOrder);
-		console.log("同一优先级和同一完成状态的项目:", samePriorityTodos);
 
 		// 找到拖拽项目和目标位置项目
 		const dragItem = samePriorityTodos.find(todo => todo.id === dragId);
@@ -260,7 +259,6 @@ export default class TodoListWithPriority extends Component {
 		}
 
 		// 批量更新排序顺序
-		console.log("需要更新的项目:", itemsToUpdate);
 		for (const item of itemsToUpdate) {
 			await TodoItemService.updateTodoSortOrder(item);
 		}

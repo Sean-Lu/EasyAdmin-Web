@@ -12,7 +12,8 @@ const toolRouter = [
 		children: [
 			{
 				path: "/tool/todoList",
-				element: lazyLoad(React.lazy(() => import("@/views/tool/todoList/index"))),
+				// element: lazyLoad(React.lazy(() => import("@/views/tool/todoList/index"))), // 纯前端实现（不涉及后端）
+				element: lazyLoad(React.lazy(() => import("@/views/tool/todoListWithPriority/index"))),
 				meta: {
 					requiresAuth: true,
 					title: "待办事项",

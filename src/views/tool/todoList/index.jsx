@@ -15,31 +15,25 @@ import "./index.css";
 // 3. 更新任务状态
 // 4. 全选/全不选
 // 5. 清除已完成的任务
-
+//
 // 参考链接：https://juejin.cn/post/7101490699178082341
 // 参考视频：https://www.bilibili.com/video/BV1eS4y1t7w4?p=56
-
+//
 // 总结：
-
 // 1. 拆分组件、实现静态组件，注意：className、style的写法
-
 // 2. 动态初始化列表，如何确定将数据放在哪个组件的state中？
 // - 某个组件使用：放在其自身的state中
 // - 某些组件使用：放在他们共同的父组件state中（官方称此操作为：状态提升）
-
 // 3.1 父子组件间如何通信？
 // - 【父组件】给【子组件】传递数据：通过props传递
 // - 【子组件】给【父组件】传递数据：通过props传递，要求父提前给子传递一个函数
-
 // 3.2 兄弟组件如何通信？
 // - 方式1：交给统一的父组件管理数据，通过props传递给下面的组件使用
 // - 方式2：兄弟组件通信可以通过发布-订阅模式来实现
-
 // 4. 注意defaultChecked 和 checked的区别，类似的还有：defaultValue 和 value
-
 // 5. 状态在哪里，操作状态的方法就在哪里
 
-// 待办事项列表组件
+// 待办事项列表组件（纯前端实现，不涉及后端）
 export default class TodoList extends Component {
 	state = {
 		todoList: [

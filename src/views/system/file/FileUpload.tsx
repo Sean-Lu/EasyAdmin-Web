@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Upload, Button, message, Modal, Form, Input } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { RcFile, UploadFile } from "antd/lib/upload/interface";
-import { uploadFile } from "../../../services/system/fileService";
+import { FileStoreType, uploadFile } from "../../../services/system/fileService";
 
 const { TextArea } = Input;
 
@@ -39,7 +39,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onSuccess }) => {
 
 			setUploading(true);
 			const file = fileList[0] as unknown as File;
-			const result = await uploadFile(file, values.description);
+			const result = await uploadFile(file, FileStoreType.LocalFile, values.description);
 
 			if (result.success) {
 				message.success("文件上传成功");

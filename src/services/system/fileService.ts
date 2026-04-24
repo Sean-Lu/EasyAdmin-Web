@@ -6,7 +6,9 @@ import { ApiResult, PageReqBase, PageRes } from "@/api/interface";
  */
 export enum FileStoreType {
 	/** 本地文件 */
-	LocalFile = 0
+	LocalFile = 0,
+	/** 阿里云 OSS */
+	AliyunOSS = 1
 }
 
 export interface FileDto {
@@ -41,9 +43,14 @@ export const getFileById = async (id: string): Promise<ApiResult<FileDto>> => {
 };
 
 // 上传文件
-export const uploadFile = async (file: File, description: string): Promise<ApiResult<FileDto>> => {
+export const uploadFile = async (
+	file: File,
+	storeType: FileStoreType = FileStoreType.LocalFile, // 默认本地文件
+	description?: string
+): Promise<ApiResult<FileDto>> => {
 	const formData = new FormData();
 	formData.append("file", file);
+	formData.append("storeType", storeType.toString());
 	formData.append("description", description || "");
 
 	return await http.post<FileDto>("/file/uploadfile", formData, {

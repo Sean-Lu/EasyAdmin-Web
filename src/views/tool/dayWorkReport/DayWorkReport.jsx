@@ -108,7 +108,7 @@ export default class DayWorkReportList extends React.Component {
 				title: "日期",
 				dataIndex: "recordTime",
 				align: tableColumnAlign,
-				width: 90,
+				width: 105,
 				render: text => {
 					return {
 						children: moment(text).format("YYYY-MM-DD")

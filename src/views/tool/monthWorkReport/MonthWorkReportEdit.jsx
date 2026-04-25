@@ -1,19 +1,19 @@
 import React from "react";
-import { Button, DatePicker, Form, Input, Modal } from "antd";
+import { Button, DatePicker, Form, Input } from "antd";
 
 import dayjs from "dayjs";
 import DragableModal from "../../../components/DragableModal";
 
 const { TextArea } = Input;
 
-// 日报新增弹窗
-export default class DayWorkReportAdd extends React.Component {
+// 月报编辑弹窗
+export default class MonthWorkReportEdit extends React.Component {
 	render() {
-		const { modalVisible, onCancel, onFinish } = this.props;
+		const { modalVisible, onCancel, onFinish, record } = this.props;
 		return (
 			<DragableModal
 				open={modalVisible}
-				title="新增日报信息"
+				title="修改月报信息"
 				footer={null}
 				destroyOnHidden={true}
 				onCancel={onCancel}
@@ -25,23 +25,24 @@ export default class DayWorkReportAdd extends React.Component {
 					layout="horizontal"
 					onFinish={onFinish}
 					initialValues={{
-						recordTime: dayjs()
+						...record,
+						month: dayjs(record.startTime)
 					}}
 				>
 					<Form.Item
-						name="recordTime"
-						label="日期"
+						name="month"
+						label="选择月"
 						rules={[
 							{
 								required: true
 							}
 						]}
 					>
-						<DatePicker />
+						<DatePicker picker="month" style={{ width: "100%" }} />
 					</Form.Item>
 					<Form.Item
-						name="todayWork"
-						label="今日工作"
+						name="monthWork"
+						label="本月工作"
 						rules={[
 							{
 								required: true
@@ -50,7 +51,7 @@ export default class DayWorkReportAdd extends React.Component {
 					>
 						<TextArea autoSize={{ minRows: 5, maxRows: 10 }} />
 					</Form.Item>
-					<Form.Item name="tomorrowPlan" label="明日计划">
+					<Form.Item name="nextMonthPlan" label="下月计划">
 						<TextArea autoSize={{ minRows: 5, maxRows: 10 }} />
 					</Form.Item>
 					<Form.Item style={{ margin: "20px 0 0 120px" }}>

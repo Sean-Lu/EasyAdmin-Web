@@ -1,10 +1,7 @@
 import React from "react";
 import { Button, Form, Modal } from "antd";
 
-import moment from "moment";
-import "moment/locale/zh-cn";
-
-moment.locale("zh-cn");
+import dayjs from "dayjs";
 
 // 任务详情弹窗
 export default class TaskDetail extends React.Component {
@@ -30,9 +27,9 @@ export default class TaskDetail extends React.Component {
 						<span>{record.taskReward}</span>
 					</Form.Item>
 					<Form.Item label="有效期">
-						<span>{record.taskStartTime !== null ? moment(record.taskStartTime).format("YYYY-MM-DD HH:mm:ss") : null}</span>
+						<span>{record.taskStartTime !== null ? dayjs(record.taskStartTime).format("YYYY-MM-DD HH:mm:ss") : null}</span>
 						<span> - </span>
-						<span>{record.taskEndTime !== null ? moment(record.taskEndTime).format("YYYY-MM-DD HH:mm:ss") : null}</span>
+						<span>{record.taskEndTime !== null ? dayjs(record.taskEndTime).format("YYYY-MM-DD HH:mm:ss") : null}</span>
 					</Form.Item>
 					<Form.Item label="任务规则">
 						<span>{record.taskRule}</span>

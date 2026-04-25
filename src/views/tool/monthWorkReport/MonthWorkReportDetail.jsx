@@ -1,30 +1,33 @@
 import React from "react";
-import { Form, Modal } from "antd";
+import { Form } from "antd";
 
 import dayjs from "dayjs";
 import DragableModal from "../../../components/DragableModal";
 
-// 日报详情弹窗
-export default class DayWorkReportDetail extends React.Component {
+// 月报详情弹窗
+export default class MonthWorkReportDetail extends React.Component {
 	render() {
 		const { modalVisible, onCancel, record } = this.props;
 
 		return (
 			<DragableModal
 				open={modalVisible}
-				title="查看日报信息"
+				title="查看月报信息"
 				footer={null}
 				destroyOnHidden={true}
 				onCancel={onCancel}
 				width={800}
 			>
 				<Form labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} layout="horizontal">
-					<Form.Item label="日期">
-						<span>{dayjs(record.recordTime).format("YYYY-MM-DD")}</span>
+					<Form.Item label="开始日期">
+						<span>{dayjs(record.startTime).format("YYYY-MM-DD")}</span>
 					</Form.Item>
-					<Form.Item label="今日工作">
+					<Form.Item label="结束日期">
+						<span>{dayjs(record.endTime).format("YYYY-MM-DD")}</span>
+					</Form.Item>
+					<Form.Item label="本月工作">
 						<span>
-							{record.todayWork?.split("\n").map((line, index) => (
+							{record.monthWork?.split("\n").map((line, index) => (
 								<React.Fragment key={index}>
 									{line}
 									<br />
@@ -32,9 +35,9 @@ export default class DayWorkReportDetail extends React.Component {
 							))}
 						</span>
 					</Form.Item>
-					<Form.Item label="明日计划">
+					<Form.Item label="下月计划">
 						<span>
-							{record.tomorrowPlan?.split("\n").map((line, index) => (
+							{record.nextMonthPlan?.split("\n").map((line, index) => (
 								<React.Fragment key={index}>
 									{line}
 									<br />

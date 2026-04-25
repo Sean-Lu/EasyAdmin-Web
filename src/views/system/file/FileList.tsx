@@ -4,7 +4,7 @@ import { DeleteOutlined, DownloadOutlined, ExclamationCircleOutlined, SearchOutl
 import { FileDto, getFiles, deleteFile, downloadFile, FileStoreType, getFileById } from "../../../services/system/fileService";
 import FileUpload from "./FileUpload";
 import FileDetail from "./FileDetail";
-import moment from "moment";
+import dayjs from "dayjs";
 
 const { confirm } = Modal;
 
@@ -160,7 +160,7 @@ const FileList: React.FC = () => {
 			title: "上传时间",
 			dataIndex: "createTime",
 			key: "createTime",
-			render: (date: string) => moment(date).format("YYYY-MM-DD HH:mm:ss")
+			render: (date: string) => dayjs(date).format("YYYY-MM-DD HH:mm:ss")
 		},
 		{
 			title: "操作",

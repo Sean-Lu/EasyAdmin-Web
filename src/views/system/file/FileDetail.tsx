@@ -2,7 +2,7 @@ import React from "react";
 import { Modal, Descriptions, Button, Tag } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { FileDto, FileStoreType } from "../../../services/system/fileService";
-import moment from "moment";
+import dayjs from "dayjs";
 
 interface FileDetailProps {
 	visible: boolean;
@@ -16,7 +16,7 @@ const FileDetail: React.FC<FileDetailProps> = ({ visible, file, onClose, onDownl
 	if (!file) return null;
 
 	const formatDate = (dateString: string) => {
-		return moment(dateString).format("YYYY-MM-DD HH:mm:ss");
+		return dayjs(dateString).format("YYYY-MM-DD HH:mm:ss");
 	};
 
 	const formatSize = (size: number) => {

@@ -4,16 +4,16 @@ import { Button, Col, DatePicker, Divider, Form, Row } from "antd";
 import dayjs from "dayjs";
 
 import StandardTable from "../../../components/StandardTable";
-import DayWorkReportAdd from "./DayWorkReportAdd";
-import DayWorkReportEdit from "./DayWorkReportEdit";
-import DayWorkReportDetail from "./DayWorkReportDetail";
+import WeekWorkReportAdd from "./WeekWorkReportAdd";
+import WeekWorkReportEdit from "./WeekWorkReportEdit";
+import WeekWorkReportDetail from "./WeekWorkReportDetail";
 import { api } from "../../../actions/tool/api";
 import ExportButton from "../../../components/ExportButton";
 
 const { RangePicker } = DatePicker;
 
-// 日报列表
-export default class DayWorkReportList extends React.Component {
+// 周报列表
+export default class WeekWorkReportList extends React.Component {
 	searchFormRef = React.createRef();
 
 	// ============ 查询表单 ===============
@@ -53,14 +53,14 @@ export default class DayWorkReportList extends React.Component {
 	) => {
 		return (
 			<>
-				<DayWorkReportAdd modalVisible={addModalVisible} onCancel={hideAddModal} onFinish={onAddFinish} />
-				<DayWorkReportEdit
+				<WeekWorkReportAdd modalVisible={addModalVisible} onCancel={hideAddModal} onFinish={onAddFinish} />
+				<WeekWorkReportEdit
 					modalVisible={updateModalVisible}
 					onCancel={hideUpdateModal}
 					onFinish={onUpdateFinish}
 					record={record}
 				/>
-				<DayWorkReportDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
+				<WeekWorkReportDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
@@ -69,24 +69,28 @@ export default class DayWorkReportList extends React.Component {
 		return (
 			<>
 				<Divider orientation="vertical" />
-				<ExportButton pageInfo={pageInfo} apiUrl={api.dayWorkReport.export} />
+				<ExportButton pageInfo={pageInfo} apiUrl={api.weekWorkReport.export} />
 			</>
 		);
 	};
 
 	handleAddValues = values => {
+		const weekDate = values.week;
 		return {
-			recordTime: dayjs(values.recordTime).format("YYYY-MM-DD"),
-			todayWork: values.todayWork,
-			tomorrowPlan: values.tomorrowPlan
+			startTime: weekDate.startOf("week").format("YYYY-MM-DD"),
+			endTime: weekDate.endOf("week").format("YYYY-MM-DD"),
+			weekWork: values.weekWork,
+			nextWeekPlan: values.nextWeekPlan
 		};
 	};
 
 	handleUpdateValues = values => {
+		const weekDate = values.week;
 		return {
-			recordTime: dayjs(values.recordTime).format("YYYY-MM-DD"),
-			todayWork: values.todayWork,
-			tomorrowPlan: values.tomorrowPlan
+			startTime: weekDate.startOf("week").format("YYYY-MM-DD"),
+			endTime: weekDate.endOf("week").format("YYYY-MM-DD"),
+			weekWork: values.weekWork,
+			nextWeekPlan: values.nextWeekPlan
 		};
 	};
 
@@ -102,21 +106,20 @@ export default class DayWorkReportList extends React.Component {
 		const tableColumnAlign = "left";
 		const columns = [
 			{
-				title: "日期",
-				dataIndex: "recordTime",
+				title: "周期",
+				dataIndex: "weekRange",
 				align: tableColumnAlign,
-				width: 105,
-				render: text => {
+				width: 200,
+				render: (text, record) => {
 					return {
-						children: dayjs(text).format("YYYY-MM-DD")
+						children: `${dayjs(record.startTime).format("YYYY-MM-DD")} ~ ${dayjs(record.endTime).format("YYYY-MM-DD")}`
 					};
 				}
 			},
 			{
-				title: "今日工作",
-				dataIndex: "todayWork",
+				title: "本周工作",
+				dataIndex: "weekWork",
 				align: tableColumnAlign,
-				// width: 250,
 				render: text =>
 					text?.split("\n").map((line, index) => (
 						<div key={index}>
@@ -126,10 +129,9 @@ export default class DayWorkReportList extends React.Component {
 					))
 			},
 			{
-				title: "明日计划",
-				dataIndex: "tomorrowPlan",
+				title: "下周计划",
+				dataIndex: "nextWeekPlan",
 				align: tableColumnAlign,
-				// width: 250,
 				render: text =>
 					text?.split("\n").map((line, index) => (
 						<div key={index}>
@@ -143,7 +145,7 @@ export default class DayWorkReportList extends React.Component {
 		return (
 			<>
 				<StandardTable
-					code={"tool.dayWorkReport"}
+					code={"tool.weekWorkReport"}
 					searchFormRef={this.searchFormRef}
 					columns={columns}
 					renderSearchForm={this.renderSearchForm}
@@ -152,11 +154,11 @@ export default class DayWorkReportList extends React.Component {
 					handleAddValues={this.handleAddValues}
 					handleUpdateValues={this.handleUpdateValues}
 					handleSearchValues={this.handleSearchValues}
-					apiAdd={api.dayWorkReport.add}
-					apiDelete={api.dayWorkReport.delete}
-					apiUpdate={api.dayWorkReport.update}
-					apiPage={api.dayWorkReport.page}
-					apiDetail={api.dayWorkReport.detail}
+					apiAdd={api.weekWorkReport.add}
+					apiDelete={api.weekWorkReport.delete}
+					apiUpdate={api.weekWorkReport.update}
+					apiPage={api.weekWorkReport.page}
+					apiDetail={api.weekWorkReport.detail}
 				/>
 			</>
 		);

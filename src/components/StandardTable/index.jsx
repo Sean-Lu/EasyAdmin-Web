@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Card, Col, Form, message, Modal, Pagination, Row, Space, Table, Switch, Spin } from "antd";
 
-import moment from "moment";
+import dayjs from "dayjs";
 
 import axios from "../../api/index";
 
@@ -509,7 +509,7 @@ class StandardTable extends React.Component {
 				width: 160,
 				render: text => {
 					return {
-						children: text !== null ? moment(text).format("YYYY-MM-DD HH:mm:ss") : ""
+						children: text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : ""
 					};
 				}
 			},
@@ -520,7 +520,7 @@ class StandardTable extends React.Component {
 				width: 160,
 				render: text => {
 					return {
-						children: text !== null ? moment(text).format("YYYY-MM-DD HH:mm:ss") : ""
+						children: text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : ""
 					};
 				}
 			},

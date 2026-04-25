@@ -1,6 +1,5 @@
 import React from "react";
 import { Form, Modal } from "antd";
-import moment from "moment";
 import DragableModal from "../../../components/DragableModal";
 
 // 操作日志详情弹窗

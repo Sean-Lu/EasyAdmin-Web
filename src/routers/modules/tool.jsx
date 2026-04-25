@@ -30,6 +30,24 @@ const toolRouter = [
 				}
 			},
 			{
+				path: "/tool/weekWorkReport",
+				element: lazyLoad(React.lazy(() => import("@/views/tool/weekWorkReport/WeekWorkReport"))),
+				meta: {
+					requiresAuth: true,
+					title: "周报",
+					key: "tool-weekWorkReport"
+				}
+			},
+			{
+				path: "/tool/monthWorkReport",
+				element: lazyLoad(React.lazy(() => import("@/views/tool/monthWorkReport/MonthWorkReport"))),
+				meta: {
+					requiresAuth: true,
+					title: "月报",
+					key: "tool-monthWorkReport"
+				}
+			},
+			{
 				path: "/tool/crypto",
 				element: lazyLoad(React.lazy(() => import("@/views/tool/crypto/index"))),
 				meta: {

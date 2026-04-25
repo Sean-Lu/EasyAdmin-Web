@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Modal } from "antd";
-import moment from "moment";
+import dayjs from "dayjs";
 import DragableModal from "../../../components/DragableModal";
 
 // 登录日志详情弹窗
@@ -15,7 +15,7 @@ export default class LoginLogDetail extends React.Component {
 						<span>{record.userNickName}</span>
 					</Form.Item>
 					<Form.Item label="登录时间">
-						<span>{record.loginTime !== null ? moment(record.loginTime).format("YYYY-MM-DD HH:mm:ss") : ""}</span>
+						<span>{record.loginTime !== null ? dayjs(record.loginTime).format("YYYY-MM-DD HH:mm:ss") : ""}</span>
 					</Form.Item>
 					<Form.Item label="IP">
 						<span>{record.ip}</span>

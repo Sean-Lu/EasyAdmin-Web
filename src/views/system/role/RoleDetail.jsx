@@ -1,10 +1,10 @@
 import { Modal } from "antd";
-import moment from "moment";
+import dayjs from "dayjs";
 
 // 角色详情弹窗
 export default function RoleDetail({ modalVisible = false, onCancel = () => {}, record = {} }) {
 	const formatTime = time => {
-		return time ? moment(time).format("YYYY-MM-DD HH:mm:ss") : "-";
+		return time ? dayjs(time).format("YYYY-MM-DD HH:mm:ss") : "-";
 	};
 
 	return (

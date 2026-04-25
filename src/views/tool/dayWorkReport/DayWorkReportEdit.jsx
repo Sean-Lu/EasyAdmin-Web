@@ -1,14 +1,10 @@
 import React from "react";
 import { Button, DatePicker, Form, Input, Modal } from "antd";
 
-import locale from "antd/lib/date-picker/locale/zh_CN";
-import moment from "moment";
-import "moment/locale/zh-cn";
+import dayjs from "dayjs";
 import DragableModal from "../../../components/DragableModal";
 
 const { TextArea } = Input;
-
-moment.locale("zh-cn");
 
 // 日报编辑弹窗
 export default class DayWorkReportEdit extends React.Component {
@@ -30,7 +26,7 @@ export default class DayWorkReportEdit extends React.Component {
 					onFinish={onFinish}
 					initialValues={{
 						...record,
-						recordTime: moment(record.recordTime)
+						recordTime: dayjs(record.recordTime)
 					}}
 				>
 					<Form.Item
@@ -42,7 +38,7 @@ export default class DayWorkReportEdit extends React.Component {
 							}
 						]}
 					>
-						<DatePicker locale={locale} />
+						<DatePicker />
 					</Form.Item>
 					<Form.Item
 						name="todayWork"

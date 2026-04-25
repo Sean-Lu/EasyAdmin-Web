@@ -4,7 +4,6 @@ import StandardTable from "../../../components/StandardTable";
 import OperateLogDetail from "./OperateLogDetail";
 import axios from "../../../api/index";
 import { api } from "../../../actions/system/api";
-import moment from "moment";
 
 // 操作日志列表
 export default class OperateLogList extends React.Component {

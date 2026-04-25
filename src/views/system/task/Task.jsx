@@ -2,15 +2,12 @@ import React from "react";
 import { Button, Col, Form, Input, Row, Select } from "antd";
 import StandardTable from "../../../components/StandardTable";
 
-import moment from "moment";
-import "moment/locale/zh-cn";
+import dayjs from "dayjs";
 
 import TaskAdd from "./TaskAdd";
 import TaskEdit from "./TaskEdit";
 import TaskDetail from "./TaskDetail";
 import { api } from "../../../actions/system/api";
-
-moment.locale("zh-cn");
 
 // 任务列表
 export default class TaskList extends React.Component {
@@ -151,7 +148,7 @@ export default class TaskList extends React.Component {
 				width: 150,
 				render: text => {
 					return {
-						children: text !== null ? moment(text).format("YYYY-MM-DD HH:mm:ss") : ""
+						children: text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : ""
 					};
 				}
 			},
@@ -162,7 +159,7 @@ export default class TaskList extends React.Component {
 				width: 150,
 				render: text => {
 					return {
-						children: text !== null ? moment(text).format("YYYY-MM-DD HH:mm:ss") : ""
+						children: text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : ""
 					};
 				}
 			},

@@ -4,16 +4,16 @@ import { Button, Col, DatePicker, Divider, Form, Row } from "antd";
 import dayjs from "dayjs";
 
 import StandardTable from "../../../components/StandardTable";
-import DayWorkReportAdd from "./DayWorkReportAdd";
-import DayWorkReportEdit from "./DayWorkReportEdit";
-import DayWorkReportDetail from "./DayWorkReportDetail";
+import MonthWorkReportAdd from "./MonthWorkReportAdd";
+import MonthWorkReportEdit from "./MonthWorkReportEdit";
+import MonthWorkReportDetail from "./MonthWorkReportDetail";
 import { api } from "../../../actions/tool/api";
 import ExportButton from "../../../components/ExportButton";
 
 const { RangePicker } = DatePicker;
 
-// 日报列表
-export default class DayWorkReportList extends React.Component {
+// 月报列表
+export default class MonthWorkReportList extends React.Component {
 	searchFormRef = React.createRef();
 
 	// ============ 查询表单 ===============
@@ -53,14 +53,14 @@ export default class DayWorkReportList extends React.Component {
 	) => {
 		return (
 			<>
-				<DayWorkReportAdd modalVisible={addModalVisible} onCancel={hideAddModal} onFinish={onAddFinish} />
-				<DayWorkReportEdit
+				<MonthWorkReportAdd modalVisible={addModalVisible} onCancel={hideAddModal} onFinish={onAddFinish} />
+				<MonthWorkReportEdit
 					modalVisible={updateModalVisible}
 					onCancel={hideUpdateModal}
 					onFinish={onUpdateFinish}
 					record={record}
 				/>
-				<DayWorkReportDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
+				<MonthWorkReportDetail modalVisible={detailModalVisible} onCancel={hideDetailModal} record={record} />
 			</>
 		);
 	};
@@ -69,24 +69,28 @@ export default class DayWorkReportList extends React.Component {
 		return (
 			<>
 				<Divider orientation="vertical" />
-				<ExportButton pageInfo={pageInfo} apiUrl={api.dayWorkReport.export} />
+				<ExportButton pageInfo={pageInfo} apiUrl={api.monthWorkReport.export} />
 			</>
 		);
 	};
 
 	handleAddValues = values => {
+		const monthDate = values.month;
 		return {
-			recordTime: dayjs(values.recordTime).format("YYYY-MM-DD"),
-			todayWork: values.todayWork,
-			tomorrowPlan: values.tomorrowPlan
+			startTime: monthDate.startOf("month").format("YYYY-MM-DD"),
+			endTime: monthDate.endOf("month").format("YYYY-MM-DD"),
+			monthWork: values.monthWork,
+			nextMonthPlan: values.nextMonthPlan
 		};
 	};
 
 	handleUpdateValues = values => {
+		const monthDate = values.month;
 		return {
-			recordTime: dayjs(values.recordTime).format("YYYY-MM-DD"),
-			todayWork: values.todayWork,
-			tomorrowPlan: values.tomorrowPlan
+			startTime: monthDate.startOf("month").format("YYYY-MM-DD"),
+			endTime: monthDate.endOf("month").format("YYYY-MM-DD"),
+			monthWork: values.monthWork,
+			nextMonthPlan: values.nextMonthPlan
 		};
 	};
 
@@ -102,21 +106,20 @@ export default class DayWorkReportList extends React.Component {
 		const tableColumnAlign = "left";
 		const columns = [
 			{
-				title: "日期",
-				dataIndex: "recordTime",
+				title: "周期",
+				dataIndex: "monthRange",
 				align: tableColumnAlign,
-				width: 105,
-				render: text => {
+				width: 200,
+				render: (text, record) => {
 					return {
-						children: dayjs(text).format("YYYY-MM-DD")
+						children: `${dayjs(record.startTime).format("YYYY-MM-DD")} ~ ${dayjs(record.endTime).format("YYYY-MM-DD")}`
 					};
 				}
 			},
 			{
-				title: "今日工作",
-				dataIndex: "todayWork",
+				title: "本月工作",
+				dataIndex: "monthWork",
 				align: tableColumnAlign,
-				// width: 250,
 				render: text =>
 					text?.split("\n").map((line, index) => (
 						<div key={index}>
@@ -126,10 +129,9 @@ export default class DayWorkReportList extends React.Component {
 					))
 			},
 			{
-				title: "明日计划",
-				dataIndex: "tomorrowPlan",
+				title: "下月计划",
+				dataIndex: "nextMonthPlan",
 				align: tableColumnAlign,
-				// width: 250,
 				render: text =>
 					text?.split("\n").map((line, index) => (
 						<div key={index}>
@@ -143,7 +145,7 @@ export default class DayWorkReportList extends React.Component {
 		return (
 			<>
 				<StandardTable
-					code={"tool.dayWorkReport"}
+					code={"tool.monthWorkReport"}
 					searchFormRef={this.searchFormRef}
 					columns={columns}
 					renderSearchForm={this.renderSearchForm}
@@ -152,11 +154,11 @@ export default class DayWorkReportList extends React.Component {
 					handleAddValues={this.handleAddValues}
 					handleUpdateValues={this.handleUpdateValues}
 					handleSearchValues={this.handleSearchValues}
-					apiAdd={api.dayWorkReport.add}
-					apiDelete={api.dayWorkReport.delete}
-					apiUpdate={api.dayWorkReport.update}
-					apiPage={api.dayWorkReport.page}
-					apiDetail={api.dayWorkReport.detail}
+					apiAdd={api.monthWorkReport.add}
+					apiDelete={api.monthWorkReport.delete}
+					apiUpdate={api.monthWorkReport.update}
+					apiPage={api.monthWorkReport.page}
+					apiDetail={api.monthWorkReport.detail}
 				/>
 			</>
 		);

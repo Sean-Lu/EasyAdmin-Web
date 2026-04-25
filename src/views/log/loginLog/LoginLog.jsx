@@ -4,7 +4,7 @@ import StandardTable from "../../../components/StandardTable";
 import LoginLogDetail from "./LoginLogDetail";
 import axios from "../../../api/index";
 import { api } from "../../../actions/system/api";
-import moment from "moment";
+import dayjs from "dayjs";
 
 // 登录日志列表
 export default class LoginLogList extends React.Component {
@@ -114,7 +114,7 @@ export default class LoginLogList extends React.Component {
 				width: 300,
 				render: text => {
 					return {
-						children: text !== null ? moment(text).format("YYYY-MM-DD HH:mm:ss") : ""
+						children: text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : ""
 					};
 				}
 			},

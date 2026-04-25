@@ -1,11 +1,8 @@
 import React from "react";
 import { Button, DatePicker, Form, Input, Modal, Select, Switch } from "antd";
 
-import locale from "antd/lib/date-picker/locale/zh_CN";
-import moment from "moment";
-import "moment/locale/zh-cn";
+import dayjs from "dayjs";
 
-moment.locale("zh-cn");
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
@@ -67,7 +64,7 @@ export default class TaskAdd extends React.Component {
 						<Input placeholder="请输入任务奖励" />
 					</Form.Item>
 					<Form.Item name="taskTimeRange" label="有效期">
-						<RangePicker showTime locale={locale} />
+						<RangePicker showTime />
 					</Form.Item>
 					<Form.Item name="taskRule" label="任务规则">
 						<TextArea placeholder="请输入任务规则" autoSize={{ minRows: 3, maxRows: 5 }} />

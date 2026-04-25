@@ -26,10 +26,11 @@ const FileDetail: React.FC<FileDetailProps> = ({ visible, file, onClose, onDownl
 	};
 
 	const getStoreTypeText = (type: FileStoreType) => {
-		const typeMap = {
-			[FileStoreType.LocalFile]: "本地文件"
+		const typeMap: Record<number, string> = {
+			[FileStoreType.LocalFile]: "本地文件",
+			[FileStoreType.AliyunOSS]: "阿里云 OSS"
 		};
-		return typeMap[type] || type;
+		return typeMap[type] ?? type.toString();
 	};
 
 	return (

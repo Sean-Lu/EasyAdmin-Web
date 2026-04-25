@@ -150,10 +150,11 @@ const FileList: React.FC = () => {
 			dataIndex: "storeType",
 			key: "storeType",
 			render: (type: FileStoreType) => {
-				const typeMap = {
-					[FileStoreType.LocalFile]: <Tag color="blue">本地文件</Tag>
+				const typeMap: Record<number, React.ReactNode> = {
+					[FileStoreType.LocalFile]: <Tag color="blue">本地文件</Tag>,
+					[FileStoreType.AliyunOSS]: <Tag color="green">阿里云 OSS</Tag>
 				};
-				return typeMap[type] || type;
+				return typeMap[type] ?? type;
 			}
 		},
 		{

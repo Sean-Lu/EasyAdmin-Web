@@ -16,7 +16,7 @@ export default class CheckIn extends Component {
 							style={{
 								width: 450
 							}}
-							bodyStyle={{ padding: 8 }}
+							styles={{ body: { padding: 8 } }}
 						>
 							<Calendar />
 						</Card>

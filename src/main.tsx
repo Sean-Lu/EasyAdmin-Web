@@ -9,6 +9,10 @@ import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
 import { store, persistor } from "@/redux";
 import App from "@/App";
+import dayjs from "dayjs";
+import "dayjs/locale/zh-cn";
+
+dayjs.locale("zh-cn");
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	// * react严格模式

@@ -1,4 +1,4 @@
-import { Navigate, useRoutes } from "react-router-dom";
+import { Navigate, useRoutes, RouteObject as ReactRouterRouteObject } from "react-router-dom";
 import { RouteObject } from "@/routers/interface";
 import Login from "@/views/login/index";
 import CheckIn from "@/views/tool/checkIn/Calendar";
@@ -46,7 +46,7 @@ export const rootRouter: RouteObject[] = [
 ];
 
 const Router = () => {
-	const routes = useRoutes(rootRouter);
+	const routes = useRoutes(rootRouter as ReactRouterRouteObject[]);
 	return routes;
 };
 

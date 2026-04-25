@@ -7,18 +7,13 @@ import { HashRouter } from "react-router-dom";
 import AuthRouter from "@/routers/utils/authRouter";
 import Router from "@/routers/index";
 import useTheme from "@/hooks/useTheme";
-import locale from "antd/locale/zh_CN";
-import enUS from "antd/locale/en_US";
-import dayjs from "dayjs";
-import "dayjs/locale/zh-cn";
+import zhCN from "antd/es/locale/zh_CN.js";
+import enUS from "antd/es/locale/en_US.js";
 import i18n from "i18next";
-
-// 配置 dayjs 语言
-dayjs.locale("zh-cn");
 
 const App = (props: any) => {
 	const { language, assemblySize, themeConfig, setLanguage } = props;
-	const [i18nLocale, setI18nLocale] = useState(locale);
+	const [i18nLocale, setI18nLocale] = useState(zhCN);
 
 	// 全局使用主题
 	useTheme(themeConfig);
@@ -26,9 +21,9 @@ const App = (props: any) => {
 	// 设置 antd 语言国际化
 	const setAntdLanguage = () => {
 		// 如果 redux 中有默认语言就设置成 redux 的默认语言，没有默认语言就设置成浏览器默认语言
-		if (language && language == "zh") return setI18nLocale(locale);
+		if (language && language == "zh") return setI18nLocale(zhCN);
 		if (language && language == "en") return setI18nLocale(enUS);
-		if (getBrowserLang() == "zh") return setI18nLocale(locale);
+		if (getBrowserLang() == "zh") return setI18nLocale(zhCN);
 		if (getBrowserLang() == "en") return setI18nLocale(enUS);
 	};
 

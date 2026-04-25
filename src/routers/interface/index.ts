@@ -1,3 +1,5 @@
+import type { RouteObject as RRouteObject } from "react-router-dom";
+
 export interface MetaProps {
 	keepAlive?: boolean;
 	requiresAuth?: boolean;
@@ -5,12 +7,9 @@ export interface MetaProps {
 	key?: string;
 }
 
-export interface RouteObject {
-	caseSensitive?: boolean;
+// 扩展 react-router-dom 的 RouteObject 类型
+export interface RouteObject extends Omit<RRouteObject, "children"> {
 	children?: RouteObject[];
-	element?: React.ReactNode;
-	index?: boolean;
-	path?: string;
 	meta?: MetaProps;
 	outLink?: string;
 }

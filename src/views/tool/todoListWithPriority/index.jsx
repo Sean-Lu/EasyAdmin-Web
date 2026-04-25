@@ -285,7 +285,7 @@ export default class TodoListWithPriority extends Component {
 									width: "100%",
 									minHeight: "auto"
 								}}
-								bodyStyle={{ padding: "16px", margin: "0" }}
+								styles={{ body: { padding: "16px", margin: "0" } }}
 							>
 								<Title level={3} style={{ marginBottom: 10 }}>
 									TodoList

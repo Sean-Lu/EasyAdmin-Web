@@ -1,14 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import TodoItem from "./index";
 
 // 可拖拽的待办事项项组件
-const DraggableTodoItem = ({ item, moveTodo, updateTodo, delTodo, updatePriority, updateName }) => {
+const DraggableTodoItem = ({ item, moveTodo, updateTodo, delTodo, updatePriority, updateName, disabled }) => {
 	const ref = React.useRef(null);
+	const [editing, setEditing] = useState(false);
+
+	const isDisabled = disabled || editing;
+
+	const handleEditChange = (id, isEditing) => {
+		if (id === item.id) {
+			setEditing(isEditing);
+		}
+	};
 
 	const [{ isDragging }, drag] = useDrag({
 		type: "todo",
 		item: { id: item.id, priority: item.priority, done: item.done },
+		canDrag: !isDisabled,
 		collect: monitor => ({
 			isDragging: monitor.isDragging()
 		}),
@@ -24,7 +34,7 @@ const DraggableTodoItem = ({ item, moveTodo, updateTodo, delTodo, updatePriority
 	const [, drop] = useDrop({
 		accept: "todo",
 		hover(dragItem, monitor) {
-			if (!ref.current) return;
+			if (!ref.current || isDisabled) return;
 
 			// 只有同一优先级和同一完成状态的项目才能互相拖拽
 			if (dragItem.priority !== item.priority || dragItem.done !== item.done) return;
@@ -38,6 +48,9 @@ const DraggableTodoItem = ({ item, moveTodo, updateTodo, delTodo, updatePriority
 			// 这里不需要更新索引，因为我们使用id来标识项目
 		},
 		drop(dragItem, monitor) {
+			if (isDisabled) {
+				return null;
+			}
 			// 只有同一优先级和同一完成状态的项目才能互相拖拽
 			if (dragItem.priority !== item.priority || dragItem.done !== item.done) {
 				return null;
@@ -50,7 +63,7 @@ const DraggableTodoItem = ({ item, moveTodo, updateTodo, delTodo, updatePriority
 	drag(drop(ref));
 
 	return (
-		<div ref={ref} style={{ opacity: isDragging ? 0.5 : 1, cursor: "move", width: "100%" }}>
+		<div ref={ref} style={{ opacity: isDragging ? 0.5 : 1, cursor: isDisabled ? "default" : "move", width: "100%" }}>
 			<TodoItem
 				key={item.id}
 				{...item}
@@ -58,6 +71,7 @@ const DraggableTodoItem = ({ item, moveTodo, updateTodo, delTodo, updatePriority
 				delTodo={delTodo}
 				updatePriority={updatePriority}
 				updateName={updateName}
+				onEditChange={handleEditChange}
 			/>
 		</div>
 	);

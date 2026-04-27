@@ -19,6 +19,10 @@ class TodoItem extends Component {
 	componentDidMount() {
 		// 添加全局键盘事件监听
 		document.addEventListener("keydown", this.handleKeyDown);
+		const { onEditChange, id } = this.props;
+		if (onEditChange) {
+			onEditChange(id, false);
+		}
 	}
 
 	componentWillUnmount() {
@@ -53,20 +57,31 @@ class TodoItem extends Component {
 
 	// 开始编辑
 	handleEdit = () => {
+		const { onEditChange, id } = this.props;
+		if (onEditChange) {
+			onEditChange(id, true);
+		}
 		this.setState({ editing: true, editValue: this.props.name });
 	};
 
 	// 取消编辑
 	handleCancelEdit = () => {
+		const { onEditChange, id } = this.props;
+		if (onEditChange) {
+			onEditChange(id, false);
+		}
 		this.setState({ editing: false, editValue: this.props.name });
 	};
 
 	// 保存编辑
 	handleSaveEdit = async () => {
-		const { id, updateName } = this.props;
+		const { id, updateName, onEditChange } = this.props;
 		const { editValue } = this.state;
 		if (editValue.trim()) {
 			await updateName(id, editValue.trim());
+			if (onEditChange) {
+				onEditChange(id, false);
+			}
 			this.setState({ editing: false });
 		}
 	};

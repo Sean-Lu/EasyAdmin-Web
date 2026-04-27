@@ -208,7 +208,12 @@ const FileList: React.FC = () => {
 				dataSource={files}
 				rowKey="id"
 				loading={loading}
-				pagination={pagination}
+				pagination={{
+					...pagination,
+					showSizeChanger: true,
+					showQuickJumper: true,
+					showTotal: total => `共 ${total} 条`
+				}}
 				onChange={handleTableChange}
 				bordered={true}
 			/>

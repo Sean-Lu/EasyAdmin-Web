@@ -99,6 +99,15 @@ const systemRouter = [
 					title: "文件管理",
 					key: "system-file"
 				}
+			},
+			{
+				path: "/system/job",
+				element: lazyLoad(React.lazy(() => import("@/views/system/job/ScheduleJob"))),
+				meta: {
+					requiresAuth: true,
+					title: "定时任务",
+					key: "system-job"
+				}
 			}
 		]
 	}

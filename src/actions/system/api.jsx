@@ -100,6 +100,20 @@ export const api = {
 		page: "/task/page",
 		detail: "/task/detail"
 	},
+	// 定时任务
+	scheduleJob: {
+		add: "/scheduleJob/add",
+		delete: "/scheduleJob/delete",
+		update: "/scheduleJob/update",
+		updateState: "/scheduleJob/updateState",
+		runOnce: "/scheduleJob/runOnce",
+		page: "/scheduleJob/page",
+		detail: "/scheduleJob/detail",
+		deleteLog: "/scheduleJob/deleteLog",
+		clearLog: "/scheduleJob/clearLog",
+		logPage: "/scheduleJob/logPage",
+		logDetail: "/scheduleJob/logDetail"
+	},
 	// 登录日志
 	loginLog: {
 		delete: "/loginLog/delete",

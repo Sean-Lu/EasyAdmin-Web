@@ -82,4 +82,12 @@ export class TodoItemService {
 		}
 		return request.post<boolean>(`/TodoItem/ClearCompleted`);
 	}
+
+	/**
+	 * 更新待办事项分类
+	 * @param data 分类更新数据
+	 */
+	static async updateTodoCategory(data: { id: number; categoryId: number }) {
+		return request.post<boolean>(`/TodoItem/UpdateCategory`, data);
+	}
 }

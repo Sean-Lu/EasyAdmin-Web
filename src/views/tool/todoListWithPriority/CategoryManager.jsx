@@ -89,6 +89,10 @@ export default class CategoryManager extends Component {
 						this.props.onCategorySelect(categories[0].id);
 					}
 				}
+				// 通知父组件分类列表更新
+				if (this.props.onCategoriesChange) {
+					this.props.onCategoriesChange(categories);
+				}
 			}
 		} catch (error) {
 			console.error("获取分类列表失败:", error);

@@ -11,6 +11,7 @@ import TodoItem from "./Item";
 import DraggableTodoItem from "./Item/DraggableTodoItem";
 import TodoFooter from "./Footer";
 import { TodoItemService } from "@/services/tool/todoItemService";
+import { TodoCategoryService } from "@/services/tool/todoCategoryService";
 
 const { Title } = Typography;
 
@@ -18,6 +19,7 @@ const { Title } = Typography;
 export default class TodoListWithPriority extends Component {
 	state = {
 		todoList: [],
+		categories: [],
 		// 模态框状态
 		deleteModalVisible: false,
 		clearModalVisible: false,
@@ -30,8 +32,26 @@ export default class TodoListWithPriority extends Component {
 		currentCategoryId: null
 	};
 
-	// 组件挂载时获取待办事项列表
+	// 组件挂载时不获取数据，等待CategoryManager传递
 	componentDidMount() {}
+
+	// 处理分类列表更新
+	handleCategoriesChange = categories => {
+		this.setState({ categories });
+	};
+
+	// 获取分类列表（备用方法）
+	fetchCategories = async () => {
+		try {
+			const response = await TodoCategoryService.getCategoryList();
+			if (response.code === 200) {
+				this.setState({ categories: response.data });
+			}
+		} catch (error) {
+			message.error("获取分类列表失败");
+			console.error("获取分类列表失败:", error);
+		}
+	};
 
 	// 获取待办事项列表
 	fetchTodoList = async categoryId => {
@@ -267,8 +287,23 @@ export default class TodoListWithPriority extends Component {
 		await this.fetchTodoList(currentCategoryId);
 	};
 
+	// 移动待办事项到另一个分类
+	moveToCategory = async (todoId, categoryId) => {
+		const { currentCategoryId } = this.state;
+		try {
+			const response = await TodoItemService.updateTodoCategory({ id: todoId, categoryId });
+			if (response.code === 200 && response.data) {
+				await this.fetchTodoList(currentCategoryId);
+				message.success("移动待办事项成功");
+			}
+		} catch (error) {
+			message.error("移动待办事项失败");
+			console.error("移动待办事项失败:", error);
+		}
+	};
+
 	render() {
-		const { todoList, deleteModalVisible, clearModalVisible, pendingExpanded, completedExpanded } = this.state;
+		const { todoList, deleteModalVisible, clearModalVisible, pendingExpanded, completedExpanded, categories } = this.state;
 		const pendingTodos = todoList.filter(c => !c.done);
 		const completedTodos = todoList.filter(c => c.done);
 
@@ -277,7 +312,7 @@ export default class TodoListWithPriority extends Component {
 				<div className="todo-container" style={{ padding: "20px", margin: "0" }}>
 					<Row gutter={[16, 16]}>
 						<Col xs={24} md={8}>
-							<CategoryManager onCategorySelect={this.handleCategoryChange} />
+							<CategoryManager onCategorySelect={this.handleCategoryChange} onCategoriesChange={this.handleCategoriesChange} />
 						</Col>
 						<Col xs={24} md={16}>
 							<Card
@@ -343,6 +378,8 @@ export default class TodoListWithPriority extends Component {
 														delTodo={this.showDeleteConfirm}
 														updatePriority={this.updatePriority}
 														updateName={this.updateName}
+														categories={categories}
+														moveToCategory={this.moveToCategory}
 													/>
 												</List.Item>
 											);
@@ -399,6 +436,8 @@ export default class TodoListWithPriority extends Component {
 														delTodo={this.showDeleteConfirm}
 														updatePriority={this.updatePriority}
 														updateName={this.updateName}
+														categories={categories}
+														moveToCategory={this.moveToCategory}
 													/>
 												</List.Item>
 											);

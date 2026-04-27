@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Checkbox, Button, Select, Input } from "antd";
+import { Checkbox, Button, Select, Input, Dropdown } from "antd";
+import { MoreOutlined } from "@ant-design/icons";
 
 import "./index.css";
 
@@ -10,7 +11,8 @@ class TodoItem extends Component {
 		super(props);
 		this.state = {
 			editing: false,
-			editValue: props.name
+			editValue: props.name,
+			menuVisible: false
 		};
 		// 绑定键盘事件处理函数
 		this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -101,7 +103,7 @@ class TodoItem extends Component {
 	};
 
 	render() {
-		const { id, name, done, priority } = this.props;
+		const { id, name, done, priority, categoryId, categories, moveToCategory } = this.props;
 		const { editing, editValue } = this.state;
 
 		// 根据优先级设置样式
@@ -121,6 +123,28 @@ class TodoItem extends Component {
 				priorityStyle = {};
 				priorityColor = "#999";
 		}
+
+		const itemCategoryId = categoryId || this.props.CategoryId;
+		const otherCategories = categories?.filter(cat => cat.id !== itemCategoryId) || [];
+
+		const menuItems = [];
+		if (otherCategories.length > 0) {
+			menuItems.push({
+				key: "move",
+				label: "移动到",
+				children: otherCategories.map(cat => ({
+					key: `move-${cat.id}`,
+					label: cat.name,
+					onClick: () => moveToCategory && moveToCategory(id, cat.id)
+				}))
+			});
+		}
+		menuItems.push({
+			key: "delete",
+			label: "删除",
+			danger: true,
+			onClick: this.handleDelete
+		});
 
 		return (
 			<div className="todo-item">
@@ -182,9 +206,11 @@ class TodoItem extends Component {
 									高
 								</Option>
 							</Select>
-							<Button danger type="text" size="small" onClick={this.handleDelete}>
-								删除
-							</Button>
+							<Dropdown menu={{ items: menuItems }} trigger={["click"]}>
+								<Button type="text" size="small">
+									<MoreOutlined />
+								</Button>
+							</Dropdown>
 						</div>
 					</div>
 				)}

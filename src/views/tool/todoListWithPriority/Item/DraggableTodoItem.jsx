@@ -3,7 +3,17 @@ import { useDrag, useDrop } from "react-dnd";
 import TodoItem from "./index";
 
 // 可拖拽的待办事项项组件
-const DraggableTodoItem = ({ item, moveTodo, updateTodo, delTodo, updatePriority, updateName, disabled }) => {
+const DraggableTodoItem = ({
+	item,
+	moveTodo,
+	updateTodo,
+	delTodo,
+	updatePriority,
+	updateName,
+	disabled,
+	categories,
+	moveToCategory
+}) => {
 	const ref = React.useRef(null);
 	const [editing, setEditing] = useState(false);
 
@@ -72,6 +82,8 @@ const DraggableTodoItem = ({ item, moveTodo, updateTodo, delTodo, updatePriority
 				updatePriority={updatePriority}
 				updateName={updateName}
 				onEditChange={handleEditChange}
+				categories={categories}
+				moveToCategory={moveToCategory}
 			/>
 		</div>
 	);

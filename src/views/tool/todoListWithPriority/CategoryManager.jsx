@@ -90,7 +90,7 @@ export default class CategoryManager extends Component {
 	fetchCategoryList = async () => {
 		try {
 			const response = await TodoCategoryService.getCategoryList();
-			if (response.code === 200) {
+			if (response.success) {
 				const categories = response.data || [];
 				this.setState({ categoryList: categories });
 				// 如果有分类且没有选中分类，默认选择第一个
@@ -158,7 +158,7 @@ export default class CategoryManager extends Component {
 					name: newCategoryName.trim(),
 					sortOrder: newCategorySortOrder
 				});
-				if (response.code === 200) {
+				if (response.success) {
 					message.success("更新分类成功");
 				}
 			} else {
@@ -167,12 +167,12 @@ export default class CategoryManager extends Component {
 					name: newCategoryName.trim(),
 					sortOrder: newCategorySortOrder
 				});
-				if (response.code === 200) {
+				if (response.success) {
 					message.success("添加分类成功");
 				}
 			}
 
-			if (response.code === 200) {
+			if (response.success) {
 				await this.fetchCategoryList();
 				this.setState({ editModalVisible: false, newCategoryName: "", newCategorySortOrder: 0, editingCategory: null });
 			}
@@ -187,7 +187,7 @@ export default class CategoryManager extends Component {
 		const { deletingCategoryId, selectedCategoryId } = this.state;
 		try {
 			const response = await TodoCategoryService.deleteCategory(deletingCategoryId);
-			if (response.code === 200) {
+			if (response.success) {
 				message.success("删除分类成功");
 				await this.fetchCategoryList();
 			}

@@ -54,7 +54,7 @@ export default class TodoListWithPriority extends Component {
 	fetchTodoList = async categoryId => {
 		try {
 			const response = await TodoItemService.getTodoList(categoryId);
-			if (response.code === 200) {
+			if (response.success) {
 				const sortedList = response.data; // 直接使用后端返回的排序结果
 				this.setState({ todoList: sortedList, currentCategoryId: categoryId });
 			}
@@ -79,7 +79,7 @@ export default class TodoListWithPriority extends Component {
 				priority: todoObj.priority || 1,
 				categoryId: currentCategoryId
 			});
-			if (response.code === 200 && response.data) {
+			if (response.success && response.data) {
 				await this.fetchTodoList(currentCategoryId);
 				await this.refreshCategories();
 				message.success("添加待办事项成功");
@@ -95,7 +95,7 @@ export default class TodoListWithPriority extends Component {
 		const { currentCategoryId } = this.state;
 		try {
 			const response = await TodoItemService.updateTodoStatus({ id, done });
-			if (response.code === 200 && response.data) {
+			if (response.success && response.data) {
 				await this.fetchTodoList(currentCategoryId);
 				await this.refreshCategories();
 			}
@@ -110,7 +110,7 @@ export default class TodoListWithPriority extends Component {
 		const { currentCategoryId } = this.state;
 		try {
 			const response = await TodoItemService.updateTodoPriority({ id, priority });
-			if (response.code === 200 && response.data) {
+			if (response.success && response.data) {
 				await this.fetchTodoList(currentCategoryId);
 				message.success("更新优先级成功");
 			}
@@ -125,7 +125,7 @@ export default class TodoListWithPriority extends Component {
 		const { currentCategoryId } = this.state;
 		try {
 			const response = await TodoItemService.updateTodoName({ id, name });
-			if (response.code === 200 && response.data) {
+			if (response.success && response.data) {
 				await this.fetchTodoList(currentCategoryId);
 				message.success("更新待办事项内容成功");
 			}
@@ -148,7 +148,7 @@ export default class TodoListWithPriority extends Component {
 		const { deletingId, currentCategoryId } = this.state;
 		try {
 			const response = await TodoItemService.deleteTodoItem(deletingId);
-			if (response.code === 200 && response.data) {
+			if (response.success && response.data) {
 				await this.fetchTodoList(currentCategoryId);
 				await this.refreshCategories();
 				message.success("删除待办事项成功");
@@ -179,7 +179,7 @@ export default class TodoListWithPriority extends Component {
 			const { todoList } = this.state;
 			const ids = todoList.map(item => item.id);
 			const response = await TodoItemService.batchUpdateTodoStatus({ ids, done });
-			if (response.code === 200 && response.data) {
+			if (response.success && response.data) {
 				await this.fetchTodoList(currentCategoryId);
 				await this.refreshCategories();
 			}
@@ -201,9 +201,9 @@ export default class TodoListWithPriority extends Component {
 		const { currentCategoryId } = this.state;
 		try {
 			const response = await TodoItemService.clearCompleted(currentCategoryId);
-			if (response.code === 200 && response.data) {
+			if (response.success && response.data) {
 				await this.fetchTodoList(currentCategoryId);
-				await this.refreshCategories();
+				// await this.refreshCategories(); // 这里不需要刷新分类列表，因为分类列表只显示待处理数量，清除已完成后待处理数量不会改变
 				message.success("清除已完成待办事项成功");
 			}
 		} catch (error) {
@@ -294,7 +294,7 @@ export default class TodoListWithPriority extends Component {
 		const { currentCategoryId } = this.state;
 		try {
 			const response = await TodoItemService.updateTodoCategory({ id: todoId, categoryId });
-			if (response.code === 200 && response.data) {
+			if (response.success && response.data) {
 				await this.fetchTodoList(currentCategoryId);
 				await this.refreshCategories();
 				message.success("移动待办事项成功");

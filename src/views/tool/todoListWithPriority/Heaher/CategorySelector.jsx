@@ -20,7 +20,7 @@ export default class CategorySelector extends Component {
 	fetchCategoryList = async () => {
 		try {
 			const response = await TodoCategoryService.getCategoryList();
-			if (response.code === 200) {
+			if (response.success) {
 				this.setState({ categoryList: response.data || [] });
 				// 如果没有选择分类且有分类列表，默认选择第一个
 				if (!this.state.selectedCategoryId && response.data && response.data.length > 0) {
@@ -58,7 +58,7 @@ export default class CategorySelector extends Component {
 		}
 		try {
 			const response = await TodoCategoryService.addCategory({ name: newCategoryName.trim() });
-			if (response.code === 200) {
+			if (response.success) {
 				message.success("添加分类成功");
 				this.setState({ editing: false, newCategoryName: "" });
 				await this.fetchCategoryList();

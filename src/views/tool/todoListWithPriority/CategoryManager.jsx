@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, List, Button, Input, Modal, message } from "antd";
+import { Card, List, Button, Input, Modal, message, Badge } from "antd";
 import { PlusOutlined, MenuOutlined } from "@ant-design/icons";
 import { TodoCategoryService } from "@/services/tool/todoCategoryService";
 import { useDrag, useDrop, DndProvider } from "react-dnd";
@@ -48,9 +48,20 @@ const DraggableCategoryItem = ({ category, index, moveCategory, onEdit, onDelete
 			}}
 			onClick={() => onSelect(category.id)}
 		>
-			<MenuOutlined style={{ marginRight: 8, cursor: "grab" }} />
-			{category.name}
-			<span style={{ marginLeft: "auto", fontSize: 12, color: "#999" }}> - 排序: {category.sortOrder}</span>
+			<div style={{ display: "flex", alignItems: "center" }}>
+				<MenuOutlined style={{ marginRight: 8, cursor: "grab" }} />
+				<span>{category.name}</span>
+				<Badge
+					count={category.pendingCount}
+					showZero={true}
+					style={{
+						backgroundColor: category.pendingCount > 0 ? "#ff4d4f" : "#f5f5f5",
+						color: category.pendingCount > 0 ? "#fff" : "#999",
+						marginLeft: 4
+					}}
+				/>
+				<span style={{ marginLeft: 8, fontSize: 12, color: "#999" }}>- 排序: {category.sortOrder}</span>
+			</div>
 		</List.Item>
 	);
 };

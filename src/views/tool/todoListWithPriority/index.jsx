@@ -309,7 +309,7 @@ export default class TodoListWithPriority extends Component {
 
 		return (
 			<DndProvider backend={HTML5Backend}>
-				<div className="todo-container" style={{ padding: "20px", margin: "0" }}>
+				<div className="todo-container" style={{ padding: "5px", margin: "0" }}>
 					<Row gutter={[16, 16]}>
 						<Col xs={24} md={8}>
 							<CategoryManager onCategorySelect={this.handleCategoryChange} onCategoriesChange={this.handleCategoriesChange} />
@@ -323,7 +323,10 @@ export default class TodoListWithPriority extends Component {
 								styles={{ body: { padding: "16px", margin: "0" } }}
 							>
 								<Title level={3} style={{ marginBottom: 10 }}>
-									TodoList
+									TodoList -{" "}
+									{this.state.currentCategoryId
+										? this.state.categories.find(c => c.id === this.state.currentCategoryId)?.name
+										: "待办事项"}
 								</Title>
 								{/* 分类选择组件【用CategoryManager替代，功能更完善】 */}
 								{/* <CategorySelector onCategoryChange={this.handleCategoryChange} /> */}

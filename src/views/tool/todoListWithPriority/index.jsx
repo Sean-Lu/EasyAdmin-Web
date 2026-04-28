@@ -32,6 +32,9 @@ export default class TodoListWithPriority extends Component {
 		currentCategoryId: null
 	};
 
+	// CategoryManager组件引用
+	categoryManagerRef = React.createRef();
+
 	// 组件挂载时不获取数据，等待CategoryManager传递
 	componentDidMount() {}
 
@@ -40,16 +43,10 @@ export default class TodoListWithPriority extends Component {
 		this.setState({ categories });
 	};
 
-	// 获取分类列表（备用方法）
-	fetchCategories = async () => {
-		try {
-			const response = await TodoCategoryService.getCategoryList();
-			if (response.code === 200) {
-				this.setState({ categories: response.data });
-			}
-		} catch (error) {
-			message.error("获取分类列表失败");
-			console.error("获取分类列表失败:", error);
+	// 刷新分类列表（通过ref调用CategoryManager的方法）
+	refreshCategories = async () => {
+		if (this.categoryManagerRef.current) {
+			await this.categoryManagerRef.current.fetchCategoryList();
 		}
 	};
 
@@ -84,6 +81,7 @@ export default class TodoListWithPriority extends Component {
 			});
 			if (response.code === 200 && response.data) {
 				await this.fetchTodoList(currentCategoryId);
+				await this.refreshCategories();
 				message.success("添加待办事项成功");
 			}
 		} catch (error) {
@@ -99,6 +97,7 @@ export default class TodoListWithPriority extends Component {
 			const response = await TodoItemService.updateTodoStatus({ id, done });
 			if (response.code === 200 && response.data) {
 				await this.fetchTodoList(currentCategoryId);
+				await this.refreshCategories();
 			}
 		} catch (error) {
 			message.error("更新待办事项状态失败");
@@ -151,6 +150,7 @@ export default class TodoListWithPriority extends Component {
 			const response = await TodoItemService.deleteTodoItem(deletingId);
 			if (response.code === 200 && response.data) {
 				await this.fetchTodoList(currentCategoryId);
+				await this.refreshCategories();
 				message.success("删除待办事项成功");
 			}
 		} catch (error) {
@@ -181,6 +181,7 @@ export default class TodoListWithPriority extends Component {
 			const response = await TodoItemService.batchUpdateTodoStatus({ ids, done });
 			if (response.code === 200 && response.data) {
 				await this.fetchTodoList(currentCategoryId);
+				await this.refreshCategories();
 			}
 		} catch (error) {
 			message.error("更新待办事项状态失败");
@@ -202,6 +203,7 @@ export default class TodoListWithPriority extends Component {
 			const response = await TodoItemService.clearCompleted(currentCategoryId);
 			if (response.code === 200 && response.data) {
 				await this.fetchTodoList(currentCategoryId);
+				await this.refreshCategories();
 				message.success("清除已完成待办事项成功");
 			}
 		} catch (error) {
@@ -294,6 +296,7 @@ export default class TodoListWithPriority extends Component {
 			const response = await TodoItemService.updateTodoCategory({ id: todoId, categoryId });
 			if (response.code === 200 && response.data) {
 				await this.fetchTodoList(currentCategoryId);
+				await this.refreshCategories();
 				message.success("移动待办事项成功");
 			}
 		} catch (error) {
@@ -312,7 +315,11 @@ export default class TodoListWithPriority extends Component {
 				<div className="todo-container" style={{ padding: "5px", margin: "0" }}>
 					<Row gutter={[16, 16]}>
 						<Col xs={24} md={8}>
-							<CategoryManager onCategorySelect={this.handleCategoryChange} onCategoriesChange={this.handleCategoriesChange} />
+							<CategoryManager
+								ref={this.categoryManagerRef}
+								onCategorySelect={this.handleCategoryChange}
+								onCategoriesChange={this.handleCategoriesChange}
+							/>
 						</Col>
 						<Col xs={24} md={16}>
 							<Card

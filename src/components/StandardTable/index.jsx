@@ -156,6 +156,7 @@ class StandardTable extends React.Component {
 				// 在弹窗之前校验token是否过期，避免填完信息后因为token过期导致保存失败
 				if (res.success === true && res.data.expired === true) {
 					message.info("登录失效，请您重新登录！");
+					localStorage.setItem("redirectUrl", window.location.hash.slice(1)); // 保存当前页面地址，用于登录成功后跳转
 					window.location.hash = "/login";
 					return;
 				}

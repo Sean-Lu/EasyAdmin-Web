@@ -21,7 +21,10 @@ const AuthRouter = (props: { children: JSX.Element }) => {
 
 	// * 判断是否有Token
 	const token = store.getState().global.token;
-	if (!token) return <Navigate to="/login" replace />;
+	if (!token) {
+		localStorage.setItem("redirectUrl", pathname); // 保存当前页面地址，用于登录成功后跳转
+		return <Navigate to="/login" replace />;
+	}
 
 	// * Dynamic Router(动态路由，根据后端返回的菜单数据生成的一维数组)
 	const dynamicRouter = store.getState().auth.authRouter;

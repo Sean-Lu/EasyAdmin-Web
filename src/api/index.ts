@@ -62,6 +62,7 @@ class RequestHttp {
 				if (data.code == ResultEnum.OVERDUE) {
 					store.dispatch(setToken(""));
 					message.error(data.msg);
+					localStorage.setItem("redirectUrl", window.location.hash.slice(1)); // 保存当前页面地址，用于登录成功后跳转
 					window.location.hash = "/login";
 					return Promise.reject(data);
 				}
@@ -91,6 +92,7 @@ class RequestHttp {
 					checkStatus(response.status);
 					if (response.status === 401) {
 						store.dispatch(setToken(""));
+						localStorage.setItem("redirectUrl", window.location.hash.slice(1)); // 保存当前页面地址，用于登录成功后跳转
 						window.location.hash = "/login";
 						return Promise.reject(error);
 					}

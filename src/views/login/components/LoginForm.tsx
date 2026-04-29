@@ -27,7 +27,15 @@ const LoginForm = (props: any) => {
 			setToken(data?.accessToken);
 			setTabsList([]);
 			message.success("登录成功！");
-			navigate(HOME_URL);
+
+			// 登录成功后，判断是否有重定向地址，如果有则跳转，没有则跳转到首页
+			const redirectUrl = localStorage.getItem("redirectUrl");
+			if (redirectUrl && redirectUrl !== "/login") {
+				localStorage.removeItem("redirectUrl");
+				navigate(redirectUrl);
+			} else {
+				navigate(HOME_URL);
+			}
 		} finally {
 			setLoading(false);
 		}

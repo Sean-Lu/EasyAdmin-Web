@@ -49,7 +49,8 @@ const LoginForm = (props: any) => {
 		<Form
 			form={form}
 			name="basic"
-			labelCol={{ span: 5 }}
+			labelCol={{ span: 0 }}
+			wrapperCol={{ span: 24 }}
 			initialValues={{ remember: true }}
 			onFinish={onFinish}
 			onFinishFailed={onFinishFailed}
@@ -63,6 +64,9 @@ const LoginForm = (props: any) => {
 				<Input.Password autoComplete="new-password" placeholder="密码" prefix={<LockOutlined />} />
 			</Form.Item>
 			<Form.Item className="login-btn">
+				<Button type="primary" htmlType="submit" loading={loading} icon={<UserOutlined />}>
+					{t("login.confirm")}
+				</Button>
 				<Button
 					onClick={() => {
 						form.resetFields();
@@ -70,9 +74,6 @@ const LoginForm = (props: any) => {
 					icon={<CloseCircleOutlined />}
 				>
 					{t("login.reset")}
-				</Button>
-				<Button type="primary" htmlType="submit" loading={loading} icon={<UserOutlined />}>
-					{t("login.confirm")}
 				</Button>
 			</Form.Item>
 		</Form>

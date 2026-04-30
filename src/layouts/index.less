@@ -1,7 +1,10 @@
 .container {
 	display: flex;
-	min-width: 950px;
+	min-width: 320px;
 	height: 100%;
+	@media screen and (max-width: 950px) {
+		min-width: 320px;
+	}
 	.ant-layout-sider {
 		box-sizing: border-box;
 	}

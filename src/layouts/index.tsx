@@ -13,7 +13,7 @@ import "./index.less";
 
 const LayoutIndex = (props: any) => {
 	const { Sider, Content } = Layout;
-	const { isCollapse, updateCollapse, setAuthButtons } = props;
+	const { isCollapse, updateCollapse, setAuthButtons, tabsList } = props;
 
 	// 获取按钮权限列表
 	const getAuthButtonsList = async () => {
@@ -47,7 +47,7 @@ const LayoutIndex = (props: any) => {
 				<LayoutHeader></LayoutHeader>
 				<LayoutTabs></LayoutTabs>
 				<Content>
-					<Outlet></Outlet>
+					<Outlet />
 				</Content>
 				<LayoutFooter></LayoutFooter>
 			</Layout>
@@ -55,6 +55,6 @@ const LayoutIndex = (props: any) => {
 	);
 };
 
-const mapStateToProps = (state: any) => state.menu;
+const mapStateToProps = (state: any) => ({ ...state.menu, global: state.global });
 const mapDispatchToProps = { setAuthButtons, updateCollapse };
 export default connect(mapStateToProps, mapDispatchToProps)(LayoutIndex);

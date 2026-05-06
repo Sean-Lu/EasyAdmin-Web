@@ -8,6 +8,10 @@ const BreadcrumbNav = (props: any) => {
 	const { themeConfig } = props.global;
 	const breadcrumbList = props.breadcrumb.breadcrumbList[pathname] || [];
 
+	if (pathname === "/empty") {
+		return null;
+	}
+
 	const items = [
 		{
 			title: <a href={`#${HOME_URL}`}>首页</a>
@@ -25,5 +29,5 @@ const BreadcrumbNav = (props: any) => {
 	return <>{!themeConfig.breadcrumb && <Breadcrumb items={items} />}</>;
 };
 
-const mapStateToProps = (state: any) => state;
+const mapStateToProps = (state: any) => ({ global: state.global, breadcrumb: state.breadcrumb });
 export default connect(mapStateToProps)(BreadcrumbNav);

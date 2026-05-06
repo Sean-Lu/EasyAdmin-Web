@@ -1,58 +1,69 @@
 .tabs {
 	position: relative;
 	border-bottom: 1px solid #e4e7ed;
-	.ant-tabs {
-		padding: 0 90px 0 13px;
-		.ant-tabs-nav {
-			margin: 0;
-			&::before {
-				border: none;
-			}
-			.ant-tabs-ink-bar {
-				visibility: visible;
-			}
-			.ant-tabs-tab-with-remove.ant-tabs-tab-active {
-				.ant-tabs-tab-remove {
-					top: 1px;
-					margin: 7px;
-					color: @primary-color !important;
-					opacity: 1 !important;
+	display: flex;
+	align-items: center;
+	.tabs-content {
+		flex: 1;
+		display: flex;
+		overflow: hidden;
+		.tabs-tab {
+			position: relative;
+			display: flex;
+			align-items: center;
+			padding: 8px 28px 8px 16px;
+			color: #666666;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			border-bottom: 2px solid transparent;
+			&:hover {
+				background: rgba(0, 0, 0, 0.02);
+				.tabs-tab-close {
+					opacity: 1;
 				}
-				.ant-tabs-tab-btn {
-					transform: translateX(-9px);
+			}
+			&-active {
+				color: @primary-color;
+				border-bottom-color: @primary-color;
+				background: rgba(0, 0, 0, 0.02);
+				.tabs-tab-close {
+					opacity: 1;
+					color: @primary-color;
 				}
 			}
-			.ant-tabs-tab {
-				padding: 8px 22px;
+			&-dragging {
+				opacity: 0.5;
+				transform: scale(0.95);
+				cursor: grabbing;
+			}
+			&-content {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+			}
+			&-icon {
+				width: 14px;
+				height: 14px;
+			}
+			&-title {
+				font-size: 14px;
+			}
+			&-close {
+				position: absolute;
+				right: 8px;
+				top: 50%;
+				transform: translateY(-50%);
+				width: 20px;
+				height: 20px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 16px;
 				color: #cccccc;
-				background: none;
-				border: none;
-				transition: none;
-				.anticon-home {
-					margin-right: 7px;
-				}
-				.ant-tabs-tab-remove {
-					position: absolute;
-					right: 0;
-					color: #cccccc;
-					opacity: 0;
-					transition: 0.1s ease-in-out;
-					&:hover {
-						color: @primary-color;
-					}
-				}
-			}
-			.ant-tabs-tab.ant-tabs-tab-with-remove {
+				opacity: 0;
+				transition: opacity 0.1s ease;
 				&:hover {
-					.ant-tabs-tab-remove {
-						top: 1px;
-						margin: 7px;
-						opacity: 1;
-						transition: 0.1s ease-in-out;
-					}
-					.ant-tabs-tab-btn {
-						transform: translateX(-9px);
-					}
+					color: @primary-color;
 				}
 			}
 		}
@@ -63,21 +74,6 @@
 		right: 13px;
 		padding-left: 10px;
 		font-size: 12px;
+		z-index: 10;
 	}
-}
-
-/* tabs 超出显示的样式 */
-.ant-tabs-dropdown {
-	.ant-tabs-dropdown-menu-item {
-		.anticon-home {
-			margin-right: 7px;
-		}
-	}
-}
-
-/* tabs 不受全局组件大小影响 */
-.ant-tabs-small > .ant-tabs-nav .ant-tabs-tab,
-.ant-tabs-large > .ant-tabs-nav .ant-tabs-tab {
-	padding: 8px 22px !important;
-	font-size: 14px !important;
 }

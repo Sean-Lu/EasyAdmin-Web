@@ -11,11 +11,29 @@ const MoreButton = (props: any) => {
 
 	// close multipleTab
 	const closeMultipleTab = (tabPath?: string) => {
-		const handleTabsList = props.tabsList.filter((item: Menu.MenuOptions) => {
-			return item.path === tabPath || item.path === HOME_URL;
-		});
-		props.setTabsList(handleTabsList);
-		tabPath ?? navigate(HOME_URL);
+		if (tabPath) {
+			const handleTabsList = props.tabsList.filter((item: Menu.MenuOptions) => {
+				return item.path === tabPath;
+			});
+			props.setTabsList(handleTabsList.length > 0 ? handleTabsList : []);
+		} else {
+			props.setTabsList([]);
+			navigate("/empty");
+		}
+	};
+
+	// close left tabs
+	const closeLeftTabs = () => {
+		const currentIndex = props.tabsList.findIndex((item: Menu.MenuOptions) => item.path === pathname);
+		const handleTabsList = props.tabsList.filter((_item: Menu.MenuOptions, index: number) => index >= currentIndex);
+		props.setTabsList(handleTabsList.length > 0 ? handleTabsList : []);
+	};
+
+	// close right tabs
+	const closeRightTabs = () => {
+		const currentIndex = props.tabsList.findIndex((item: Menu.MenuOptions) => item.path === pathname);
+		const handleTabsList = props.tabsList.filter((_item: Menu.MenuOptions, index: number) => index <= currentIndex);
+		props.setTabsList(handleTabsList.length > 0 ? handleTabsList : []);
 	};
 
 	const items: MenuProps["items"] = [
@@ -26,11 +44,21 @@ const MoreButton = (props: any) => {
 		},
 		{
 			key: "2",
+			label: <span>{t("tabs.closeLeft")}</span>,
+			onClick: closeLeftTabs
+		},
+		{
+			key: "3",
+			label: <span>{t("tabs.closeRight")}</span>,
+			onClick: closeRightTabs
+		},
+		{
+			key: "4",
 			label: <span>{t("tabs.closeOther")}</span>,
 			onClick: () => closeMultipleTab(pathname)
 		},
 		{
-			key: "3",
+			key: "5",
 			label: <span>{t("tabs.closeAll")}</span>,
 			onClick: () => closeMultipleTab()
 		}

@@ -3,6 +3,7 @@
 import { LayoutIndex } from "@/routers/constant";
 import { RouteObject } from "@/routers/interface";
 import Home from "@/views/home/index";
+import EmptyPage from "@/views/empty";
 
 // 首页模块
 const homeRouter: Array<RouteObject> = [
@@ -17,6 +18,15 @@ const homeRouter: Array<RouteObject> = [
 					requiresAuth: true,
 					title: "首页",
 					key: "home"
+				}
+			},
+			{
+				path: "/empty",
+				element: <EmptyPage />,
+				meta: {
+					requiresAuth: false,
+					title: "空状态",
+					key: "empty"
 				}
 			}
 		]

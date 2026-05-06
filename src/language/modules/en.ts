@@ -10,7 +10,9 @@ export default {
 		more: "More",
 		closeCurrent: "Close Current",
 		closeOther: "Close Other",
-		closeAll: "Close All"
+		closeAll: "Close All",
+		closeLeft: "Close Left",
+		closeRight: "Close Right"
 	},
 	header: {
 		componentSize: "Component Size",

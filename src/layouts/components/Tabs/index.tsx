@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setTabsList } from "@/redux/modules/tabs/action";
 import { routerArray } from "@/routers";
 import { searchRoute } from "@/utils/util";
 import MoreButton from "./components/MoreButton";
+import * as Icons from "@ant-design/icons";
 import "./index.less";
+
+const renderIcon = (iconName?: string) => {
+	if (!iconName) return null;
+	const IconComponent = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[iconName];
+	if (!IconComponent) return null;
+	return <IconComponent className="tabs-tab-icon" />;
+};
 
 const LayoutTabs = (props: any) => {
 	const { tabsList } = props.tabs;
@@ -33,9 +40,24 @@ const LayoutTabs = (props: any) => {
 	const addTabs = () => {
 		if (pathname === "/empty") return;
 		const route = searchRoute(pathname, routerArray);
+		const menuData = props.menu.menuList;
+		let icon = route.meta?.icon;
+		if (!icon && menuData.length > 0) {
+			const findIcon = (menus: Menu.MenuOptions[]): string | undefined => {
+				for (const menu of menus) {
+					if (menu.path === pathname) return menu.icon;
+					if (menu.children) {
+						const found = findIcon(menu.children);
+						if (found) return found;
+					}
+				}
+				return undefined;
+			};
+			icon = findIcon(menuData);
+		}
 		let newTabsList = JSON.parse(JSON.stringify(tabsList));
 		if (tabsList.length === 0 || tabsList.every((item: any) => item.path !== route.path)) {
-			newTabsList.push({ title: route.meta!.title, path: route.path });
+			newTabsList.push({ title: route.meta!.title, path: route.path, icon });
 		}
 		setTabsList(newTabsList);
 		setActiveValue(pathname);
@@ -112,22 +134,7 @@ const LayoutTabs = (props: any) => {
 								onClick={() => clickTabs(item.path)}
 							>
 								<span className="tabs-tab-content">
-									{item.path == HOME_URL ? (
-										<svg
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth="2"
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											className="tabs-tab-icon"
-										>
-											<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-											<polyline points="9 22 9 12 15 12 15 22"></polyline>
-										</svg>
-									) : (
-										""
-									)}
+									{renderIcon(item.icon)}
 									<span className="tabs-tab-title">{item.title}</span>
 								</span>
 								<span

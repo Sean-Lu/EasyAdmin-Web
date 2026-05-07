@@ -1,5 +1,14 @@
 import React from "react";
 import { Form, Modal } from "antd";
+import * as Icons from "@ant-design/icons";
+import { getOutLinkOpenTypeLabel } from "../../../enums/menu";
+
+const renderIcon = iconName => {
+	if (!iconName) return null;
+	const IconComponent = Icons[iconName];
+	if (!IconComponent) return null;
+	return <IconComponent style={{ fontSize: 18, color: "#1890ff", marginRight: 8 }} />;
+};
 
 // 菜单详情弹窗
 export default class MenuDetail extends React.Component {
@@ -21,8 +30,14 @@ export default class MenuDetail extends React.Component {
 					<Form.Item label="外部链接">
 						<span>{record.outLink}</span>
 					</Form.Item>
+					<Form.Item label="打开方式">
+						<span>{getOutLinkOpenTypeLabel(record.outLinkOpenType)}</span>
+					</Form.Item>
 					<Form.Item label="图标">
-						<span>{record.icon}</span>
+						<span>
+							{renderIcon(record.icon)}
+							{record.icon || "无"}
+						</span>
 					</Form.Item>
 					<Form.Item label="排序">
 						<span>{record.sort}</span>

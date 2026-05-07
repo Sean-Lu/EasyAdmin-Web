@@ -5,6 +5,7 @@ export interface MetaProps {
 	requiresAuth?: boolean;
 	title: string;
 	key?: string;
+	icon?: string;
 }
 
 // 扩展 react-router-dom 的 RouteObject 类型
@@ -12,4 +13,5 @@ export interface RouteObject extends Omit<RRouteObject, "children"> {
 	children?: RouteObject[];
 	meta?: MetaProps;
 	outLink?: string;
+	outLinkOpenType?: number;
 }

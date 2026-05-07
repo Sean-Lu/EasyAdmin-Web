@@ -52,8 +52,9 @@ const LayoutMenu = (props: any) => {
 
 	// 动态渲染 Icon 图标
 	const customIcons: { [key: string]: any } = Icons;
-	const addIcon = (name: string) => {
-		return React.createElement(customIcons[name]);
+	const addIcon = (name?: string) => {
+		if (!name) return undefined;
+		return customIcons[name] ? React.createElement(customIcons[name]) : undefined;
 	};
 
 	// 处理后台返回菜单 key 值为 antd 菜单需要的 key 值
@@ -93,7 +94,12 @@ const LayoutMenu = (props: any) => {
 	const navigate = useNavigate();
 	const clickMenu: MenuProps["onClick"] = ({ key }: { key: string }) => {
 		const route = searchRoute(key, props.menuList);
-		if (route.outLink) window.open(route.outLink, "_blank");
+		if (route.outLink) {
+			if (route.outLinkOpenType === 1) {
+				window.open(route.outLink, "_blank");
+				return;
+			}
+		}
 		navigate(key);
 	};
 

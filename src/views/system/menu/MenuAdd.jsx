@@ -1,8 +1,10 @@
 import React from "react";
-import { Button, Form, Input, InputNumber, Modal, Spin, Switch, TreeSelect } from "antd";
+import { Button, Form, Input, InputNumber, Modal, Select, Spin, Switch, TreeSelect } from "antd";
 
 import axios from "../../../api/index";
 import { api } from "../../../actions/system/api";
+import { getOutLinkOpenTypeOptions } from "../../../enums/menu";
+import FormIconPicker from "../../../components/IconPicker/FormIconPicker";
 
 // 菜单新增弹窗
 export default class MenuAdd extends React.Component {
@@ -129,6 +131,17 @@ export default class MenuAdd extends React.Component {
 						<Input placeholder="请输入外部链接" />
 					</Form.Item>
 					<Form.Item
+						name="outLinkOpenType"
+						label="打开方式"
+						rules={[
+							{
+								required: false
+							}
+						]}
+					>
+						<Select placeholder="请选择打开方式" allowClear options={getOutLinkOpenTypeOptions()} />
+					</Form.Item>
+					<Form.Item
 						name="icon"
 						label="图标"
 						rules={[
@@ -137,7 +150,7 @@ export default class MenuAdd extends React.Component {
 							}
 						]}
 					>
-						<Input placeholder="请输入图标" />
+						<FormIconPicker placeholder="请选择图标" />
 					</Form.Item>
 					<Form.Item
 						name="sort"

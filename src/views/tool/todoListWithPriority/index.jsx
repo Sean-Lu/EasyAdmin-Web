@@ -15,6 +15,8 @@ import { TodoCategoryService } from "@/services/tool/todoCategoryService";
 
 const { Title } = Typography;
 
+import "./index.css";
+
 // 待办事项列表组件（带优先级）
 export default class TodoListWithPriority extends Component {
 	state = {
@@ -313,7 +315,7 @@ export default class TodoListWithPriority extends Component {
 		return (
 			<DndProvider backend={HTML5Backend}>
 				<div className="todo-container" style={{ padding: "5px", margin: "0" }}>
-					<Row gutter={[16, 16]}>
+					<Row gutter={[16, 16]} className="todo-row">
 						<Col xs={24} md={8}>
 							<CategoryManager
 								ref={this.categoryManagerRef}

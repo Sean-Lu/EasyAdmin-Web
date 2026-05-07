@@ -1,0 +1,11 @@
+@media screen and (max-width: 900px) {
+	.todo-row {
+		display: flex !important;
+		flex-direction: column !important;
+	}
+	.todo-row > div {
+		width: 100% !important;
+		max-width: none !important;
+		flex: none !important;
+	}
+}

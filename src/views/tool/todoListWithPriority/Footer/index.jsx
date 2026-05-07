@@ -45,7 +45,7 @@ export default class TodoFooter extends Component {
 					已完成 {doneCount} / 全部 {totalCount}
 				</Checkbox>
 				<Button onClick={this.handleClearAllDone} danger type="primary" size="default">
-					清除已完成任务
+					清除已完成
 				</Button>
 			</div>
 		);

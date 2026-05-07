@@ -31,6 +31,18 @@ const LayoutTabs = (props: any) => {
 		setIsDeleting(false);
 	}, [pathname]);
 
+	// find menu by path
+	const findMenuByPath = (menus: Menu.MenuOptions[], targetPath: string): Menu.MenuOptions | undefined => {
+		for (const menu of menus) {
+			if (menu.path === targetPath) return menu;
+			if (menu.children) {
+				const found = findMenuByPath(menu.children, targetPath);
+				if (found) return found;
+			}
+		}
+		return undefined;
+	};
+
 	// click tabs
 	const clickTabs = (path: string) => {
 		navigate(path);
@@ -41,8 +53,15 @@ const LayoutTabs = (props: any) => {
 		if (pathname === "/empty") return;
 		const route = searchRoute(pathname, routerArray);
 		const menuData = props.menu.menuList;
+		const menuItem = findMenuByPath(menuData, pathname);
+
 		let icon = route.meta?.icon;
-		if (!icon && menuData.length > 0) {
+		let title = route.meta?.title;
+
+		if (menuItem) {
+			if (!icon) icon = menuItem.icon;
+			if (menuItem.title) title = menuItem.title;
+		} else if (!icon && menuData.length > 0) {
 			const findIcon = (menus: Menu.MenuOptions[]): string | undefined => {
 				for (const menu of menus) {
 					if (menu.path === pathname) return menu.icon;
@@ -55,9 +74,12 @@ const LayoutTabs = (props: any) => {
 			};
 			icon = findIcon(menuData);
 		}
+
+		if (!title) return;
+
 		let newTabsList = JSON.parse(JSON.stringify(tabsList));
-		if (tabsList.length === 0 || tabsList.every((item: any) => item.path !== route.path)) {
-			newTabsList.push({ title: route.meta!.title, path: route.path, icon });
+		if (tabsList.length === 0 || tabsList.every((item: any) => item.path !== pathname)) {
+			newTabsList.push({ title, path: pathname, icon });
 		}
 		setTabsList(newTabsList);
 		setActiveValue(pathname);

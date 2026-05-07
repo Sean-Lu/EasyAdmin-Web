@@ -82,12 +82,34 @@ export const searchRoute = (path: string, routes: RouteObject[] = []): RouteObje
 	let result: RouteObject = {};
 	for (let item of routes) {
 		if (item.path === path) return item;
+		if (item.path?.includes(":") && matchDynamicRoute(item.path, path)) {
+			return item;
+		}
 		if (item.children) {
 			const res = searchRoute(path, item.children);
 			if (Object.keys(res).length) result = res;
 		}
 	}
 	return result;
+};
+
+/**
+ * @description 是否匹配动态路由
+ * @param {String} routePath 动态路由 动态参数 例如 /user/:id
+ * @param {String} currentPath 当前访问地址
+ * @returns boolean
+ */
+const matchDynamicRoute = (routePath: string, currentPath: string): boolean => {
+	const routeSegments = routePath.split("/");
+	const currentSegments = currentPath.split("/");
+	if (routeSegments.length !== currentSegments.length) return false;
+	for (let i = 0; i < routeSegments.length; i++) {
+		if (routeSegments[i].startsWith(":") || routeSegments[i] === currentSegments[i]) {
+			continue;
+		}
+		return false;
+	}
+	return true;
 };
 
 /**

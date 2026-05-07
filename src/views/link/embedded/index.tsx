@@ -1,20 +1,25 @@
 import { OutLinkOpenType } from "@/enums/menu";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 // 外部链接组件(iframe)
 const EmbeddedLink = () => {
 	const [url, setUrl] = useState("");
 	const [title, setTitle] = useState("");
-	const [openType, setOpenType] = useState<number>(0);
+	const [openType, setOpenType] = useState<number>(OutLinkOpenType.Inline);
+	const [redirected, setRedirected] = useState(false);
 	const menuList = useSelector((state: any) => state.menu.menuList);
 	const { pathname } = useLocation();
+	const { key } = useParams<{ key: string }>();
 
 	useEffect(() => {
 		const findMenu = (list: any[]): any => {
 			for (const item of list) {
 				if (item.path === pathname) {
+					return item;
+				}
+				if (key && item.meta?.key === key) {
 					return item;
 				}
 				if (item.children && item.children.length > 0) {
@@ -30,12 +35,28 @@ const EmbeddedLink = () => {
 			setTitle(menu.title || "");
 			setOpenType(menu.outLinkOpenType || OutLinkOpenType.Inline);
 		}
-	}, [menuList, pathname]);
+	}, [menuList, pathname, key]);
+
+	useEffect(() => {
+		if (openType === OutLinkOpenType.Blank && url && !redirected) {
+			setRedirected(true);
+			window.open(url, "_blank");
+		}
+	}, [openType, url, redirected]);
 
 	if (openType === OutLinkOpenType.Blank) {
 		return (
 			<div className="card content-box">
-				<span className="text">该链接配置为在新标签页打开，请点击左侧菜单重新打开</span>
+				<div style={{ textAlign: "center" }}>
+					<span className="text">该链接配置为在新标签页打开</span>
+					{url && (
+						<p style={{ marginTop: "20px" }}>
+							<a href={url} target="_blank" rel="noopener noreferrer" className="text-primary">
+								点击此处手动打开
+							</a>
+						</p>
+					)}
+				</div>
 			</div>
 		);
 	}

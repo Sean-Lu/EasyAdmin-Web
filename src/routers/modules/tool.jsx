@@ -64,6 +64,15 @@ const toolRouter = [
 					title: "签到",
 					key: "tool-checkIn"
 				}
+			},
+			{
+				path: "/tool/codeGen",
+				element: lazyLoad(React.lazy(() => import("@/views/tool/codeGen/CodeGen"))),
+				meta: {
+					requiresAuth: true,
+					title: "代码生成",
+					key: "tool-codeGen"
+				}
 			}
 		]
 	}

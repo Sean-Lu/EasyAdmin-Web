@@ -25,6 +25,13 @@ const LoginForm = (props: any) => {
 			loginForm.password = md5(loginForm.password);
 			const { data } = await loginApi(loginForm);
 			setToken(data?.accessToken);
+
+			if (data?.refreshToken) {
+				localStorage.setItem("refreshToken", data.refreshToken);
+			} else {
+				localStorage.removeItem("refreshToken");
+			}
+
 			setTabsList([]);
 			message.success("登录成功！");
 

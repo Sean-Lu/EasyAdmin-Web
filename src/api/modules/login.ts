@@ -15,6 +15,16 @@ export const loginApi = (params: Login.LoginReq) => {
 	return http.post<Login.LoginRes>(PORT1 + `/auth/login`, params, { headers: { noLoading: true } }); // 控制当前请求不显示 loading
 };
 
+// * 刷新token接口
+export const refreshTokenApi = (refreshToken: string) => {
+	return http.post<Login.LoginRes>(PORT1 + `/auth/refreshToken`, { refreshToken }, { headers: { noLoading: true } });
+};
+
+// * 用户退出登录接口
+export const logoutApi = () => {
+	return http.post(PORT1 + `/auth/logout`);
+};
+
 // * 获取按钮权限
 export const getAuthorButtons = () => {
 	return http.get<Login.AuthButtonsRes>(PORT1 + `/auth/buttons`);

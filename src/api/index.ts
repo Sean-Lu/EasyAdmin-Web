@@ -8,6 +8,7 @@ import { AxiosCanceler } from "./helper/axiosCancel";
 import { setToken } from "@/redux/modules/global/action";
 import { message } from "antd";
 import { store } from "@/redux";
+import { refreshTokenApi } from "./modules/login";
 
 const axiosCanceler = new AxiosCanceler();
 
@@ -19,6 +20,9 @@ const config = {
 	// 跨域时候允许携带凭证
 	withCredentials: true
 };
+
+let isRefreshing = false;
+let failedRequests: Array<{ resolve: (token: string) => void; reject: (error: AxiosError) => void }> = [];
 
 class RequestHttp {
 	service: AxiosInstance;
@@ -52,15 +56,21 @@ class RequestHttp {
 		 */
 		this.service.interceptors.response.use(
 			(response: AxiosResponse) => {
-				const { data, config } = response;
+				const { data, config, headers } = response;
 				NProgress.done();
 				// * 在请求结束后，移除本次请求(关闭loading)
 				axiosCanceler.removePending(config);
 				tryHideFullScreenLoading();
 
-				// * 登录失效（code == 599）
+				const newToken = headers["x-new-token"];
+				if (newToken) {
+					store.dispatch(setToken(newToken));
+				}
+
+				// * 登录失效（code == 401）
 				if (data.code == ResultEnum.OVERDUE) {
 					store.dispatch(setToken(""));
+					localStorage.removeItem("refreshToken");
 					message.error(data.msg);
 					localStorage.setItem("redirectUrl", window.location.hash.slice(1)); // 保存当前页面地址，用于登录成功后跳转
 					window.location.hash = "/login";
@@ -82,23 +92,87 @@ class RequestHttp {
 				}
 			},
 			async (error: AxiosError) => {
-				const { response } = error;
+				const { response, config: requestConfig } = error;
 				NProgress.done();
 				tryHideFullScreenLoading();
+
 				// 请求超时单独判断，请求超时没有 response
-				if (error.message.indexOf("timeout") !== -1) message.error("请求超时，请稍后再试");
+				if (error.message.indexOf("timeout") !== -1) {
+					message.error("请求超时，请稍后再试");
+					return Promise.reject(error);
+				}
+
 				// 根据响应的错误状态码，做不同的处理
 				if (response) {
 					checkStatus(response.status);
+
+					if (
+						response.status === 401 &&
+						requestConfig &&
+						!requestConfig.url?.includes("/auth/login") &&
+						!requestConfig.url?.includes("/auth/refreshToken")
+					) {
+						const refreshToken = localStorage.getItem("refreshToken");
+						if (refreshToken) {
+							if (!isRefreshing) {
+								isRefreshing = true;
+								try {
+									const refreshResult = await refreshTokenApi(refreshToken);
+									if (refreshResult.data && refreshResult.data.accessToken) {
+										const newAccessToken = refreshResult.data.accessToken;
+										const newRefreshToken = refreshResult.data.refreshToken;
+
+										store.dispatch(setToken(newAccessToken));
+										if (newRefreshToken) {
+											localStorage.setItem("refreshToken", newRefreshToken);
+										}
+
+										failedRequests.forEach(callback => callback.resolve(newAccessToken));
+										failedRequests = [];
+
+										if (requestConfig.headers) {
+											requestConfig.headers["authorization"] = newAccessToken;
+										}
+										return this.service(requestConfig);
+									} else {
+										throw new Error("刷新token失败");
+									}
+								} catch (refreshError) {
+									failedRequests.forEach(callback => callback.reject(refreshError as AxiosError));
+									failedRequests = [];
+									handleTokenExpired();
+									return Promise.reject(error);
+								} finally {
+									isRefreshing = false;
+								}
+							}
+
+							return new Promise<string>((resolve, reject) => {
+								failedRequests.push({ resolve, reject });
+							})
+								.then(newToken => {
+									if (requestConfig.headers) {
+										requestConfig.headers["authorization"] = newToken;
+									}
+									return this.service(requestConfig);
+								})
+								.catch(() => {
+									handleTokenExpired();
+									return Promise.reject(error);
+								});
+						}
+					}
+
 					if (response.status === 401) {
-						store.dispatch(setToken(""));
-						localStorage.setItem("redirectUrl", window.location.hash.slice(1)); // 保存当前页面地址，用于登录成功后跳转
-						window.location.hash = "/login";
-						return Promise.reject(error);
+						handleTokenExpired();
 					}
 				}
+
 				// 服务器结果都没有返回(可能服务器错误可能客户端断网) 断网处理:可以跳转到断网页面
-				if (!window.navigator.onLine) window.location.hash = "/500";
+				if (!window.navigator.onLine) {
+					window.location.hash = "/500";
+				}
+
 				return Promise.reject(error);
 			}
 		);
@@ -148,6 +222,15 @@ class RequestHttp {
 			returnFullResponse: true
 		});
 	}
+}
+
+// * 登录过期处理
+function handleTokenExpired() {
+	store.dispatch(setToken(""));
+	localStorage.removeItem("refreshToken");
+	// message.error("登录已过期，请重新登录");
+	localStorage.setItem("redirectUrl", window.location.hash.slice(1));
+	window.location.hash = "/login";
 }
 
 export default new RequestHttp(config);

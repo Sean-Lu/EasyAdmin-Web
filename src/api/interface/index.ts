@@ -42,6 +42,8 @@ export namespace Login {
 	/**登录响应参数 */
 	export interface LoginRes {
 		accessToken: string;
+		refreshToken: string;
+		expiresIn: number;
 	}
 	export interface AuthButtonsRes {
 		[propName: string]: any;

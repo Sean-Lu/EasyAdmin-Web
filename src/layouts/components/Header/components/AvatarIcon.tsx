@@ -8,7 +8,7 @@ import { setToken } from "@/redux/modules/global/action";
 import PasswordModal from "./PasswordModal";
 import InfoModal from "./InfoModal";
 import avatar from "@/assets/images/avatar.png";
-import { UserInfo } from "@/api/modules/login";
+import { UserInfo, logoutApi } from "@/api/modules/login";
 
 const AvatarIcon = (props: any) => {
 	const { userInfo, setToken } = props;
@@ -28,8 +28,14 @@ const AvatarIcon = (props: any) => {
 			content: "是否确认退出登录？",
 			okText: "确认",
 			cancelText: "取消",
-			onOk: () => {
+			onOk: async () => {
+				try {
+					await logoutApi();
+				} catch {
+					// 即使服务端登出失败，也清除本地状态
+				}
 				setToken("");
+				localStorage.removeItem("refreshToken");
 				message.success("退出登录成功！");
 				navigate("/login");
 			}

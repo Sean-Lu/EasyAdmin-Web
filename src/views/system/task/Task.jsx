@@ -81,35 +81,29 @@ export default class TaskList extends React.Component {
 
 	handleAddValues = values => {
 		return {
-			taskName: values.taskName,
-			taskType: values.taskType,
-			taskReward: values.taskReward,
+			...values,
 			taskStartTime:
-				Array.isArray(values.taskTimeRange) && values.taskTimeRange.length > 0
+				Array.isArray(values.taskTimeRange) && values.taskTimeRange.length > 0 && values.taskTimeRange[0]
 					? values.taskTimeRange[0].format("YYYY-MM-DD HH:mm:ss")
 					: null,
 			taskEndTime:
-				Array.isArray(values.taskTimeRange) && values.taskTimeRange.length > 1
+				Array.isArray(values.taskTimeRange) && values.taskTimeRange.length > 1 && values.taskTimeRange[1]
 					? values.taskTimeRange[1].format("YYYY-MM-DD HH:mm:ss")
-					: null,
-			taskRule: values.taskRule
+					: null
 		};
 	};
 
 	handleUpdateValues = values => {
 		return {
-			taskName: values.taskName,
-			taskType: values.taskType,
-			taskReward: values.taskReward,
+			...values,
 			taskStartTime:
-				Array.isArray(values.taskTimeRange) && values.taskTimeRange.length > 0
+				Array.isArray(values.taskTimeRange) && values.taskTimeRange.length > 0 && values.taskTimeRange[0]
 					? values.taskTimeRange[0].format("YYYY-MM-DD HH:mm:ss")
 					: null,
 			taskEndTime:
-				Array.isArray(values.taskTimeRange) && values.taskTimeRange.length > 1
+				Array.isArray(values.taskTimeRange) && values.taskTimeRange.length > 1 && values.taskTimeRange[1]
 					? values.taskTimeRange[1].format("YYYY-MM-DD HH:mm:ss")
-					: null,
-			taskRule: values.taskRule
+					: null
 		};
 	};
 

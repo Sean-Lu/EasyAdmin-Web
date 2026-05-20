@@ -108,6 +108,15 @@ const systemRouter = [
 					title: "定时任务",
 					key: "system-job"
 				}
+			},
+			{
+				path: "/system/update",
+				element: lazyLoad(React.lazy(() => import("@/views/system/update/index"))),
+				meta: {
+					requiresAuth: true,
+					title: "更新管理",
+					key: "system-update"
+				}
 			}
 		]
 	}

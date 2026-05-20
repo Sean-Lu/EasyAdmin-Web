@@ -607,7 +607,7 @@ class StandardTable extends React.Component {
 							<Form ref={searchFormRef} onFinish={this.OnSearchFormFinish}>
 								{renderSearchForm(this.handleFormReset)}
 							</Form>
-							{(apiAdd !== undefined || apiDelete !== undefined) && (
+							{(apiAdd !== undefined || apiDelete !== undefined || renderCustomTableButton !== undefined) && (
 								<Space style={{ marginBottom: 8 }}>
 									{apiAdd !== undefined && (
 										<Button onClick={this.showAddModal} type="primary">

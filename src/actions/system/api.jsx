@@ -125,5 +125,27 @@ export const api = {
 		delete: "/operateLog/delete",
 		page: "/operateLog/page",
 		detail: "/operateLog/detail"
+	},
+	// 更新管理
+	update: {
+		register: "/update/register",
+		delete: "/update/delete",
+		update: "/update/update",
+		updateState: "/update/updateState",
+		page: "/update/page",
+		detail: "/update/detail",
+		downloadFile: "/update/downloadFile",
+		downloadZip: "/update/downloadZip",
+		latestVersion: "/update/latestVersion"
+	},
+	// 应用标识管理
+	appCode: {
+		add: "/appCode/add",
+		delete: "/appCode/delete",
+		update: "/appCode/update",
+		updateState: "/appCode/updateState",
+		page: "/appCode/page",
+		detail: "/appCode/detail",
+		activeList: "/appCode/activeList"
 	}
 };

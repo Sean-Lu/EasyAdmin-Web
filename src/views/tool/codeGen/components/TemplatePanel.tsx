@@ -196,10 +196,13 @@ const TemplatePanel: React.FC<TemplatePanelProps> = ({
 						<Form.Item label="文件路径" name="filePath" rules={[{ required: true }]}>
 							<Input placeholder="如：controller/{{ClassName}}Controller.java" />
 						</Form.Item>
+						<Form.Item label="排序号" name="sortOrder" initialValue={0}>
+							<Input type="number" placeholder="请输入排序号" />
+						</Form.Item>
+						<Form.Item label="是否默认" name="isDefault" valuePropName="checked">
+							<Checkbox>设为默认模板</Checkbox>
+						</Form.Item>
 					</div>
-					<Form.Item label="是否默认" name="isDefault" valuePropName="checked">
-						<Checkbox>设为默认模板</Checkbox>
-					</Form.Item>
 					<Form.Item label="模板内容" name="content" rules={[{ required: true }]}>
 						<TextArea rows={15} placeholder="请输入模板内容，支持 Handlebars 语法" />
 					</Form.Item>

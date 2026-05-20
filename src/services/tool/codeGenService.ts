@@ -26,6 +26,7 @@ export interface CodeGenTemplateDto extends DtoBase {
 	description: string; //模板描述
 	filePath: string; //文件路径模板（包含目录和文件名）
 	isDefault: boolean; //是否默认模板
+	sortOrder: number; //排序号
 	state: number; //状态
 }
 
@@ -85,6 +86,48 @@ export interface CodeGenReqDto {
 	moduleName: string; //模块名
 	author: string; //作者
 	tablePrefix: string; //表前缀
+}
+
+/**代码生成列配置DTO（配置模式 / 代码解析模式共用） */
+export interface CodeGenColumnConfigDto {
+	propertyName: string; //属性名
+	fieldName?: string; //字段名
+	columnName?: string; //列名
+	columnComment?: string; //列注释
+	dbType?: string; //数据库类型
+	cSharpType?: string; //C#类型
+	javaType?: string; //Java类型
+	isNullable: boolean; //是否可空
+	isKey: boolean; //是否主键
+	isIdentity: boolean; //是否自增
+}
+
+/**代码生成配置请求DTO（配置模式 / 代码解析模式共用） */
+export interface CodeGenConfigReqDto {
+	className: string; //类名（必填）
+	instanceName?: string; //实例名
+	tableName?: string; //表名
+	tableComment?: string; //表注释
+	packageName?: string; //包名
+	moduleName?: string; //模块名
+	author?: string; //作者
+	templateIds: number[]; //模板ID列表
+	columns?: CodeGenColumnConfigDto[]; //列配置
+}
+
+/**Entity源码解析请求DTO */
+export interface CodeFirstParseReqDto {
+	sourceCode: string; //Entity源码
+	language: string; //语言: csharp / java
+}
+
+/**Entity源码解析结果DTO */
+export interface CodeFirstParseResultDto {
+	className: string; //类名
+	tableName: string; //表名
+	tableComment: string; //表注释
+	namespace: string; //命名空间
+	columns: CodeGenColumnConfigDto[]; //列配置
 }
 
 /**获取代码生成模板列表 */
@@ -168,9 +211,21 @@ export const getDbTables = async (id: number): Promise<DbTableInfoDto[]> => {
 	return res.data;
 };
 
-/**生成代码 */
+/**生成代码（数据库模式） */
 export const generateCode = async (data: CodeGenReqDto): Promise<CodeGenResultDto> => {
 	const res = await http.post<CodeGenResultDto>(`${PORT1}/codeGen/GenerateCode`, data);
+	return res.data;
+};
+
+/**生成代码（配置模式 / 代码解析模式） */
+export const generateCodeByConfig = async (data: CodeGenConfigReqDto): Promise<CodeGenResultDto> => {
+	const res = await http.post<CodeGenResultDto>(`${PORT1}/codeGen/GenerateCodeByConfig`, data);
+	return res.data;
+};
+
+/**解析Entity源码 */
+export const parseEntityCode = async (data: CodeFirstParseReqDto): Promise<CodeFirstParseResultDto> => {
+	const res = await http.post<CodeFirstParseResultDto>(`${PORT1}/codeGen/ParseEntityCode`, data);
 	return res.data;
 };
 

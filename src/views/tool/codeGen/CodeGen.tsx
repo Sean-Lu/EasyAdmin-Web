@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Card, Row, Col, message } from "antd";
+import { Card, Row, Col, message, Segmented } from "antd";
 import {
 	getTemplates,
 	getDbConfigs,
@@ -16,15 +16,19 @@ import DbConfigPanel from "./components/DbConfigPanel";
 import DbTablePanel from "./components/DbTablePanel";
 import CategoryPanel from "./components/CategoryPanel";
 import TemplatePanel from "./components/TemplatePanel";
-import GenConfigPanel from "./components/GenConfigPanel";
+import GenConfigPanel, { CodeGenMode } from "./components/GenConfigPanel";
 import GenResultPanel from "./components/GenResultPanel";
 import HelpPanel from "./components/HelpPanel";
+import EntitySourcePanel from "./components/EntitySourcePanel";
+import ConfigModePanel from "./components/ConfigModePanel";
 
 /**
  * 代码生成器组件
  * 提供数据库配置管理、代码模板管理、代码生成和预览功能
  */
 const CodeGen: React.FC = () => {
+	const [mode, setMode] = useState<CodeGenMode>("dbFirst");
+
 	/** 数据库配置列表 */
 	const [dbConfigs, setDbConfigs] = useState<DbConnectionConfigDto[]>([]);
 	/** 当前选中的数据库配置ID */
@@ -69,6 +73,12 @@ const CodeGen: React.FC = () => {
 		loadDbConfigs();
 		loadCategories();
 	}, []);
+
+	useEffect(() => {
+		setGeneratedResult(null);
+		setSelectedTables([]);
+		setSelectedTemplates([]);
+	}, [mode]);
 
 	/**
 	 * 加载数据库配置列表
@@ -233,33 +243,59 @@ const CodeGen: React.FC = () => {
 		}
 	};
 
+	const handleCodeFirstGenerated = (result: CodeGenResultDto) => {
+		setGeneratedResult(result);
+	};
+
+	const getModeLabel = () => {
+		switch (mode) {
+			case "dbFirst":
+				return "数据库模式";
+			case "codeFirst":
+				return "代码解析模式";
+			case "config":
+				return "配置模式";
+		}
+	};
+
 	return (
 		<div className="code-gen-page" style={{ padding: 16 }}>
-			<Card
-				title="代码生成器"
-				extra={<span style={{ fontSize: 12, color: "#666" }}>配置数据库连接，选择数据表和模板，一键生成代码</span>}
-			>
+			<Card title="代码生成器" extra={<span style={{ fontSize: 12, color: "#666" }}>三种生成模式，灵活适配不同场景</span>}>
+				<div style={{ marginBottom: 16 }}>
+					<Segmented
+						value={mode}
+						onChange={val => setMode(val as CodeGenMode)}
+						options={[
+							{ label: "数据库模式", value: "dbFirst" },
+							{ label: "代码解析模式", value: "codeFirst" },
+							{ label: "配置模式", value: "config" }
+						]}
+					/>
+				</div>
+
 				<Row gutter={16}>
-					<Col span={10}>
-						<DbConfigPanel
-							dbConfigs={dbConfigs}
-							selectedDbConfig={selectedDbConfig}
-							onSelectDbConfig={handleSelectDbConfig}
-							onRefresh={loadDbConfigs}
-						/>
+					{mode === "dbFirst" && (
+						<Col span={10}>
+							<DbConfigPanel
+								dbConfigs={dbConfigs}
+								selectedDbConfig={selectedDbConfig}
+								onSelectDbConfig={handleSelectDbConfig}
+								onRefresh={loadDbConfigs}
+							/>
 
-						<DbTablePanel
-							dbTables={dbTables}
-							selectedTables={selectedTables}
-							selectedDbConfig={selectedDbConfig}
-							tableSearchText={tableSearchText}
-							onSearchChange={setTableSearchText}
-							onSelectAll={handleSelectAllTables}
-							onSelectTable={handleSelectTable}
-						/>
-					</Col>
+							<DbTablePanel
+								dbTables={dbTables}
+								selectedTables={selectedTables}
+								selectedDbConfig={selectedDbConfig}
+								tableSearchText={tableSearchText}
+								onSearchChange={setTableSearchText}
+								onSelectAll={handleSelectAllTables}
+								onSelectTable={handleSelectTable}
+							/>
+						</Col>
+					)}
 
-					<Col span={14}>
+					<Col span={mode === "dbFirst" ? 14 : 24}>
 						<CategoryPanel
 							categories={categories}
 							selectedCategory={selectedCategory}
@@ -277,7 +313,18 @@ const CodeGen: React.FC = () => {
 							onRefresh={() => loadTemplates(selectedCategory ?? undefined)}
 						/>
 
+						{mode === "codeFirst" && (
+							<EntitySourcePanel
+								templateIds={selectedTemplates}
+								genParams={genParams}
+								onCodeGenerated={handleCodeFirstGenerated}
+							/>
+						)}
+
+						{mode === "config" && <ConfigModePanel templateIds={selectedTemplates} onCodeGenerated={handleCodeFirstGenerated} />}
+
 						<GenConfigPanel
+							mode={mode}
 							genParams={genParams}
 							onParamsChange={params => setGenParams(prev => ({ ...prev, ...params }))}
 							onGenerate={handleGenerateCode}

@@ -2,7 +2,10 @@ import React from "react";
 import { Card, Button, Form, Input, Row, Col } from "antd";
 import { PlayCircleOutlined, SettingOutlined } from "@ant-design/icons";
 
+export type CodeGenMode = "dbFirst" | "codeFirst" | "config";
+
 interface GenConfigPanelProps {
+	mode: CodeGenMode;
 	genParams: {
 		packageName: string;
 		moduleName: string;
@@ -16,7 +19,14 @@ interface GenConfigPanelProps {
 /**
  * 生成配置面板
  */
-const GenConfigPanel: React.FC<GenConfigPanelProps> = ({ genParams, onParamsChange, onGenerate }) => {
+const GenConfigPanel: React.FC<GenConfigPanelProps> = ({ mode, genParams, onParamsChange, onGenerate }) => {
+	const isDbFirst = mode === "dbFirst";
+	const isConfig = mode === "config";
+
+	if (isConfig) {
+		return null;
+	}
+
 	return (
 		<Card
 			title={
@@ -60,18 +70,26 @@ const GenConfigPanel: React.FC<GenConfigPanelProps> = ({ genParams, onParamsChan
 						</Form.Item>
 					</Col>
 					<Col span={12}>
-						<Form.Item label="表前缀">
-							<Input
-								value={genParams.tablePrefix}
-								onChange={e => onParamsChange({ tablePrefix: e.target.value })}
-								placeholder="t_（选填，用于移除表名前缀）"
-							/>
-						</Form.Item>
+						{isDbFirst ? (
+							<Form.Item label="表前缀">
+								<Input
+									value={genParams.tablePrefix}
+									onChange={e => onParamsChange({ tablePrefix: e.target.value })}
+									placeholder="t_（选填，用于移除表名前缀）"
+								/>
+							</Form.Item>
+						) : (
+							<Form.Item label="提示">
+								<span style={{ color: "#999", fontSize: 12 }}>代码解析/配置模式下无需设置表前缀</span>
+							</Form.Item>
+						)}
 					</Col>
 				</Row>
-				<Button type="primary" block size="large" icon={<PlayCircleOutlined />} onClick={onGenerate}>
-					生成代码
-				</Button>
+				{isDbFirst && (
+					<Button type="primary" block size="large" icon={<PlayCircleOutlined />} onClick={onGenerate}>
+						生成代码
+					</Button>
+				)}
 			</Form>
 		</Card>
 	);

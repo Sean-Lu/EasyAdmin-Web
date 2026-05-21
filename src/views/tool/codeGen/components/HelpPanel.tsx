@@ -6,7 +6,9 @@ import {
 	TableOutlined,
 	FolderOutlined,
 	CodeOutlined,
-	SettingOutlined
+	SettingOutlined,
+	FileTextOutlined,
+	PlayCircleOutlined
 } from "@ant-design/icons";
 
 const { Panel } = Collapse;
@@ -253,49 +255,140 @@ public class {{ClassName}} {
 						}
 					>
 						<div style={{ padding: 8 }}>
-							<div style={{ marginBottom: 16 }}>
-								<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-									<DatabaseOutlined /> 第一步：配置数据库
-								</h4>
-								<p style={{ color: "#666", paddingLeft: 28 }}>
-									点击{"'"}新增配置{"'"}按钮，填写数据库连接信息，点击{"'"}测试连接{"'"}验证配置是否正确。
-								</p>
+							<div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: "1px solid #eee" }}>
+								<h3 style={{ marginBottom: 12, color: "#1890ff" }}>数据库模式</h3>
+								<div style={{ marginBottom: 12 }}>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<DatabaseOutlined /> 第一步：配置数据库
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										点击{"'"}新增配置{"'"}按钮，填写数据库连接信息，点击{"'"}测试连接{"'"}验证配置是否正确。
+									</p>
+								</div>
+
+								<div style={{ marginBottom: 12 }}>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<TableOutlined /> 第二步：选择数据表
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										选择数据库配置后，系统会自动加载该数据库中的所有数据表。勾选需要生成代码的数据表。
+									</p>
+								</div>
+
+								<div style={{ marginBottom: 12 }}>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<FolderOutlined /> 第三步：选择模板分类
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										选择代码模板分类（如 Java项目模板、C#项目模板），不同分类包含不同的代码模板。
+									</p>
+								</div>
+
+								<div style={{ marginBottom: 12 }}>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<CodeOutlined /> 第四步：选择代码模板
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										勾选需要的代码模板（如 Entity、Controller、Service 等），支持自定义模板。
+									</p>
+								</div>
+
+								<div>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<SettingOutlined /> 第五步：配置生成参数
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										填写包名、模块名、作者名等信息，点击{"'"}生成代码{"'"}按钮即可生成代码。
+									</p>
+								</div>
 							</div>
 
-							<div style={{ marginBottom: 16 }}>
-								<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-									<TableOutlined /> 第二步：选择数据表
-								</h4>
-								<p style={{ color: "#666", paddingLeft: 28 }}>
-									选择数据库配置后，系统会自动加载该数据库中的所有数据表。勾选需要生成代码的数据表。
-								</p>
+							<div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: "1px solid #eee" }}>
+								<h3 style={{ marginBottom: 12, color: "#1890ff" }}>代码解析模式</h3>
+								<div style={{ marginBottom: 12 }}>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<CodeOutlined /> 第一步：选择语言
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										选择源码语言（C# 或 Java），支持解析对应的 Entity 类。
+									</p>
+								</div>
+
+								<div style={{ marginBottom: 12 }}>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<FileTextOutlined /> 第二步：输入源码
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										粘贴 Entity 类源码到文本框中，或点击文件选择按钮上传 .cs 或 .java 文件。
+									</p>
+								</div>
+
+								<div style={{ marginBottom: 12 }}>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<PlayCircleOutlined /> 第三步：解析预览
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										点击{"'"}解析预览{"'"}按钮，系统会自动解析源码中的类名、属性、类型等信息，并展示解析结果。
+									</p>
+								</div>
+
+								<div style={{ marginBottom: 12 }}>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<FolderOutlined /> 第四步：选择模板
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										选择代码模板分类和具体的代码模板（如 Entity、Controller、Service 等）。
+									</p>
+								</div>
+
+								<div>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<SettingOutlined /> 第五步：配置参数并生成
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										填写包名、模块名、作者名等信息，点击{"'"}生成代码{"'"}按钮即可生成代码。
+									</p>
+								</div>
 							</div>
 
-							<div style={{ marginBottom: 16 }}>
-								<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-									<FolderOutlined /> 第三步：选择模板分类
-								</h4>
-								<p style={{ color: "#666", paddingLeft: 28 }}>
-									选择代码模板分类（如 Java项目模板、C#项目模板），不同分类包含不同的代码模板。
-								</p>
-							</div>
+							<div>
+								<h3 style={{ marginBottom: 12, color: "#1890ff" }}>配置模式</h3>
+								<div style={{ marginBottom: 12 }}>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<SettingOutlined /> 第一步：配置基础变量
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										填写类名(必填)、实例名(自动推导或手动设置)、表名、表注释、包名、模块名、作者名等信息。
+									</p>
+								</div>
 
-							<div style={{ marginBottom: 16 }}>
-								<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-									<CodeOutlined /> 第四步：选择代码模板
-								</h4>
-								<p style={{ color: "#666", paddingLeft: 28 }}>
-									勾选需要的代码模板（如 Entity、Controller、Service 等），支持自定义模板。
-								</p>
-							</div>
+								<div style={{ marginBottom: 12 }}>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<TableOutlined /> 第二步：配置列信息（可选）
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										点击{"'"}添加列{"'"}
+										按钮，配置属性名、字段名、C#类型、Java类型、描述、是否主键等信息。列配置为空时，适用于只使用基础模板变量的模板。
+									</p>
+								</div>
 
-							<div style={{ marginBottom: 16 }}>
-								<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-									<SettingOutlined /> 第五步：配置生成参数
-								</h4>
-								<p style={{ color: "#666", paddingLeft: 28 }}>
-									填写包名、模块名、作者名等信息，点击{"'"}生成代码{"'"}按钮即可生成代码。
-								</p>
+								<div style={{ marginBottom: 12 }}>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<FolderOutlined /> 第三步：选择模板
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										选择代码模板分类和具体的代码模板（如 Entity、Controller、Service 等）。
+									</p>
+								</div>
+
+								<div>
+									<h4 style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+										<PlayCircleOutlined /> 第四步：生成代码
+									</h4>
+									<p style={{ color: "#666", paddingLeft: 28, fontSize: 13 }}>
+										点击{"'"}生成代码{"'"}按钮，系统将根据配置的模板变量生成代码。
+									</p>
+								</div>
 							</div>
 						</div>
 					</Tabs.TabPane>

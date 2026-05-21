@@ -151,41 +151,52 @@ export default class AppCodeList extends React.Component {
 									cursor: "pointer",
 									padding: "8px 12px",
 									background: selectedAppCode === item.code ? "#e6f7ff" : "transparent",
-									borderLeft: selectedAppCode === item.code ? "3px solid #1890ff" : "3px solid transparent"
+									borderLeft: selectedAppCode === item.code ? "3px solid #1890ff" : "3px solid transparent",
+									boxSizing: "border-box",
+									width: "100%"
 								}}
 								onClick={() => this.handleSelect(item)}
-								actions={[
-									<EditOutlined
-										key="edit"
-										style={{ color: "#1890ff" }}
-										onClick={e => {
-											e.stopPropagation();
-											this.showEditModal(item);
-										}}
-									/>,
-									<Popconfirm
-										key="delete"
-										title="确认删除？"
-										onConfirm={e => {
-											e?.stopPropagation();
-											this.handleDelete(item);
-										}}
-										onCancel={e => e?.stopPropagation()}
-									>
-										<DeleteOutlined style={{ color: "#ff4d4f" }} onClick={e => e.stopPropagation()} />
-									</Popconfirm>
-								]}
 							>
-								<List.Item.Meta
-									title={
-										<span>
-											{item.code}
-											<Tag color="blue" style={{ marginLeft: 8, fontSize: 11 }}>
-												{item.name}
-											</Tag>
-										</span>
-									}
-								/>
+								<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+									<div style={{ display: "flex", alignItems: "center", flexWrap: "nowrap", flex: 1, minWidth: 0 }}>
+										<span style={{ flexShrink: 0 }}>{item.code}</span>
+										<Tag
+											color="blue"
+											style={{
+												marginLeft: 6,
+												fontSize: 11,
+												maxWidth: "150px",
+												overflow: "hidden",
+												textOverflow: "ellipsis",
+												whiteSpace: "nowrap",
+												flexShrink: 1
+											}}
+										>
+											{item.name}
+										</Tag>
+									</div>
+									<div style={{ display: "flex", alignItems: "center", gap: 12, marginLeft: 12, flexShrink: 0 }}>
+										<EditOutlined
+											key="edit"
+											style={{ color: "#1890ff", cursor: "pointer" }}
+											onClick={e => {
+												e.stopPropagation();
+												this.showEditModal(item);
+											}}
+										/>
+										<Popconfirm
+											key="delete"
+											title="确认删除？"
+											onConfirm={e => {
+												e?.stopPropagation();
+												this.handleDelete(item);
+											}}
+											onCancel={e => e?.stopPropagation()}
+										>
+											<DeleteOutlined style={{ color: "#ff4d4f", cursor: "pointer" }} onClick={e => e.stopPropagation()} />
+										</Popconfirm>
+									</div>
+								</div>
 							</List.Item>
 						)}
 					/>

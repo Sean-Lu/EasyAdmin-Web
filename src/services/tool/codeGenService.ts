@@ -40,7 +40,6 @@ export interface DbConnectionConfigDto extends DtoBase {
 	username: string; //数据库用户名
 	password: string; //数据库密码
 	connectionString: string; //数据库连接字符串
-	isDefault: boolean; //是否默认连接配置
 	state: number; //状态
 }
 

@@ -192,9 +192,6 @@ const DbConfigPanel: React.FC<DbConfigPanelProps> = ({ dbConfigs, selectedDbConf
 					<Form.Item label="密码" name="password">
 						<Input.Password placeholder={editingConfig?.password ? "已设置密码，留空则不修改" : "请输入密码"} />
 					</Form.Item>
-					<Form.Item label="是否默认" name="isDefault" valuePropName="checked">
-						<Checkbox>设为默认配置</Checkbox>
-					</Form.Item>
 				</Form>
 			</Modal>
 		</>

@@ -11,7 +11,7 @@ export const checkStatus = (status: number): void => {
 			message.error("请求失败，请您稍后重试！");
 			break;
 		case 401:
-			message.error("登录已过期，请您重新登录！");
+			// message.error("登录已过期，请您重新登录！");
 			break;
 		case 403:
 			message.error("当前账号无权限访问！");

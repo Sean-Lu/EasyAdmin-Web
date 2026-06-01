@@ -69,12 +69,8 @@ class RequestHttp {
 
 				// * 登录失效（code == 401）
 				if (data.code == ResultEnum.OVERDUE) {
-					store.dispatch(setToken(""));
-					localStorage.removeItem("refreshToken");
-					message.error(data.msg);
-					localStorage.setItem("redirectUrl", window.location.hash.slice(1)); // 保存当前页面地址，用于登录成功后跳转
-					window.location.hash = "/login";
-					return Promise.reject(data);
+					handleTokenExpired();
+					return new Promise(() => {});
 				}
 
 				// * 全局错误信息拦截（防止下载文件的时候返回数据流，没有code，直接报错）
@@ -141,7 +137,7 @@ class RequestHttp {
 									failedRequests.forEach(callback => callback.reject(refreshError as AxiosError));
 									failedRequests = [];
 									handleTokenExpired();
-									return Promise.reject(error);
+									return new Promise(() => {});
 								} finally {
 									isRefreshing = false;
 								}
@@ -158,13 +154,15 @@ class RequestHttp {
 								})
 								.catch(() => {
 									handleTokenExpired();
-									return Promise.reject(error);
+									return new Promise(() => {});
 								});
 						}
 					}
 
 					if (response.status === 401) {
 						handleTokenExpired();
+						// 返回永远pending的Promise，避免上层.then()和.catch()执行
+						return new Promise(() => {});
 					}
 				}
 
@@ -226,9 +224,9 @@ class RequestHttp {
 
 // * 登录过期处理
 function handleTokenExpired() {
+	message.error("登录已过期，请您重新登录！");
 	store.dispatch(setToken(""));
 	localStorage.removeItem("refreshToken");
-	// message.error("登录已过期，请重新登录");
 	localStorage.setItem("redirectUrl", window.location.hash.slice(1));
 	window.location.hash = "/login";
 }

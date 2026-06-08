@@ -51,6 +51,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			proxy: {
 				"/proxy": {
 					// target: "http://sean.easyadmin-api.com", // 正式环境
+					// target: "http://192.168.88.241:9090", // 测试环境
 					target: "http://127.0.0.1:9001", // 本地环境
 					changeOrigin: true,
 					rewrite: path => path.replace(/^\/proxy/, ""),

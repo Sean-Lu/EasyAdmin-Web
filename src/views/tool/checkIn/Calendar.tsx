@@ -25,8 +25,8 @@ const Calendar = () => {
 			if (parentContainer) {
 				// const width = document.documentElement.getBoundingClientRect().width; // 获取视口宽度（浏览器窗口宽度）
 				const width = parentContainer.getBoundingClientRect().width; // 获取指定元素的宽度
-				const rem = (width / 750) * 100;
-				document.documentElement.style.fontSize = rem + "px"; // 这行代码会直接修改 <html> 元素的 font-size 样式，从而影响整个页面的根字体大小。由于 CSS 中的 rem 单位是相对于根元素（即 <html> 元素）的字体大小的，因此这会导致页面中所有使用 rem 单位的元素的大小发生变化。
+				const rem = Math.max((width / 750) * 100, 60);
+				document.documentElement.style.fontSize = rem + "px"; // 签到日历使用 rem 布局，主题切换时可能读到临时小宽度，这里避免根字号被错误缩小。
 				// parentContainer.style.fontSize = rem + "px"; // 只修改 #calendar-container 的 font-size。CSS 调整：如果使用了 rem 单位，需要改为 em 或 px 单位。
 			}
 		};
@@ -161,7 +161,7 @@ const Calendar = () => {
 		// Add previous month's days
 		for (let i = offset - 1; i >= 0; i--) {
 			daysArray.push(
-				<span key={`prev-${i}`} className="calendar-day" style={{ color: "#c4c4c4" }}>
+				<span key={`prev-${i}`} className="calendar-day calendar-day-adjacent">
 					{lastDayOfPrevMonth - i}
 				</span>
 			);
@@ -182,7 +182,7 @@ const Calendar = () => {
 		const totalDays = daysArray.length;
 		for (let i = 1; i <= 42 - totalDays; i++) {
 			daysArray.push(
-				<span key={`next-${i}`} className="calendar-day" style={{ color: "#c4c4c4" }}>
+				<span key={`next-${i}`} className="calendar-day calendar-day-adjacent">
 					{i}
 				</span>
 			);

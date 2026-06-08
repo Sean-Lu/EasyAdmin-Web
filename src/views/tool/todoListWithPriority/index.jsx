@@ -3,6 +3,7 @@ import { Card, List, Typography, message, Modal, Button, Row, Col } from "antd";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { connect } from "react-redux";
 
 import TodoHeader from "./Heaher";
 //import CategorySelector from "./Heaher/CategorySelector";
@@ -18,7 +19,7 @@ const { Title } = Typography;
 import "./index.css";
 
 // 待办事项列表组件（带优先级）
-export default class TodoListWithPriority extends Component {
+class TodoListWithPriority extends Component {
 	state = {
 		todoList: [],
 		categories: [],
@@ -309,12 +310,13 @@ export default class TodoListWithPriority extends Component {
 
 	render() {
 		const { todoList, deleteModalVisible, clearModalVisible, pendingExpanded, completedExpanded, categories } = this.state;
+		const { themeConfig } = this.props.global;
 		const pendingTodos = todoList.filter(c => !c.done);
 		const completedTodos = todoList.filter(c => c.done);
 
 		return (
 			<DndProvider backend={HTML5Backend}>
-				<div className="todo-container" style={{ padding: "5px", margin: "0" }}>
+				<div className={`todo-container${themeConfig.isDark ? " todo-dark" : ""}`} style={{ padding: "5px", margin: "0" }}>
 					<Row gutter={[16, 16]} className="todo-row">
 						<Col xs={24} md={8}>
 							<CategoryManager
@@ -489,3 +491,6 @@ export default class TodoListWithPriority extends Component {
 		);
 	}
 }
+
+const mapStateToProps = state => state;
+export default connect(mapStateToProps)(TodoListWithPriority);

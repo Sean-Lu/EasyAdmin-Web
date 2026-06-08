@@ -2,6 +2,8 @@ import { Component } from "react";
 import { Button, Checkbox } from "antd";
 import PropTypes from "prop-types";
 
+import "./index.css";
+
 // 待办事项底部组件
 export default class TodoFooter extends Component {
 	// 使用 PropTypes 进行类型检查
@@ -34,8 +36,6 @@ export default class TodoFooter extends Component {
 					padding: "0 16px",
 					marginTop: "5px",
 					lineHeight: "40px",
-					borderTop: "1px solid #e8e8e8",
-					backgroundColor: "#ffffff",
 					display: "flex",
 					justifyContent: "space-between",
 					alignItems: "center"

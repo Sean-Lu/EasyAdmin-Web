@@ -1,16 +1,19 @@
 import { Component } from "react";
 import { Card } from "antd";
+import { connect } from "react-redux";
 
 import Calendar from "./Calendar";
 
 import "./index.css";
 
 // 签到组件
-export default class CheckIn extends Component {
+class CheckIn extends Component<any> {
 	render() {
+		const { themeConfig } = this.props.global;
+
 		return (
 			<>
-				<div className="checkIn-container">
+				<div className={`checkIn-container${themeConfig.isDark ? " checkIn-dark" : ""}`}>
 					<div className="checkIn-content">
 						<Card
 							style={{
@@ -26,3 +29,6 @@ export default class CheckIn extends Component {
 		);
 	}
 }
+
+const mapStateToProps = (state: any) => state;
+export default connect(mapStateToProps)(CheckIn);

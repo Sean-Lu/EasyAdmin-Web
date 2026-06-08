@@ -10,9 +10,9 @@ const useTheme = (themeConfig: ThemeConfigProp) => {
 	const initTheme = () => {
 		// 灰色和弱色切换
 		const body = document.documentElement as HTMLElement;
-		if (!weakOrGray) body.setAttribute("style", "");
-		if (weakOrGray === "weak") body.setAttribute("style", "filter: invert(80%)");
-		if (weakOrGray === "gray") body.setAttribute("style", "filter: grayscale(1)");
+		body.style.filter = "";
+		if (weakOrGray === "weak") body.style.filter = "invert(80%)";
+		if (weakOrGray === "gray") body.style.filter = "grayscale(1)";
 
 		// 切换暗黑模式
 		let head = document.getElementsByTagName("head")[0];

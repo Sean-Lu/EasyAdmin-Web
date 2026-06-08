@@ -136,3 +136,32 @@
 	border-radius: 100%;
 	border: 0.5px solid transparent;
 }
+
+.calendar-day-adjacent {
+	color: #c4c4c4;
+}
+
+.checkIn-dark .sign-date-wrap {
+	color: #d9d9d9;
+	background: #1f1f1f;
+	border-color: #414243;
+}
+
+.checkIn-dark .sign-date-top,
+.checkIn-dark .sign-date-week,
+.checkIn-dark .sign-date-days {
+	color: #d9d9d9;
+}
+
+.checkIn-dark .calendar-day {
+	color: #d9d9d9;
+}
+
+.checkIn-dark .calendar-day-adjacent {
+	color: #686868;
+}
+
+.checkIn-dark .calendar-day-checkin {
+	color: #fff;
+	background-color: #fbaf74;
+}

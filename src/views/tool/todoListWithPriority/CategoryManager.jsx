@@ -33,6 +33,9 @@ const DraggableCategoryItem = ({ category, index, moveCategory, onEdit, onDelete
 	return (
 		<List.Item
 			ref={ref}
+			className={`todo-category-item${isSelected === category.id ? " todo-category-item-selected" : ""}${
+				isOver ? " todo-category-item-over" : ""
+			}`}
 			actions={[
 				<Button key="edit" size="small" onClick={() => onEdit(category)}>
 					编辑
@@ -43,8 +46,7 @@ const DraggableCategoryItem = ({ category, index, moveCategory, onEdit, onDelete
 			]}
 			style={{
 				cursor: "pointer",
-				opacity: isDragging ? 0.5 : 1,
-				backgroundColor: isOver ? "#f0f0f0" : isSelected === category.id ? "#e6f7ff" : ""
+				opacity: isDragging ? 0.5 : 1
 			}}
 			onClick={() => onSelect(category.id)}
 		>
@@ -54,13 +56,12 @@ const DraggableCategoryItem = ({ category, index, moveCategory, onEdit, onDelete
 				<Badge
 					count={category.pendingCount}
 					showZero={true}
+					className={category.pendingCount > 0 ? "todo-category-count-active" : "todo-category-count-empty"}
 					style={{
-						backgroundColor: category.pendingCount > 0 ? "#ff4d4f" : "#f5f5f5",
-						color: category.pendingCount > 0 ? "#fff" : "#999",
 						marginLeft: 4
 					}}
 				/>
-				<span style={{ marginLeft: 8, fontSize: 12, color: "#999" }}>- 排序: {category.sortOrder}</span>
+				<span className="todo-category-sort">- 排序: {category.sortOrder}</span>
 			</div>
 		</List.Item>
 	);

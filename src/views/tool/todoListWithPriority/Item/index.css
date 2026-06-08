@@ -19,6 +19,22 @@
 	word-break: break-word;
 }
 
+.todo-item-text-priority-1 {
+	color: #000;
+}
+
+.todo-item-text-priority-2 {
+	color: #fa8c16;
+}
+
+.todo-item-text-priority-3 {
+	color: #ff4d4f;
+}
+
+.todo-item-text-done {
+	color: #999;
+}
+
 .todo-item-actions {
 	display: flex;
 	align-items: center;

@@ -109,6 +109,7 @@ class TodoItem extends Component {
 		// 根据优先级设置样式
 		let priorityStyle = {};
 		let priorityColor = "#999";
+		const textClassName = `todo-item-text ${done ? "todo-item-text-done" : `todo-item-text-priority-${priority}`}`;
 
 		switch (priority) {
 			case 3:
@@ -183,12 +184,11 @@ class TodoItem extends Component {
 					<div className="todo-item-content">
 						<Checkbox checked={done} onChange={this.handleCheck} />
 						<span
-							className="todo-item-text"
+							className={textClassName}
 							onClick={this.handleEdit}
 							style={{
 								cursor: "pointer",
 								textDecoration: done ? "line-through" : "none",
-								color: done ? "#999" : priority === 3 ? "#ff4d4f" : priority === 2 ? "#fa8c16" : "#000",
 								fontWeight: priority >= 2 ? "bold" : "normal"
 							}}
 						>

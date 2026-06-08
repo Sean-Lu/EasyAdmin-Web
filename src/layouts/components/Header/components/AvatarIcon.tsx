@@ -8,10 +8,10 @@ import { setToken } from "@/redux/modules/global/action";
 import PasswordModal from "./PasswordModal";
 import InfoModal from "./InfoModal";
 import avatar from "@/assets/images/avatar.png";
-import { UserInfo, logoutApi } from "@/api/modules/login";
+import { logoutApi } from "@/api/modules/login";
 
 const AvatarIcon = (props: any) => {
-	const { userInfo, setToken } = props;
+	const { setToken } = props;
 	const navigate = useNavigate();
 
 	interface ModalProps {
@@ -73,12 +73,11 @@ const AvatarIcon = (props: any) => {
 			<Dropdown menu={{ items: menuItems }} placement="bottom" arrow trigger={["click"]}>
 				<Avatar size="large" src={avatar} />
 			</Dropdown>
-			<InfoModal innerRef={infoRef} userInfo={userInfo}></InfoModal>
+			<InfoModal innerRef={infoRef}></InfoModal>
 			<PasswordModal innerRef={passRef}></PasswordModal>
 		</>
 	);
 };
 
-const mapStateToProps = (state: { userInfo: UserInfo }) => state;
 const mapDispatchToProps = { setToken };
-export default connect(mapStateToProps, mapDispatchToProps)(AvatarIcon);
+export default connect(null, mapDispatchToProps)(AvatarIcon);

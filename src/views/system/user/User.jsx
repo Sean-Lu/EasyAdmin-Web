@@ -169,7 +169,7 @@ export default class UserList extends React.Component {
 				title: "岗位",
 				dataIndex: "positionName",
 				align: tableColumnAlign,
-				width: 100
+				width: 140
 			},
 			{
 				title: "邮箱",

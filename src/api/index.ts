@@ -224,7 +224,7 @@ class RequestHttp {
 
 // * 登录过期处理
 function handleTokenExpired() {
-	message.error("登录已过期，请您重新登录！");
+	message.info("登录已过期，请您重新登录！");
 	store.dispatch(setToken(""));
 	localStorage.removeItem("refreshToken");
 	localStorage.setItem("redirectUrl", window.location.hash.slice(1));

@@ -6,16 +6,26 @@
 	.tabs-content {
 		flex: 1;
 		display: flex;
-		overflow: hidden;
+		min-width: 0;
+		overflow-x: auto;
+		overflow-y: hidden;
+		scrollbar-width: none;
+		&::-webkit-scrollbar {
+			display: none;
+		}
 		.tabs-tab {
 			position: relative;
 			display: flex;
+			flex: 0 0 auto;
 			align-items: center;
+			max-width: 150px;
+			min-width: 72px;
 			padding: 8px 28px 8px 16px;
 			color: #666666;
 			cursor: pointer;
 			transition: all 0.2s ease;
 			border-bottom: 2px solid transparent;
+			white-space: nowrap;
 			&:hover {
 				background: rgba(0, 0, 0, 0.02);
 				.tabs-tab-close {
@@ -40,13 +50,20 @@
 				display: flex;
 				align-items: center;
 				gap: 6px;
+				min-width: 0;
 			}
 			&-icon {
+				flex: 0 0 auto;
 				width: 14px;
 				height: 14px;
 			}
 			&-title {
+				display: block;
+				min-width: 0;
+				overflow: hidden;
 				font-size: 14px;
+				text-overflow: ellipsis;
+				white-space: nowrap;
 			}
 			&-close {
 				position: absolute;
@@ -69,11 +86,8 @@
 		}
 	}
 	.more-button {
-		position: absolute;
-		top: 8px;
-		right: 13px;
-		padding-left: 10px;
+		flex: 0 0 auto;
+		margin: 0 13px 0 10px;
 		font-size: 12px;
-		z-index: 10;
 	}
 }

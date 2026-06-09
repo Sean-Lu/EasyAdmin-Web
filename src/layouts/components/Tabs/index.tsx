@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { setTabsList } from "@/redux/modules/tabs/action";
@@ -21,6 +21,7 @@ const LayoutTabs = (props: any) => {
 	const { setTabsList } = props;
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
+	const tabsContentRef = useRef<HTMLDivElement>(null);
 	const [activeValue, setActiveValue] = useState<string>(pathname);
 	const [isDeleting, setIsDeleting] = useState(false);
 
@@ -30,6 +31,10 @@ const LayoutTabs = (props: any) => {
 		}
 		setIsDeleting(false);
 	}, [pathname]);
+
+	useLayoutEffect(() => {
+		scrollActiveTabIntoView();
+	}, [pathname, tabsList]);
 
 	// find menu by path
 	const findMenuByPath = (menus: Menu.MenuOptions[], targetPath: string): Menu.MenuOptions | undefined => {
@@ -111,11 +116,40 @@ const LayoutTabs = (props: any) => {
 		setTabsList(newTabsList);
 	};
 
+	const handleTabsWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+		const tabsContent = tabsContentRef.current;
+		if (e.ctrlKey || !tabsContent || tabsContent.scrollWidth <= tabsContent.clientWidth) return;
+
+		e.preventDefault();
+		tabsContent.scrollLeft += e.deltaY !== 0 ? e.deltaY : e.deltaX;
+	};
+
+	// scroll active tab into view
+	const scrollActiveTabIntoView = () => {
+		const tabsContent = tabsContentRef.current;
+		const activeTab = tabsContent?.querySelector<HTMLDivElement>(".tabs-tab-active");
+		if (!tabsContent || !activeTab) return;
+
+		const visibleLeft = tabsContent.scrollLeft;
+		const visibleRight = visibleLeft + tabsContent.clientWidth;
+		const tabLeft = activeTab.offsetLeft;
+		const tabRight = tabLeft + activeTab.offsetWidth;
+
+		if (tabLeft < visibleLeft) {
+			tabsContent.scrollTo({ left: tabLeft, behavior: "smooth" });
+			return;
+		}
+
+		if (tabRight > visibleRight) {
+			tabsContent.scrollTo({ left: tabRight - tabsContent.clientWidth, behavior: "smooth" });
+		}
+	};
+
 	return (
 		<>
 			{!themeConfig.tabs && tabsList.length > 0 && (
 				<div className="tabs">
-					<div className="tabs-content">
+					<div className="tabs-content" ref={tabsContentRef} onWheel={handleTabsWheel}>
 						{tabsList.map((item: Menu.MenuOptions, index: number) => (
 							<div
 								key={item.path}
@@ -124,7 +158,6 @@ const LayoutTabs = (props: any) => {
 									e.preventDefault(); // 阻止默认行为，防止文本复制
 									const targetTab = e.currentTarget;
 									const originalIndex = index; // 保持原始索引不变
-									const tabWidth = targetTab.offsetWidth;
 									let currentOverIndex = index;
 
 									const handleMouseMove = (moveEvent: MouseEvent) => {
@@ -157,7 +190,9 @@ const LayoutTabs = (props: any) => {
 							>
 								<span className="tabs-tab-content">
 									{renderIcon(item.icon)}
-									<span className="tabs-tab-title">{item.title}</span>
+									<span className="tabs-tab-title" title={item.title}>
+										{item.title}
+									</span>
 								</span>
 								<span
 									className="tabs-tab-close"

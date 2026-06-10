@@ -273,36 +273,18 @@ const CodeGen: React.FC = () => {
 					/>
 				</div>
 
-				<Row gutter={16}>
-					{mode === "dbFirst" && (
-						<Col span={10}>
-							<DbConfigPanel
-								dbConfigs={dbConfigs}
-								selectedDbConfig={selectedDbConfig}
-								onSelectDbConfig={handleSelectDbConfig}
-								onRefresh={loadDbConfigs}
-							/>
-
-							<DbTablePanel
-								dbTables={dbTables}
-								selectedTables={selectedTables}
-								selectedDbConfig={selectedDbConfig}
-								tableSearchText={tableSearchText}
-								onSearchChange={setTableSearchText}
-								onSelectAll={handleSelectAllTables}
-								onSelectTable={handleSelectTable}
-							/>
-						</Col>
-					)}
-
-					<Col span={mode === "dbFirst" ? 14 : 24}>
+				<Row gutter={[16, 16]}>
+					<Col xs={24} lg={9}>
 						<CategoryPanel
 							categories={categories}
 							selectedCategory={selectedCategory}
 							onSelectCategory={handleSelectCategory}
 							onRefresh={loadCategories}
+							compact
 						/>
+					</Col>
 
+					<Col xs={24} lg={15}>
 						<TemplatePanel
 							templates={templates}
 							selectedTemplates={selectedTemplates}
@@ -312,17 +294,50 @@ const CodeGen: React.FC = () => {
 							onSelectAll={handleSelectAllTemplates}
 							onRefresh={() => loadTemplates(selectedCategory ?? undefined)}
 						/>
+					</Col>
 
-						{mode === "codeFirst" && (
+					{mode === "dbFirst" && (
+						<>
+							<Col xs={24} lg={9}>
+								<DbConfigPanel
+									dbConfigs={dbConfigs}
+									selectedDbConfig={selectedDbConfig}
+									onSelectDbConfig={handleSelectDbConfig}
+									onRefresh={loadDbConfigs}
+								/>
+							</Col>
+
+							<Col xs={24} lg={15}>
+								<DbTablePanel
+									dbTables={dbTables}
+									selectedTables={selectedTables}
+									selectedDbConfig={selectedDbConfig}
+									tableSearchText={tableSearchText}
+									onSearchChange={setTableSearchText}
+									onSelectAll={handleSelectAllTables}
+									onSelectTable={handleSelectTable}
+								/>
+							</Col>
+						</>
+					)}
+
+					{mode === "codeFirst" && (
+						<Col span={24}>
 							<EntitySourcePanel
 								templateIds={selectedTemplates}
 								genParams={genParams}
 								onCodeGenerated={handleCodeFirstGenerated}
 							/>
-						)}
+						</Col>
+					)}
 
-						{mode === "config" && <ConfigModePanel templateIds={selectedTemplates} onCodeGenerated={handleCodeFirstGenerated} />}
+					{mode === "config" && (
+						<Col span={24}>
+							<ConfigModePanel templateIds={selectedTemplates} onCodeGenerated={handleCodeFirstGenerated} />
+						</Col>
+					)}
 
+					<Col span={24}>
 						<GenConfigPanel
 							mode={mode}
 							genParams={genParams}

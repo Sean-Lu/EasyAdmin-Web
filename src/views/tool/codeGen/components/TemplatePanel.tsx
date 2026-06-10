@@ -93,20 +93,21 @@ const TemplatePanel: React.FC<TemplatePanelProps> = ({
 				<Checkbox checked={selectedTemplates.includes(record.id)} onChange={e => onSelectTemplate(record.id, e.target.checked)} />
 			)
 		},
-		{ title: "模板名称", dataIndex: "name", key: "name" },
-		{ title: "模板编码", dataIndex: "code", key: "code", width: 120 },
-		{ title: "文件路径", dataIndex: "filePath", key: "filePath", width: 250 },
+		{ title: "模板名称", dataIndex: "name", key: "name", width: 160 },
+		{ title: "模板编码", dataIndex: "code", key: "code", width: 140 },
+		{ title: "文件路径", dataIndex: "filePath", key: "filePath", width: 360, ellipsis: true },
 		{
 			title: "是否默认",
 			dataIndex: "isDefault",
 			key: "isDefault",
-			width: 80,
+			width: 90,
 			render: (val: boolean) => (val ? "是" : "否")
 		},
 		{
 			title: "操作",
 			key: "actions",
-			width: 120,
+			width: 170,
+			fixed: "right" as const,
 			render: (_: any, record: CodeGenTemplateDto) => (
 				<Space size="small">
 					<Button type="text" size="small" icon={<EditOutlined />} onClick={() => openModal(record)}>
@@ -159,6 +160,7 @@ const TemplatePanel: React.FC<TemplatePanelProps> = ({
 						pagination={{ pageSize: 5 }}
 						bordered={false}
 						size="small"
+						scroll={{ x: 980 }}
 					/>
 				) : (
 					<div style={{ textAlign: "center", padding: "40px 20px", color: "#999" }}>

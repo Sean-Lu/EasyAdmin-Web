@@ -188,6 +188,7 @@ const ConfigModePanel: React.FC<ConfigModePanelProps> = ({ templateIds, onCodeGe
 			title: "描述",
 			dataIndex: "columnComment",
 			key: "columnComment",
+			width: 180,
 			render: (_: string, record: CodeGenColumnConfigDto, index: number) => (
 				<Input
 					size="small"
@@ -218,7 +219,8 @@ const ConfigModePanel: React.FC<ConfigModePanelProps> = ({ templateIds, onCodeGe
 		{
 			title: "操作",
 			key: "action",
-			width: 60,
+			width: 80,
+			fixed: "right" as const,
 			render: (_: any, __: any, index: number) => (
 				<Button type="link" danger size="small" icon={<DeleteOutlined />} onClick={() => handleRemoveColumn(index)} />
 			)
@@ -314,6 +316,7 @@ const ConfigModePanel: React.FC<ConfigModePanelProps> = ({ templateIds, onCodeGe
 					rowKey="_key"
 					pagination={false}
 					size="small"
+					scroll={{ x: 800 }}
 				/>
 			) : (
 				<div style={{ textAlign: "center", padding: "16px 0", color: "#999", fontSize: 12 }}>

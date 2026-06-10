@@ -106,7 +106,8 @@ const DbConfigPanel: React.FC<DbConfigPanelProps> = ({ dbConfigs, selectedDbConf
 		{
 			title: "操作",
 			key: "actions",
-			width: 180,
+			width: 260,
+			fixed: "right" as const,
 			render: (_: any, record: DbConnectionConfigDto) => (
 				<Space size="small">
 					<Button type="text" size="small" icon={<CheckCircleOutlined />} onClick={() => handleTestConnection(record.id)}>

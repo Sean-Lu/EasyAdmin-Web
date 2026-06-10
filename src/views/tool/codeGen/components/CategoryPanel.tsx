@@ -10,12 +10,19 @@ interface CategoryPanelProps {
 	selectedCategory: number | null;
 	onSelectCategory: (id: number | null) => void;
 	onRefresh: () => void;
+	compact?: boolean;
 }
 
 /**
  * 代码分类面板
  */
-const CategoryPanel: React.FC<CategoryPanelProps> = ({ categories, selectedCategory, onSelectCategory, onRefresh }) => {
+const CategoryPanel: React.FC<CategoryPanelProps> = ({
+	categories,
+	selectedCategory,
+	onSelectCategory,
+	onRefresh,
+	compact = false
+}) => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [editingCategory, setEditingCategory] = useState<CodeGenCategoryDto | null>(null);
 	const [form] = Form.useForm();
@@ -67,24 +74,29 @@ const CategoryPanel: React.FC<CategoryPanelProps> = ({ categories, selectedCateg
 			title: "选择",
 			dataIndex: "selected",
 			key: "selected",
-			width: 60,
+			width: compact ? 50 : 60,
 			render: (_: any, record: CodeGenCategoryDto) => (
 				<Radio checked={selectedCategory === record.id} onChange={() => onSelectCategory(record.id)} value={record.id} />
 			)
 		},
-		{ title: "分类名称", dataIndex: "name", key: "name" },
-		{ title: "分类编码", dataIndex: "code", key: "code", width: 120 },
-		{
-			title: "是否内置",
-			dataIndex: "isBuiltIn",
-			key: "isBuiltIn",
-			width: 80,
-			render: (val: boolean) => (val ? "是" : "否")
-		},
+		{ title: "分类名称", dataIndex: "name", key: "name", width: compact ? 110 : 220 },
+		{ title: "分类编码", dataIndex: "code", key: "code", width: compact ? 140 : 180 },
+		...(!compact
+			? [
+					{
+						title: "是否内置",
+						dataIndex: "isBuiltIn",
+						key: "isBuiltIn",
+						width: 80,
+						render: (val: boolean) => (val ? "是" : "否")
+					}
+			  ]
+			: []),
 		{
 			title: "操作",
 			key: "actions",
-			width: 120,
+			width: 130,
+			fixed: "right" as const,
 			render: (_: any, record: CodeGenCategoryDto) => (
 				<Space size="small">
 					<Button type="text" size="small" icon={<EditOutlined />} onClick={() => openModal(record)}>
@@ -119,7 +131,7 @@ const CategoryPanel: React.FC<CategoryPanelProps> = ({ categories, selectedCateg
 				bordered
 				style={{ marginBottom: 16, borderRadius: 8 }}
 				extra={
-					<Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => openModal()}>
+					<Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => openModal()} title="新增分类">
 						新增分类
 					</Button>
 				}
@@ -131,6 +143,7 @@ const CategoryPanel: React.FC<CategoryPanelProps> = ({ categories, selectedCateg
 					pagination={false}
 					bordered={false}
 					size="small"
+					scroll={{ x: compact ? 530 : 730 }}
 					onRow={record => ({
 						onClick: () => onSelectCategory(record.id)
 					})}

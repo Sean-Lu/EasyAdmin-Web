@@ -73,6 +73,15 @@ const toolRouter = [
 					title: "代码生成",
 					key: "tool-codeGen"
 				}
+			},
+			{
+				path: "/tool/commonTools",
+				element: lazyLoad(React.lazy(() => import("@/views/tool/commonTools/index"))),
+				meta: {
+					requiresAuth: true,
+					title: "百宝箱",
+					key: "tool-commonTools"
+				}
 			}
 		]
 	}

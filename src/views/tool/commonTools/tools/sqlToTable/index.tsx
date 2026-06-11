@@ -350,6 +350,7 @@ interface SqlToTableProps {
 	onBack?: () => void;
 }
 
+// SQL 转表格工具
 const SqlToTable: React.FC<SqlToTableProps> = ({ onBack }) => {
 	const [sqlText, setSqlText] = useState(sampleSql);
 	const [parsedTable, setParsedTable] = useState<ParsedSqlTable | null>(null);
@@ -431,7 +432,7 @@ const SqlToTable: React.FC<SqlToTableProps> = ({ onBack }) => {
 					<Space>
 						{onBack && (
 							<Button icon={<ArrowLeftOutlined />} onClick={onBack}>
-								返回工具集
+								返回百宝箱
 							</Button>
 						)}
 						{parsedTable && (

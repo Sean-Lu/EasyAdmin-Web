@@ -6,11 +6,23 @@
 	background-size: auto, 24px 24px, 24px 24px;
 
 	.common-tools-header {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 16px;
 		margin-bottom: 28px;
 
 		.ant-typography {
 			margin-bottom: 4px;
 		}
+
+		.tool-search {
+			width: min(360px, 100%);
+		}
+	}
+
+	.ant-empty {
+		margin-top: 96px;
 	}
 
 	.tool-card {
@@ -54,6 +66,18 @@
 
 		.tool-card-footer {
 			margin-top: auto;
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	.common-tools-page {
+		.common-tools-header {
+			flex-direction: column;
+
+			.tool-search {
+				width: 100%;
+			}
 		}
 	}
 }

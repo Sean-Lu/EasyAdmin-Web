@@ -427,7 +427,7 @@ const SqlToTable: React.FC<SqlToTableProps> = ({ onBack }) => {
 	return (
 		<div className="sql-to-table-page">
 			<Card
-				title="SQL 转表格工具"
+				title="SQL 转表格"
 				extra={
 					<Space>
 						{onBack && (

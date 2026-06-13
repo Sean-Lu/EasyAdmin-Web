@@ -1,12 +1,20 @@
 import React, { useMemo, useState } from "react";
-import { ArrowRightOutlined, BarChartOutlined, CodeOutlined, LinkOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+	ArrowRightOutlined,
+	BarChartOutlined,
+	CodeOutlined,
+	LinkOutlined,
+	QrcodeOutlined,
+	SearchOutlined
+} from "@ant-design/icons";
 import { Card, Col, Empty, Input, Row, Tag, Typography } from "antd";
 import JsonToTable from "./tools/jsonToTable";
+import QrCode from "./tools/qrCode";
 import SqlToTable from "./tools/sqlToTable";
 import UrlCodec from "./tools/urlCodec";
 import "./index.less";
 
-type ToolKey = "sqlToTable" | "urlCodec" | "jsonToTable";
+type ToolKey = "sqlToTable" | "urlCodec" | "jsonToTable" | "qrCode";
 
 interface ToolItem {
 	key: ToolKey;
@@ -37,6 +45,13 @@ const tools: ToolItem[] = [
 		description: "URL 与中文路径互转",
 		tag: "developer_tools",
 		icon: <LinkOutlined />
+	},
+	{
+		key: "qrCode",
+		title: "二维码工具",
+		description: "二维码生成/解析",
+		tag: "image_tools",
+		icon: <QrcodeOutlined />
 	}
 ];
 
@@ -61,6 +76,10 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "jsonToTable") {
 		return <JsonToTable onBack={() => setActiveTool(null)} />;
+	}
+
+	if (activeTool === "qrCode") {
+		return <QrCode onBack={() => setActiveTool(null)} />;
 	}
 
 	return (

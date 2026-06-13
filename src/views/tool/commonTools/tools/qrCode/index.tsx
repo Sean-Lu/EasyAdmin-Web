@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
 	ArrowLeftOutlined,
 	ClearOutlined,
@@ -29,6 +29,7 @@ import type { Color } from "antd/es/color-picker";
 import type { RcFile } from "antd/es/upload/interface";
 import jsQR from "jsqr";
 import QRCode from "qrcode";
+import clipboardUtil from "@/utils/clipboardUtil";
 import "./index.less";
 
 interface QrCodeProps {
@@ -54,10 +55,6 @@ const dataUrlToDownload = (dataUrl: string, filename: string) => {
 	link.href = dataUrl;
 	link.download = filename;
 	link.click();
-};
-
-const copyText = async (text: string) => {
-	await navigator.clipboard.writeText(text);
 };
 
 const readFileAsDataUrl = (file: File) =>
@@ -192,6 +189,7 @@ const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
 	const [margin, setMargin] = useState(2);
 	const [logoDataUrl, setLogoDataUrl] = useState("");
 	const [logoName, setLogoName] = useState("");
+	const decodePanelRef = useRef<HTMLDivElement | null>(null);
 
 	const handleGenerate = async () => {
 		const text = inputText.trim();
@@ -289,6 +287,12 @@ const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
 	};
 
 	const handleReadClipboard = async () => {
+		if (!navigator.clipboard?.read || !window.isSecureContext) {
+			decodePanelRef.current?.focus();
+			message.info("当前访问方式不支持直接读取剪切板，请按 Ctrl+V 粘贴图片");
+			return;
+		}
+
 		try {
 			const file = await readClipboardImageFile();
 			if (!file) {
@@ -312,13 +316,7 @@ const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
 
 	const handleCopy = async () => {
 		if (!decodedText) return;
-
-		try {
-			await copyText(decodedText);
-			message.success("已复制解析内容");
-		} catch (error) {
-			message.error("复制失败，请手动复制");
-		}
+		clipboardUtil.copyString(decodedText);
 	};
 
 	const handleClearDecode = () => {
@@ -462,7 +460,7 @@ const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
 			key: "decode",
 			label: "识别二维码",
 			children: (
-				<Row gutter={[16, 16]} className="qr-decode-panel" tabIndex={0} onPaste={handlePasteImage}>
+				<Row ref={decodePanelRef} gutter={[16, 16]} className="qr-decode-panel" tabIndex={0} onPaste={handlePasteImage}>
 					<Col xs={24} lg={10}>
 						<Space direction="vertical" size={12} className="qr-code-panel">
 							<Typography.Text type="secondary">

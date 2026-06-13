@@ -12,7 +12,9 @@ export default {
 		closeOther: "Close Other",
 		closeAll: "Close All",
 		closeLeft: "Close Left",
-		closeRight: "Close Right"
+		closeRight: "Close Right",
+		menuFullscreen: "Current Menu Full Screen",
+		exitMenuFullscreen: "Exit Menu Full Screen"
 	},
 	header: {
 		componentSize: "Component Size",

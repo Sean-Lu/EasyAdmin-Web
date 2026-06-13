@@ -1,5 +1,5 @@
 import { Button, Dropdown, MenuProps } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import { DownOutlined, FullscreenExitOutlined, FullscreenOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { HOME_URL } from "@/config/config";
@@ -8,6 +8,11 @@ const MoreButton = (props: any) => {
 	const { t } = useTranslation();
 	const { pathname } = useLocation();
 	const navigate = useNavigate();
+	const toggleMenuFullscreen = () => {
+		if (props.onMenuFullscreenChange) {
+			props.onMenuFullscreenChange(!props.menuFullscreen);
+		}
+	};
 
 	// close multipleTab
 	const closeMultipleTab = (tabPath?: string) => {
@@ -37,6 +42,15 @@ const MoreButton = (props: any) => {
 	};
 
 	const items: MenuProps["items"] = [
+		{
+			key: "fullscreen",
+			icon: props.menuFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />,
+			label: <span>{props.menuFullscreen ? t("tabs.exitMenuFullscreen") : t("tabs.menuFullscreen")}</span>,
+			onClick: toggleMenuFullscreen
+		},
+		{
+			type: "divider"
+		},
 		{
 			key: "1",
 			label: <span>{t("tabs.closeCurrent")}</span>,

@@ -12,7 +12,9 @@ export default {
 		closeOther: "关闭其它",
 		closeAll: "关闭所有",
 		closeLeft: "关闭左侧",
-		closeRight: "关闭右侧"
+		closeRight: "关闭右侧",
+		menuFullscreen: "当前菜单全屏",
+		exitMenuFullscreen: "退出菜单全屏"
 	},
 	header: {
 		componentSize: "组件大小",

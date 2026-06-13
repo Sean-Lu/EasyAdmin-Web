@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { ComponentType } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { setTabsList } from "@/redux/modules/tabs/action";
@@ -8,6 +9,11 @@ import MoreButton from "./components/MoreButton";
 import * as Icons from "@ant-design/icons";
 import "./index.less";
 
+interface LayoutTabsOwnProps {
+	menuFullscreen?: boolean;
+	onMenuFullscreenChange?: (menuFullscreen: boolean) => void;
+}
+
 const renderIcon = (iconName?: string) => {
 	if (!iconName) return null;
 	const IconComponent = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[iconName];
@@ -15,7 +21,7 @@ const renderIcon = (iconName?: string) => {
 	return <IconComponent className="tabs-tab-icon" />;
 };
 
-const LayoutTabs = (props: any) => {
+const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 	const { tabsList } = props.tabs;
 	const { themeConfig } = props.global;
 	const { setTabsList } = props;
@@ -206,7 +212,13 @@ const LayoutTabs = (props: any) => {
 							</div>
 						))}
 					</div>
-					<MoreButton tabsList={tabsList} delTabs={delTabs} setTabsList={setTabsList}></MoreButton>
+					<MoreButton
+						tabsList={tabsList}
+						delTabs={delTabs}
+						setTabsList={setTabsList}
+						menuFullscreen={props.menuFullscreen}
+						onMenuFullscreenChange={props.onMenuFullscreenChange}
+					></MoreButton>
 				</div>
 			)}
 		</>
@@ -215,4 +227,4 @@ const LayoutTabs = (props: any) => {
 
 const mapStateToProps = (state: any) => state;
 const mapDispatchToProps = { setTabsList };
-export default connect(mapStateToProps, mapDispatchToProps)(LayoutTabs);
+export default connect(mapStateToProps, mapDispatchToProps)(LayoutTabs) as ComponentType<LayoutTabsOwnProps>;

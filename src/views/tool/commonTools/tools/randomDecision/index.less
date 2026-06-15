@@ -2,120 +2,98 @@
 	min-height: calc(100vh - 118px);
 	padding: 24px;
 	background: #f6f8fb;
-
 	.random-decision-header {
 		margin-bottom: 18px;
-
 		.ant-typography {
 			margin-bottom: 0;
 		}
 	}
-
 	.decision-panel {
 		height: 100%;
 		padding: 22px;
+		background: #ffffff;
 		border: 1px solid #e5e7eb;
 		border-radius: 8px;
-		background: #ffffff;
-
 		.ant-typography {
 			margin-bottom: 0;
 		}
 	}
-
 	.panel-toolbar {
 		display: flex;
+		gap: 16px;
 		align-items: flex-start;
 		justify-content: space-between;
-		gap: 16px;
 		margin-bottom: 18px;
 	}
-
 	.decision-list {
 		.ant-list-item {
 			align-items: center;
 			padding: 16px 0;
 		}
-
 		.ant-list-item-meta-title {
 			margin-bottom: 6px;
 		}
 	}
-
 	.draw-panel {
 		display: flex;
 		flex-direction: column;
 		gap: 18px;
 	}
-
 	.draw-controls {
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: 10px;
 	}
-
 	.draw-actions {
 		width: 100%;
-
 		.ant-btn {
 			flex: 1;
 		}
 	}
-
 	.draw-results {
 		padding-top: 6px;
 	}
-
 	.result-stack {
 		width: 100%;
 		margin-top: 12px;
 	}
-
 	.result-item {
 		display: flex;
-		align-items: flex-start;
 		gap: 10px;
+		align-items: flex-start;
 		padding: 12px;
+		background: #f0fdf4;
 		border: 1px solid #dcfce7;
 		border-radius: 8px;
-		background: #f0fdf4;
-
 		.ant-typography {
 			display: block;
 		}
 	}
-
 	.full-width-control {
 		width: 100%;
 	}
-
 	&.random-decision-dark {
 		background: #141414;
-
 		.random-decision-header {
 			.ant-typography,
 			.ant-typography-secondary {
 				color: #d9d9d9;
 			}
 		}
-
 		.decision-panel {
-			border-color: #414243;
 			background: #1f1f1f;
+			border-color: #414243;
 		}
-
 		.panel-toolbar {
 			.ant-typography,
 			.ant-typography-secondary {
 				color: #d9d9d9;
 			}
 		}
-
 		.ant-tabs-nav::before,
 		.ant-list-item {
 			border-color: #414243;
 		}
-
 		.ant-list-item-meta-title,
 		.ant-list-item-meta-description,
 		.ant-empty-description,
@@ -123,18 +101,16 @@
 		.draw-results .ant-typography {
 			color: #d9d9d9;
 		}
-
 		.result-item {
-			border-color: #274916;
 			background: #162312;
+			border-color: #274916;
 		}
 	}
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
 	.random-decision-page {
 		padding: 16px;
-
 		.panel-toolbar {
 			flex-direction: column;
 		}

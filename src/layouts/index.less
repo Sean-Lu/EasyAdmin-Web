@@ -2,7 +2,8 @@
 	display: flex;
 	min-width: 320px;
 	height: 100%;
-	@media screen and (max-width: 950px) {
+
+	@media screen and (width <= 950px) {
 		min-width: 320px;
 	}
 	.ant-layout-sider {
@@ -55,10 +56,10 @@
 		}
 		.menu-fullscreen-exit {
 			pointer-events: none;
-			opacity: 0;
 			box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
-			transform: translateY(-4px);
+			opacity: 0;
 			transition: opacity 0.16s ease, transform 0.16s ease;
+			transform: translateY(-4px);
 		}
 		.menu-fullscreen-exit-show {
 			pointer-events: auto;

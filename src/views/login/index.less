@@ -5,19 +5,17 @@
 	justify-content: center;
 	width: 100%;
 	height: 100vh;
+	overflow: hidden;
+	background-color: #eeeeee !important;
 	background-image: url("@/assets/images/login_bg.svg");
 	background-position: center;
 	background-size: cover;
-	background-color: #eeeeee !important;
-	overflow: hidden;
-
 	.dark {
 		position: absolute;
 		top: 20px;
 		right: 20px;
 		z-index: 100;
 	}
-
 	.login-box {
 		box-sizing: border-box;
 		display: flex;
@@ -27,17 +25,15 @@
 		max-width: 100%;
 		height: 88%;
 		max-height: 100%;
-		background: #fff !important;
-		border-radius: 12px;
 		overflow: hidden;
-
+		background: #ffffff !important;
+		border-radius: 12px;
 		.login-left {
-			width: 55%;
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			width: 55%;
 			padding: 20px;
-
 			img {
 				width: 100%;
 				height: auto;
@@ -45,73 +41,59 @@
 				object-fit: contain;
 			}
 		}
-
 		.login-form-wrap {
 			width: 40%;
 			min-width: 300px;
 			max-width: 400px;
 			padding: 40px;
 			margin-right: 20px;
-			background: #fff;
+			background: #ffffff;
 			border-radius: 10px;
-			box-shadow: 2px 3px 7px rgba(0, 0, 0, 0.2);
-
+			box-shadow: 2px 3px 7px rgb(0 0 0 / 20%);
 			.login-logo {
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				margin-bottom: 40px;
-
 				.login-icon {
 					width: 70px;
 				}
-
 				.logo-text {
 					padding-left: 25px;
 					font-size: 48px;
 					font-weight: bold;
-					white-space: nowrap;
 					color: #475768 !important;
+					white-space: nowrap;
 				}
 			}
-
 			.ant-form-item {
 				height: 75px;
 				margin-bottom: 0;
-
 				.ant-input-prefix {
 					margin-right: 10px;
 				}
-
 				.ant-input-affix-wrapper-lg {
 					padding: 8.3px 11px;
 				}
-
 				.ant-input-affix-wrapper,
 				.ant-input-lg {
 					font-size: 14px;
 				}
-
 				.ant-input-affix-wrapper {
 					color: #bfbfbf;
 				}
 			}
-
 			.login-btn {
 				width: 100%;
 				margin-top: 10px;
-
 				.ant-form-item-control-input-content {
 					display: flex;
 					justify-content: space-between;
-
 					.ant-btn {
 						width: 175px;
-
 						span {
 							font-size: 14px;
 						}
-
 						&.ant-btn-default {
 							color: #606266 !important;
 						}
@@ -121,128 +103,108 @@
 		}
 	}
 
-	@media screen and (max-width: 768px) {
-		padding: 15px;
+	@media screen and (width <= 768px) {
 		box-sizing: border-box;
-
+		padding: 15px;
 		.login-box {
+			box-sizing: border-box;
 			flex-direction: column;
 			width: 100% !important;
 			height: auto;
-			max-height: none;
 			min-height: auto;
+			max-height: none;
 			padding: 30px 20px !important;
-			background: rgba(255, 255, 255, 0.95) !important;
+			background: rgb(255 255 255 / 95%) !important;
 			border-radius: 12px;
-			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-			box-sizing: border-box;
-
+			box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
 			.login-left {
 				display: none;
 			}
-
 			.login-form-wrap {
+				box-sizing: border-box;
 				width: 100% !important;
 				min-width: auto;
 				max-width: 100% !important;
 				padding: 0 !important;
+				margin: 0 !important;
 				margin-right: 0 !important;
 				background: transparent !important;
 				border-radius: 0 !important;
 				box-shadow: none !important;
-				-webkit-box-shadow: none !important;
-				-moz-box-shadow: none !important;
-				margin: 0 !important;
-				box-sizing: border-box;
-
 				.ant-form {
-					margin: 0 !important;
-					padding: 0 !important;
-					width: 100% !important;
 					box-sizing: border-box;
+					width: 100% !important;
+					padding: 0 !important;
+					margin: 0 !important;
 				}
-
 				.login-logo {
-					margin-bottom: 25px;
-					padding: 0;
 					display: flex;
 					align-items: center;
 					justify-content: center;
-
+					padding: 0;
+					margin-bottom: 25px;
 					.login-icon {
 						width: 55px;
 					}
-
 					.logo-text {
 						padding-left: 20px;
 						font-size: 36px;
 					}
 				}
-
 				.ant-form-item {
-					height: auto !important;
-					margin-bottom: 12px !important;
-					margin-left: 0 !important;
-					margin-right: 0 !important;
-					padding: 0 !important;
+					box-sizing: border-box;
 					width: 100% !important;
 					max-width: 100% !important;
-					box-sizing: border-box;
-
+					height: auto !important;
+					padding: 0 !important;
+					margin-right: 0 !important;
+					margin-bottom: 12px !important;
+					margin-left: 0 !important;
 					.ant-form-item-label {
 						display: none !important;
 						width: 0 !important;
 						padding: 0 !important;
 					}
-
 					.ant-form-item-control {
+						box-sizing: border-box;
 						width: 100% !important;
 						padding: 0 !important;
 						margin: 0 !important;
-						box-sizing: border-box;
 					}
-
 					.ant-form-item-control-input {
-						width: 100% !important;
 						box-sizing: border-box;
+						width: 100% !important;
 					}
-
 					.ant-form-item-control-input-content {
-						width: 100% !important;
+						box-sizing: border-box;
 						display: flex !important;
-						box-sizing: border-box;
-					}
-
-					.ant-input {
 						width: 100% !important;
-						box-sizing: border-box;
 					}
-
+					.ant-input {
+						box-sizing: border-box;
+						width: 100% !important;
+					}
 					.ant-input-affix-wrapper {
+						box-sizing: border-box;
 						width: 100% !important;
 						padding: 8.3px 11px !important;
-						box-sizing: border-box;
 					}
-
 					.ant-input-affix-wrapper-lg {
+						box-sizing: border-box;
 						width: 100% !important;
 						height: 44px !important;
 						padding: 8.3px 11px !important;
-						box-sizing: border-box;
 					}
 				}
-
 				.login-btn {
+					box-sizing: border-box;
+					width: 100% !important;
+					padding: 0 !important;
 					margin-top: 15px !important;
 					margin-bottom: 0 !important;
-					padding: 0 !important;
-					width: 100% !important;
-					box-sizing: border-box;
-
 					.ant-form-item-control-input-content {
 						flex-direction: column !important;
 						gap: 10px !important;
-
 						.ant-btn {
 							width: 100% !important;
 							height: 44px !important;
@@ -254,20 +216,16 @@
 		}
 	}
 
-	@media screen and (max-width: 480px) {
+	@media screen and (width <= 480px) {
 		padding: 10px;
-
 		.login-box {
 			padding: 20px 15px !important;
-
 			.login-form-wrap {
 				.login-logo {
 					margin-bottom: 20px;
-
 					.login-icon {
 						width: 45px;
 					}
-
 					.logo-text {
 						padding-left: 15px;
 						font-size: 28px;

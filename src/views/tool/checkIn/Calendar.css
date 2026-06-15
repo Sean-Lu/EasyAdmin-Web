@@ -1,110 +1,96 @@
 #calendar-container {
 	font-size: 0.24rem;
 }
-
 #calendar-container .calendar-fl {
 	float: left;
 }
-
 #calendar-container .calendar-fr {
 	float: right;
 }
-
 #calendar-container .calendar-tc {
 	text-align: center;
 }
-
 .mem-sign-st {
+	position: relative;
+	height: 4.93rem;
+	color: #ffffff;
+	text-align: center;
+
 	/* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#f48b73+0,fbaf74+100 */
 	background: #f48b73; /* Old browsers */
 	background: -moz-linear-gradient(top, #f48b73 0%, #fbaf74 100%); /* FF3.6-15 */
 	background: -webkit-linear-gradient(top, #f48b73 0%, #fbaf74 100%); /* Chrome10-25,Safari5.1-6 */
 	background: linear-gradient(to bottom, #f48b73 0%, #fbaf74 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f48b73', endColorstr='#fbaf74',GradientType=0 ); /* IE6-9 */
-	height: 4.93rem;
-	position: relative;
-	text-align: center;
-	color: #fff;
 }
-
 .mem-sign-st-detail {
-	line-height: 0.5rem;
-	font-size: 0.3rem;
 	padding: 0.2rem;
+	font-size: 0.3rem;
+	line-height: 0.5rem;
 }
-
 .mem-sign-circle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: 2.34rem;
 	height: 2.34rem;
 	padding: 0.16rem;
-	background: rgba(0, 0, 0, 0.3);
-	border-radius: 50%;
 	margin: 0.2rem auto 0;
+	background: rgb(0 0 0 / 30%);
+	border-radius: 50%;
+}
+.mem-sign-before.mem-sign-circle {
+	background: rgb(255 255 255 / 30%);
+}
+.mem-sign-circle-text {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-}
-
-.mem-sign-before.mem-sign-circle {
-	background: rgba(255, 255, 255, 0.3);
-}
-
-.mem-sign-circle-text {
 	width: 100%;
 	height: 100%;
-	background: #efe2dc;
-	border-radius: 50%;
 	font-size: 0.48rem;
 	color: #919191;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	background: #efe2dc;
+	border-radius: 50%;
 }
-
 .mem-sign-before .mem-sign-circle-text {
-	background: #fff;
 	color: #ffa895;
+	background: #ffffff;
 }
-
 .mem-sign-tips {
 	display: inline-block;
 	width: 2.94rem;
-	line-height: 0.5rem;
-	background: rgba(0, 0, 0, 0.3);
-	border-radius: 0.25rem;
 	margin-top: 0.4rem;
+	line-height: 0.5rem;
+	background: rgb(0 0 0 / 30%);
+	border-radius: 0.25rem;
 }
 
-/*签到*/
+/* 签到 */
 .sign-date-wrap {
 	margin: 0.2rem;
-	background: #fff;
+	font-size: 0.3rem;
+	background: #ffffff;
 	border: 1px solid #dddee0;
 	border-radius: 0.04rem;
-	font-size: 0.3rem;
 }
-
 .sign-date-top {
-	line-height: 0.7rem;
-	font-size: 0.28rem;
 	padding: 0 0.4rem;
 	padding-top: 0.1rem;
+	font-size: 0.28rem;
+	line-height: 0.7rem;
 }
-
 .sign-date-top i {
-	color: #bebec1;
 	font-size: 0.4rem;
+	color: #bebec1;
 }
-
 .sign-date-week,
 .sign-date-days {
 	padding-left: 0.35rem;
 }
-
 .sign-date-days {
 	padding-bottom: 0.2rem;
 }
-
 .sign-date-week span,
 .sign-date-days span {
 	float: left;
@@ -112,56 +98,49 @@
 	line-height: 0.8rem;
 	text-align: center;
 }
-/*IE7不支持的清除浮动*/
-.clearfix:after {
-	visibility: hidden;
+
+/* IE7不支持的清除浮动 */
+.clearfix::after {
 	display: block;
-	font-size: 0;
-	content: ".";
-	clear: both;
 	height: 0;
+	clear: both;
+	font-size: 0;
+	visibility: hidden;
+	content: ".";
 }
 
-/*.today {
+/* .today {
     font-weight: bold;
-}*/
-
+} */
 .calendar-day-checkin {
-	border-radius: 100%;
 	color: white;
 	background-color: #fbaf74;
-}
-
-.calendar-day {
 	border-radius: 100%;
-	border: 0.5px solid transparent;
 }
-
+.calendar-day {
+	border: 0.5px solid transparent;
+	border-radius: 100%;
+}
 .calendar-day-adjacent {
 	color: #c4c4c4;
 }
-
 .checkIn-dark .sign-date-wrap {
 	color: #d9d9d9;
 	background: #1f1f1f;
 	border-color: #414243;
 }
-
 .checkIn-dark .sign-date-top,
 .checkIn-dark .sign-date-week,
 .checkIn-dark .sign-date-days {
 	color: #d9d9d9;
 }
-
 .checkIn-dark .calendar-day {
 	color: #d9d9d9;
 }
-
 .checkIn-dark .calendar-day-adjacent {
 	color: #686868;
 }
-
 .checkIn-dark .calendar-day-checkin {
-	color: #fff;
+	color: #ffffff;
 	background-color: #fbaf74;
 }

@@ -1,80 +1,69 @@
 .common-tools-page {
 	min-height: calc(100vh - 118px);
 	padding: 24px;
-	background: linear-gradient(135deg, rgba(20, 184, 166, 12%), rgba(99, 102, 241, 8%) 46%, rgba(255, 255, 255, 0%) 72%),
-		linear-gradient(rgba(15, 23, 42, 4%) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 23, 42, 4%) 1px, transparent 1px);
+	background: linear-gradient(135deg, rgb(20 184 166 / 12%), rgb(99 102 241 / 8%) 46%, rgb(255 255 255 / 0%) 72%),
+		linear-gradient(rgb(15 23 42 / 4%) 1px, transparent 1px), linear-gradient(90deg, rgb(15 23 42 / 4%) 1px, transparent 1px);
 	background-size: auto, 24px 24px, 24px 24px;
-
 	.common-tools-header {
 		display: flex;
+		gap: 16px;
 		align-items: flex-start;
 		justify-content: space-between;
-		gap: 16px;
 		margin-bottom: 28px;
-
 		.ant-typography {
 			margin-bottom: 4px;
 		}
-
 		.tool-search {
 			width: min(360px, 100%);
 		}
 	}
-
 	.ant-empty {
 		margin-top: 96px;
 	}
-
 	.tool-card {
 		position: relative;
 		min-height: 224px;
 		border-radius: 8px;
-
 		.ant-card-body {
 			display: flex;
-			min-height: 224px;
 			flex-direction: column;
 			gap: 12px;
+			min-height: 224px;
 			padding: 28px;
 		}
-
 		.tool-card-arrow {
 			position: absolute;
 			top: 28px;
 			right: 28px;
-			color: #1677ff;
 			font-size: 20px;
+			color: #1677ff;
 		}
-
 		.tool-card-icon {
 			display: inline-flex;
-			width: 56px;
-			height: 56px;
 			align-items: center;
 			justify-content: center;
+			width: 56px;
+			height: 56px;
 			margin-bottom: 8px;
+			font-size: 28px;
+			color: #1677ff;
+			background: #f8fafc;
 			border: 1px solid #e5e7eb;
 			border-radius: 8px;
-			background: #f8fafc;
-			color: #1677ff;
-			font-size: 28px;
 		}
-
 		.ant-typography {
 			margin-bottom: 0;
 		}
-
 		.tool-card-footer {
 			margin-top: auto;
 		}
 	}
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
 	.common-tools-page {
 		.common-tools-header {
 			flex-direction: column;
-
 			.tool-search {
 				width: 100%;
 			}

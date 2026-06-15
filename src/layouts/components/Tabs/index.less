@@ -1,14 +1,13 @@
 .tabs {
 	position: relative;
-	border-bottom: 1px solid #e4e7ed;
 	display: flex;
 	align-items: center;
+	border-bottom: 1px solid #e4e7ed;
 	.tabs-content {
-		flex: 1;
 		display: flex;
+		flex: 1;
 		min-width: 0;
-		overflow-x: auto;
-		overflow-y: hidden;
+		overflow: auto hidden;
 		scrollbar-width: none;
 		&::-webkit-scrollbar {
 			display: none;
@@ -18,38 +17,38 @@
 			display: flex;
 			flex: 0 0 auto;
 			align-items: center;
-			max-width: 150px;
 			min-width: 72px;
+			max-width: 150px;
 			padding: 8px 28px 8px 16px;
 			color: #666666;
-			cursor: pointer;
-			transition: all 0.2s ease;
-			border-bottom: 2px solid transparent;
 			white-space: nowrap;
+			cursor: pointer;
+			border-bottom: 2px solid transparent;
+			transition: all 0.2s ease;
 			&:hover {
-				background: rgba(0, 0, 0, 0.02);
+				background: rgb(0 0 0 / 2%);
 				.tabs-tab-close {
 					opacity: 1;
 				}
 			}
 			&-active {
 				color: @primary-color;
+				background: rgb(0 0 0 / 2%);
 				border-bottom-color: @primary-color;
-				background: rgba(0, 0, 0, 0.02);
 				.tabs-tab-close {
-					opacity: 1;
 					color: @primary-color;
+					opacity: 1;
 				}
 			}
 			&-dragging {
+				cursor: grabbing;
 				opacity: 0.5;
 				transform: scale(0.95);
-				cursor: grabbing;
 			}
 			&-content {
 				display: flex;
-				align-items: center;
 				gap: 6px;
+				align-items: center;
 				min-width: 0;
 			}
 			&-icon {
@@ -67,18 +66,18 @@
 			}
 			&-close {
 				position: absolute;
-				right: 8px;
 				top: 50%;
-				transform: translateY(-50%);
-				width: 20px;
-				height: 20px;
+				right: 8px;
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				width: 20px;
+				height: 20px;
 				font-size: 16px;
 				color: #cccccc;
 				opacity: 0;
 				transition: opacity 0.1s ease;
+				transform: translateY(-50%);
 				&:hover {
 					color: @primary-color;
 				}

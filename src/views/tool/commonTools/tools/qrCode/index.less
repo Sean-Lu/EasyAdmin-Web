@@ -1,82 +1,67 @@
 .qr-code-page {
 	padding: 16px;
-
 	.qr-code-panel {
 		width: 100%;
 	}
-
 	.qr-code-preview,
 	.qr-upload-preview {
 		display: flex;
-		width: 100%;
-		min-height: 320px;
 		align-items: center;
 		justify-content: center;
+		width: 100%;
+		min-height: 320px;
+		background: #fafafa;
 		border: 1px dashed #d9d9d9;
 		border-radius: 8px;
-		background: #fafafa;
 	}
-
 	.qr-code-preview img {
 		width: min(280px, 100%);
 		height: auto;
 	}
-
 	.qr-preview-icon {
-		color: #8c8c8c;
 		font-size: 32px;
+		color: #8c8c8c;
 	}
-
 	.qr-options-card {
 		width: 100%;
 		border-radius: 8px;
-
 		.ant-card-head {
 			min-height: 40px;
 		}
-
 		.ant-card-body {
 			padding: 16px;
 		}
-
 		.qr-option-item {
 			margin-bottom: 0;
 		}
-
 		.qr-option-control {
 			width: 100%;
 		}
 	}
-
 	.qr-decode-panel {
 		border-radius: 8px;
 		outline: none;
-
 		&:focus-visible {
-			box-shadow: 0 0 0 2px rgba(22, 119, 255, 20%);
+			box-shadow: 0 0 0 2px rgb(22 119 255 / 20%);
 		}
 	}
-
 	.qr-upload-preview {
 		min-height: 220px;
 		overflow: hidden;
-
 		img {
 			max-width: 100%;
 			max-height: 320px;
 			object-fit: contain;
 		}
 	}
-
 	textarea {
 		font-family: Consolas, "Courier New", monospace;
 	}
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
 	.qr-code-page {
 		padding: 0;
-
 		.qr-code-preview,
 		.qr-upload-preview {
 			min-height: 220px;

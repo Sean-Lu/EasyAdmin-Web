@@ -1,63 +1,52 @@
 .todo-item {
 	display: flex;
-	justify-content: space-between;
 	align-items: center;
+	justify-content: space-between;
 	width: 100%;
 }
-
 .todo-item-content {
-	flex: 1;
 	display: flex;
-	align-items: center;
+	flex: 1;
 	gap: 12px;
+	align-items: center;
 }
-
 .todo-item-text {
 	flex: 1;
 	font-size: 14px;
 	line-height: 1.4;
 	word-break: break-word;
 }
-
 .todo-item-text-priority-1 {
-	color: #000;
+	color: #000000;
 }
-
 .todo-item-text-priority-2 {
 	color: #fa8c16;
 }
-
 .todo-item-text-priority-3 {
 	color: #ff4d4f;
 }
-
 .todo-item-text-done {
-	color: #999;
+	color: #999999;
 }
-
 .todo-item-actions {
 	display: flex;
-	align-items: center;
 	gap: 8px;
+	align-items: center;
 	opacity: 0.7;
 	transition: opacity 0.3s ease;
 }
-
 .todo-item:hover .todo-item-actions {
 	opacity: 1;
 }
-
 .todo-item-input {
 	flex: 1;
 	font-size: 14px;
 }
-
 .todo-item-priority {
 	min-width: 80px;
 }
-
 .todo-item-buttons {
 	display: flex;
-	align-items: center;
 	gap: 8px;
+	align-items: center;
 }

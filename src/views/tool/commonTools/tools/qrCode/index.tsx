@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import {
 	ArrowLeftOutlined,
 	ClearOutlined,
@@ -176,6 +177,7 @@ const getPastedImageFile = (event: React.ClipboardEvent<HTMLElement>) => {
 
 // 二维码生成/解析工具
 const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
+	const isDark = useSelector((state: any) => state.global.themeConfig.isDark);
 	const [inputText, setInputText] = useState(sampleText);
 	const [qrDataUrl, setQrDataUrl] = useState("");
 	const [generating, setGenerating] = useState(false);
@@ -512,7 +514,7 @@ const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
 	];
 
 	return (
-		<div className="qr-code-page">
+		<div className={`qr-code-page${isDark ? " qr-code-dark" : ""}`}>
 			<Card
 				title="二维码工具"
 				extra={

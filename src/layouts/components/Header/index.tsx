@@ -15,16 +15,16 @@ const LayoutHeader = () => {
 
 	const [userInfo, setUserInfo] = useState<UserInfo>();
 
-	useEffect(() => {
-		const fetchUserInfo = async () => {
-			try {
-				const userInfo = await getUserInfo();
-				setUserInfo(userInfo.data);
-			} catch (error) {
-				// console.error("获取用户信息异常", error);
-			}
-		};
+	const fetchUserInfo = async () => {
+		try {
+			const userInfo = await getUserInfo();
+			setUserInfo(userInfo.data);
+		} catch (error) {
+			// console.error("获取用户信息异常", error);
+		}
+	};
 
+	useEffect(() => {
 		fetchUserInfo();
 	}, []); // 空数组确保副作用仅运行一次
 
@@ -40,7 +40,7 @@ const LayoutHeader = () => {
 				<Theme />
 				<Fullscreen />
 				<span className="username">{userInfo ? userInfo?.nickName : "加载中..."}</span>
-				<AvatarIcon userInfo={userInfo} />
+				<AvatarIcon userInfo={userInfo} onUserInfoChange={setUserInfo} />
 			</div>
 		</Header>
 	);

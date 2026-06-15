@@ -40,9 +40,49 @@ export const getUserInfo = () => {
 	return http.get<UserInfo>(PORT1 + `/user/getUserInfo`);
 };
 
+// * 更新用户信息
+export const updateUserProfile = (params: UserProfileUpdateReq) => {
+	return http.post<boolean>(PORT1 + `/user/updateProfile`, params);
+};
+
+// * 上传用户头像
+export const uploadUserAvatar = (file: File) => {
+	const formData = new FormData();
+	formData.append("file", file);
+
+	return http.post<number>(PORT1 + `/user/uploadAvatar`, formData, {
+		headers: {
+			"Content-Type": "multipart/form-data"
+		}
+	});
+};
+
+// * 删除用户头像文件
+export const deleteUserAvatarFile = (avatarFileId?: number) => {
+	if (!avatarFileId) return Promise.resolve();
+
+	return http.delete<boolean>(PORT1 + `/file/deletefile`, { id: avatarFileId });
+};
+
+// * 获取用户头像文件的 Object URL
+export const getAvatarObjectUrl = async (avatarFileId?: number) => {
+	if (!avatarFileId) return "";
+
+	const response = await http.downloadGet(PORT1 + `/file/downloadfile`, { id: avatarFileId });
+	return URL.createObjectURL(response.data);
+};
+
+// * 更新用户信息请求参数
+export interface UserProfileUpdateReq {
+	nickName?: string;
+	avatarFileId?: number;
+}
+
+// * 用户信息
 export interface UserInfo {
 	userName: string; // 用户名称
 	nickName: string; // 昵称
+	avatarFileId?: number; // 头像文件ID
 	phoneNumber: string; // 手机号
 	email: string; // 邮箱
 	departmentId: string; // 所属部门ID

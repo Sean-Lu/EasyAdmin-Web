@@ -3,6 +3,7 @@ import {
 	ArrowRightOutlined,
 	BarChartOutlined,
 	CodeOutlined,
+	CompassOutlined,
 	LinkOutlined,
 	QrcodeOutlined,
 	SearchOutlined
@@ -10,11 +11,12 @@ import {
 import { Card, Col, Empty, Input, Row, Tag, Typography } from "antd";
 import JsonToTable from "./tools/jsonToTable";
 import QrCode from "./tools/qrCode";
+import RandomDecision from "./tools/randomDecision";
 import SqlToTable from "./tools/sqlToTable";
 import UrlCodec from "./tools/urlCodec";
 import "./index.less";
 
-type ToolKey = "sqlToTable" | "urlCodec" | "jsonToTable" | "qrCode";
+type ToolKey = "sqlToTable" | "urlCodec" | "jsonToTable" | "qrCode" | "randomDecision";
 
 interface ToolItem {
 	key: ToolKey;
@@ -52,6 +54,13 @@ const tools: ToolItem[] = [
 		description: "二维码生成/解析",
 		tag: "image_tools",
 		icon: <QrcodeOutlined />
+	},
+	{
+		key: "randomDecision",
+		title: "随机决策器",
+		description: "吃什么/去哪玩",
+		tag: "life_tools",
+		icon: <CompassOutlined />
 	}
 ];
 
@@ -80,6 +89,10 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "qrCode") {
 		return <QrCode onBack={() => setActiveTool(null)} />;
+	}
+
+	if (activeTool === "randomDecision") {
+		return <RandomDecision onBack={() => setActiveTool(null)} />;
 	}
 
 	return (

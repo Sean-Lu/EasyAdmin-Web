@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Card, Button, Form, Input, Table, message, Space, Divider, Tag, Select } from "antd";
 import { PlusOutlined, DeleteOutlined, SettingOutlined, PlayCircleOutlined } from "@ant-design/icons";
+import { BackendId } from "@/api/interface";
 import {
 	generateCodeByConfig,
 	CodeGenConfigReqDto,
@@ -9,7 +10,7 @@ import {
 } from "@/services/tool/codeGenService";
 
 interface ConfigModePanelProps {
-	templateIds: number[];
+	templateIds: BackendId[];
 	onCodeGenerated: (result: CodeGenResultDto) => void;
 }
 

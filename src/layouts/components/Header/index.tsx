@@ -7,6 +7,7 @@ import AssemblySize from "./components/AssemblySize";
 import Language from "./components/Language";
 import Theme from "./components/Theme";
 import Fullscreen from "./components/Fullscreen";
+import MessageNotice from "./components/MessageNotice";
 import { getUserInfo, UserInfo } from "@/api/modules/login";
 import "./index.less";
 
@@ -39,6 +40,7 @@ const LayoutHeader = () => {
 				<Language />
 				<Theme />
 				<Fullscreen />
+				<MessageNotice />
 				<span className="username">{userInfo ? userInfo?.nickName : "加载中..."}</span>
 				<AvatarIcon userInfo={userInfo} onUserInfoChange={setUserInfo} />
 			</div>

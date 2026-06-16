@@ -1,4 +1,4 @@
-import { Login } from "@/api/interface/index";
+import { BackendId, BackendIdInput, Login } from "@/api/interface/index";
 import { PORT1 } from "@/api/config/servicePort";
 import qs from "qs";
 
@@ -50,7 +50,7 @@ export const uploadUserAvatar = (file: File) => {
 	const formData = new FormData();
 	formData.append("file", file);
 
-	return http.post<number>(PORT1 + `/user/uploadAvatar`, formData, {
+	return http.post<BackendId>(PORT1 + `/user/uploadAvatar`, formData, {
 		headers: {
 			"Content-Type": "multipart/form-data"
 		}
@@ -58,14 +58,14 @@ export const uploadUserAvatar = (file: File) => {
 };
 
 // * 删除用户头像文件
-export const deleteUserAvatarFile = (avatarFileId?: number) => {
+export const deleteUserAvatarFile = (avatarFileId?: BackendIdInput) => {
 	if (!avatarFileId) return Promise.resolve();
 
 	return http.delete<boolean>(PORT1 + `/file/deletefile`, { id: avatarFileId });
 };
 
 // * 获取用户头像文件的 Object URL
-export const getAvatarObjectUrl = async (avatarFileId?: number) => {
+export const getAvatarObjectUrl = async (avatarFileId?: BackendIdInput) => {
 	if (!avatarFileId) return "";
 
 	const response = await http.downloadGet(PORT1 + `/file/downloadfile`, { id: avatarFileId });
@@ -75,18 +75,18 @@ export const getAvatarObjectUrl = async (avatarFileId?: number) => {
 // * 更新用户信息请求参数
 export interface UserProfileUpdateReq {
 	nickName?: string;
-	avatarFileId?: number;
+	avatarFileId?: BackendIdInput;
 }
 
 // * 用户信息
 export interface UserInfo {
 	userName: string; // 用户名称
 	nickName: string; // 昵称
-	avatarFileId?: number; // 头像文件ID
+	avatarFileId?: BackendId; // 头像文件ID
 	phoneNumber: string; // 手机号
 	email: string; // 邮箱
-	departmentId: string; // 所属部门ID
+	departmentId: BackendId; // 所属部门ID
 	departmentName: string; // 所属部门名称
-	positionId: string; // 所属岗位ID
+	positionId: BackendId; // 所属岗位ID
 	positionName: string; // 所属岗位名称
 }

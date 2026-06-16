@@ -1,4 +1,5 @@
 import request from "@/api/index";
+import { BackendId, BackendIdInput } from "@/api/interface";
 
 export enum DecisionItemType {
 	Food = 1,
@@ -11,7 +12,7 @@ export enum CommonState {
 }
 
 export interface DecisionItem {
-	id?: number;
+	id?: BackendId;
 	type: DecisionItemType;
 	name: string;
 	description?: string;
@@ -28,15 +29,15 @@ export class DecisionItemService {
 		return request.post<boolean>(`/DecisionItem/Add`, data);
 	}
 
-	static async update(data: DecisionItem & { id: number }) {
+	static async update(data: DecisionItem & { id: BackendIdInput }) {
 		return request.post<boolean>(`/DecisionItem/Update`, data);
 	}
 
-	static async delete(id: number) {
+	static async delete(id: BackendIdInput) {
 		return request.post<boolean>(`/DecisionItem/Delete`, { id });
 	}
 
-	static async updateState(id: number, state: CommonState) {
+	static async updateState(id: BackendIdInput, state: CommonState) {
 		return request.post<boolean>(`/DecisionItem/UpdateState`, { id, state });
 	}
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Table, Checkbox, Space, Popconfirm, Modal, Form, Input, Select, message } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, CodeOutlined } from "@ant-design/icons";
+import { BackendId, BackendIdInput } from "@/api/interface";
 import {
 	CodeGenTemplateDto,
 	CodeGenTemplateType,
@@ -15,10 +16,10 @@ const { TextArea } = Input;
 
 interface TemplatePanelProps {
 	templates: CodeGenTemplateDto[];
-	selectedTemplates: number[];
-	selectedCategory: number | null;
+	selectedTemplates: BackendId[];
+	selectedCategory: BackendId | null;
 	categories: CodeGenCategoryDto[];
-	onSelectTemplate: (id: number, checked: boolean) => void;
+	onSelectTemplate: (id: BackendId, checked: boolean) => void;
 	onSelectAll: () => void;
 	onRefresh: () => void;
 }
@@ -64,7 +65,7 @@ const TemplatePanel: React.FC<TemplatePanelProps> = ({
 			message.error("保存失败");
 		}
 	};
-	const handleDelete = async (id: number) => {
+	const handleDelete = async (id: BackendIdInput) => {
 		Modal.confirm({
 			title: "确认删除",
 			content: "确定要删除该代码模板吗？",

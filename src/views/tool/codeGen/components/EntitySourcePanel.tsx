@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Card, Button, Input, Select, Table, message, Space, Tag } from "antd";
 import { CodeOutlined, PlayCircleOutlined, FileTextOutlined } from "@ant-design/icons";
+import { BackendId } from "@/api/interface";
 import {
 	parseEntityCode,
 	CodeFirstParseResultDto,
@@ -13,7 +14,7 @@ import {
 const { TextArea } = Input;
 
 interface EntitySourcePanelProps {
-	templateIds: number[];
+	templateIds: BackendId[];
 	genParams: {
 		packageName: string;
 		moduleName: string;

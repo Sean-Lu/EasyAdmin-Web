@@ -27,6 +27,7 @@ import {
 	message
 } from "antd";
 import { useSelector } from "react-redux";
+import { BackendIdInput } from "@/api/interface";
 import { CommonState, DecisionItem, DecisionItemService, DecisionItemType } from "@/services/tool/decisionItemService";
 import "./index.less";
 
@@ -160,7 +161,7 @@ const RandomDecision: React.FC<RandomDecisionProps> = ({ onBack }) => {
 		}
 	};
 
-	const handleDelete = async (id: number) => {
+	const handleDelete = async (id: BackendIdInput) => {
 		const response = await DecisionItemService.delete(id);
 		if (response.success) {
 			message.success("已删除");

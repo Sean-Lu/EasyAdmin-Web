@@ -1,4 +1,4 @@
-export const api = {
+﻿export const api = {
 	// 租户管理
 	tenant: {
 		add: "/tenant/add",
@@ -147,5 +147,22 @@ export const api = {
 		page: "/appCode/page",
 		detail: "/appCode/detail",
 		activeList: "/appCode/activeList"
+	},
+	// 通知管理
+	notification: {
+		add: "/notification/add",
+		delete: "/notification/delete",
+		updateState: "/notification/updateState",
+		page: "/notification/page",
+		detail: "/notification/detail"
+	},
+	// 用户消息管理
+	userMessage: {
+		page: "/userMessage/page",
+		detail: "/userMessage/detail",
+		unreadCount: "/userMessage/unreadCount",
+		recentUnread: "/userMessage/recentUnread",
+		markRead: "/userMessage/markRead",
+		markAllRead: "/userMessage/markAllRead"
 	}
 };

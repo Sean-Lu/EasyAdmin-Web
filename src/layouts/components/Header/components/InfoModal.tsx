@@ -10,6 +10,7 @@ import {
 	uploadUserAvatar,
 	UserInfo
 } from "@/api/modules/login";
+import { BackendId } from "@/api/interface";
 import { ThemeConfigProp } from "@/redux/interface";
 import { connect } from "react-redux";
 import "./InfoModal.less";
@@ -26,8 +27,8 @@ const InfoModal = (props: Props) => {
 	const [loading, setLoading] = useState(false);
 	const [saving, setSaving] = useState(false);
 	const [uploading, setUploading] = useState(false);
-	const [avatarFileId, setAvatarFileId] = useState<number>();
-	const [originalAvatarFileId, setOriginalAvatarFileId] = useState<number>();
+	const [avatarFileId, setAvatarFileId] = useState<BackendId>();
+	const [originalAvatarFileId, setOriginalAvatarFileId] = useState<BackendId>();
 	const [avatarSrc, setAvatarSrc] = useState("");
 	const [modalUserInfo, setModalUserInfo] = useState<UserInfo>();
 	const userInfo = modalUserInfo;
@@ -76,7 +77,7 @@ const InfoModal = (props: Props) => {
 		};
 	}, [avatarFileId]);
 
-	const showModal = async (params: { name: number }) => {
+	const showModal = async () => {
 		setModalVisible(true);
 		setModalUserInfo(undefined);
 		setAvatarFileId(undefined);

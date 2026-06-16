@@ -117,6 +117,15 @@ const systemRouter = [
 					title: "更新管理",
 					key: "system-update"
 				}
+			},
+			{
+				path: "/system/notification",
+				element: lazyLoad(React.lazy(() => import("@/views/system/notification/Notification"))),
+				meta: {
+					requiresAuth: true,
+					title: "通知管理",
+					key: "system-notification"
+				}
 			}
 		]
 	}

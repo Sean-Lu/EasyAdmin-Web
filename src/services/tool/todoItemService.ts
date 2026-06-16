@@ -1,5 +1,5 @@
 import request from "@/api/index";
-import { ApiResult } from "@/api/interface";
+import { BackendIdInput } from "@/api/interface";
 
 /**
  * 待办事项服务
@@ -9,7 +9,7 @@ export class TodoItemService {
 	 * 获取待办事项列表
 	 * @param categoryId 分类ID（可选）
 	 */
-	static async getTodoList(categoryId?: number) {
+	static async getTodoList(categoryId?: BackendIdInput) {
 		if (categoryId) {
 			return request.get<Array<any>>(`/TodoItem/List?categoryId=${categoryId}`);
 		}
@@ -20,7 +20,7 @@ export class TodoItemService {
 	 * 添加待办事项
 	 * @param data 待办事项数据
 	 */
-	static async addTodoItem(data: { name: string; done: boolean; priority?: number; categoryId?: number }) {
+	static async addTodoItem(data: { name: string; done: boolean; priority?: number; categoryId?: BackendIdInput }) {
 		return request.post<boolean>(`/TodoItem/Add`, data);
 	}
 
@@ -28,7 +28,7 @@ export class TodoItemService {
 	 * 更新待办事项状态
 	 * @param data 状态数据
 	 */
-	static async updateTodoStatus(data: { id: number; done: boolean }) {
+	static async updateTodoStatus(data: { id: BackendIdInput; done: boolean }) {
 		return request.post<boolean>(`/TodoItem/UpdateStatus`, data);
 	}
 
@@ -36,7 +36,7 @@ export class TodoItemService {
 	 * 批量更新待办事项状态
 	 * @param data 批量状态数据
 	 */
-	static async batchUpdateTodoStatus(data: { ids: number[]; done: boolean }) {
+	static async batchUpdateTodoStatus(data: { ids: BackendIdInput[]; done: boolean }) {
 		return request.post<boolean>(`/TodoItem/BatchUpdateStatus`, data);
 	}
 
@@ -44,7 +44,7 @@ export class TodoItemService {
 	 * 更新待办事项优先级
 	 * @param data 优先级数据
 	 */
-	static async updateTodoPriority(data: { id: number; priority: number }) {
+	static async updateTodoPriority(data: { id: BackendIdInput; priority: number }) {
 		return request.post<boolean>(`/TodoItem/UpdatePriority`, data);
 	}
 
@@ -52,7 +52,7 @@ export class TodoItemService {
 	 * 更新待办事项内容
 	 * @param data 内容数据
 	 */
-	static async updateTodoName(data: { id: number; name: string }) {
+	static async updateTodoName(data: { id: BackendIdInput; name: string }) {
 		return request.post<boolean>(`/TodoItem/UpdateName`, data);
 	}
 
@@ -60,7 +60,7 @@ export class TodoItemService {
 	 * 更新待办事项排序顺序
 	 * @param data 排序顺序数据
 	 */
-	static async updateTodoSortOrder(data: { id: number; sortOrder: number }) {
+	static async updateTodoSortOrder(data: { id: BackendIdInput; sortOrder: number }) {
 		return request.post<boolean>(`/TodoItem/UpdateSortOrder`, data);
 	}
 
@@ -68,7 +68,7 @@ export class TodoItemService {
 	 * 删除待办事项
 	 * @param id 待办事项ID
 	 */
-	static async deleteTodoItem(id: number) {
+	static async deleteTodoItem(id: BackendIdInput) {
 		return request.post<boolean>(`/TodoItem/Delete`, { id });
 	}
 
@@ -76,7 +76,7 @@ export class TodoItemService {
 	 * 清除已完成的待办事项
 	 * @param categoryId 分类ID（可选）
 	 */
-	static async clearCompleted(categoryId?: number) {
+	static async clearCompleted(categoryId?: BackendIdInput) {
 		if (categoryId) {
 			return request.post<boolean>(`/TodoItem/ClearCompleted?categoryId=${categoryId}`);
 		}
@@ -87,7 +87,7 @@ export class TodoItemService {
 	 * 更新待办事项分类
 	 * @param data 分类更新数据
 	 */
-	static async updateTodoCategory(data: { id: number; categoryId: number }) {
+	static async updateTodoCategory(data: { id: BackendIdInput; categoryId: BackendIdInput }) {
 		return request.post<boolean>(`/TodoItem/UpdateCategory`, data);
 	}
 }

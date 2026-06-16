@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Table, Radio, Space, Popconfirm, Modal, Form, Input, InputNumber, message } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, FolderOutlined } from "@ant-design/icons";
+import { BackendId, BackendIdInput } from "@/api/interface";
 import { CodeGenCategoryDto, addCategory, updateCategory, deleteCategory } from "@/services/tool/codeGenService";
 
 const { TextArea } = Input;
 
 interface CategoryPanelProps {
 	categories: CodeGenCategoryDto[];
-	selectedCategory: number | null;
-	onSelectCategory: (id: number | null) => void;
+	selectedCategory: BackendId | null;
+	onSelectCategory: (id: BackendId | null) => void;
 	onRefresh: () => void;
 	compact?: boolean;
 }
@@ -50,7 +51,7 @@ const CategoryPanel: React.FC<CategoryPanelProps> = ({
 			message.error("保存失败");
 		}
 	};
-	const handleDelete = async (id: number) => {
+	const handleDelete = async (id: BackendIdInput) => {
 		Modal.confirm({
 			title: "确认删除",
 			content: "确定要删除该分类吗？",

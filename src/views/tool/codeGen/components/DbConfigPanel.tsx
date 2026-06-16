@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Table, Radio, Space, Popconfirm, Modal, Form, Input, Select, InputNumber, Checkbox, message } from "antd";
 import { PlusOutlined, DatabaseOutlined, EditOutlined, DeleteOutlined, CheckCircleOutlined } from "@ant-design/icons";
+import { BackendId, BackendIdInput } from "@/api/interface";
 import {
 	DbConnectionConfigDto,
 	CodeGenDbType,
@@ -14,8 +15,8 @@ const { Option } = Select;
 
 interface DbConfigPanelProps {
 	dbConfigs: DbConnectionConfigDto[];
-	selectedDbConfig: number | null;
-	onSelectDbConfig: (id: number) => void;
+	selectedDbConfig: BackendId | null;
+	onSelectDbConfig: (id: BackendId) => void;
 	onRefresh: () => void;
 }
 
@@ -37,7 +38,7 @@ const DbConfigPanel: React.FC<DbConfigPanelProps> = ({ dbConfigs, selectedDbConf
 		}
 	}, [modalVisible]);
 
-	const handleTestConnection = async (id: number) => {
+	const handleTestConnection = async (id: BackendIdInput) => {
 		try {
 			await testDbConnection(id);
 			message.success("数据库连接成功");
@@ -62,7 +63,7 @@ const DbConfigPanel: React.FC<DbConfigPanelProps> = ({ dbConfigs, selectedDbConf
 		}
 	};
 
-	const handleDelete = async (id: number) => {
+	const handleDelete = async (id: BackendIdInput) => {
 		Modal.confirm({
 			title: "确认删除",
 			content: "确定要删除该数据库配置吗？",

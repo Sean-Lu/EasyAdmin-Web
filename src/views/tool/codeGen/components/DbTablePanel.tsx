@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Card, Checkbox, Table, Input } from "antd";
 import { SearchOutlined, TableOutlined } from "@ant-design/icons";
+import { BackendId } from "@/api/interface";
 import { DbTableInfoDto } from "@/services/tool/codeGenService";
 
 const { Search } = Input;
@@ -8,7 +9,7 @@ const { Search } = Input;
 interface DbTablePanelProps {
 	dbTables: DbTableInfoDto[];
 	selectedTables: string[];
-	selectedDbConfig: number | null;
+	selectedDbConfig: BackendId | null;
 	tableSearchText: string;
 	onSearchChange: (text: string) => void;
 	onSelectAll: () => void;

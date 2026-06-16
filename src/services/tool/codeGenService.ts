@@ -1,6 +1,6 @@
 import http from "@/api/index";
 import { PORT1 } from "@/api/config/servicePort";
-import { DtoBase } from "@/api/interface";
+import { BackendId, BackendIdInput, DtoBase } from "@/api/interface";
 
 /**代码生成数据库类型 */
 export enum CodeGenDbType {
@@ -19,7 +19,7 @@ export enum CodeGenTemplateType {
 export interface CodeGenTemplateDto extends DtoBase {
 	name: string; //模板名称
 	code: string; //模板代码
-	categoryId: number; //分类ID
+	categoryId: BackendId; //分类ID
 	categoryName: string; //分类名称
 	templateType: CodeGenTemplateType; //模板类型
 	content: string; //模板内容
@@ -78,9 +78,9 @@ export interface CodeGenResultDto {
 
 /**代码生成请求DTO */
 export interface CodeGenReqDto {
-	dbConfigId: number; //数据库连接配置ID
+	dbConfigId: BackendId; //数据库连接配置ID
 	tableNames: string[]; //表名列表
-	templateIds: number[]; //模板ID列表
+	templateIds: BackendId[]; //模板ID列表
 	packageName: string; //包名
 	moduleName: string; //模块名
 	author: string; //作者
@@ -110,7 +110,7 @@ export interface CodeGenConfigReqDto {
 	packageName?: string; //包名
 	moduleName?: string; //模块名
 	author?: string; //作者
-	templateIds: number[]; //模板ID列表
+	templateIds: BackendId[]; //模板ID列表
 	columns?: CodeGenColumnConfigDto[]; //列配置
 }
 
@@ -134,14 +134,14 @@ export const getTemplates = async (params?: {
 	name?: string; //模板名称
 	templateType?: number; //模板类型
 	state?: number; //状态
-	categoryId?: number; //分类ID
+	categoryId?: BackendIdInput; //分类ID
 }): Promise<CodeGenTemplateDto[]> => {
 	const res = await http.get<CodeGenTemplateDto[]>(`${PORT1}/codeGen/GetTemplates`, params);
 	return res.data;
 };
 
 /**获取代码生成模板 */
-export const getTemplate = async (id: number): Promise<CodeGenTemplateDto> => {
+export const getTemplate = async (id: BackendIdInput): Promise<CodeGenTemplateDto> => {
 	const res = await http.get<CodeGenTemplateDto>(`${PORT1}/codeGen/GetTemplate`, { id });
 	return res.data;
 };
@@ -159,7 +159,7 @@ export const updateTemplate = async (data: any): Promise<boolean> => {
 };
 
 /**删除代码生成模板 */
-export const deleteTemplate = async (id: number): Promise<boolean> => {
+export const deleteTemplate = async (id: BackendIdInput): Promise<boolean> => {
 	const res = await http.post<boolean>(`${PORT1}/codeGen/DeleteTemplate`, { id });
 	return res.data;
 };
@@ -175,7 +175,7 @@ export const getDbConfigs = async (params?: {
 };
 
 /**获取数据库连接配置 */
-export const getDbConfig = async (id: number): Promise<DbConnectionConfigDto> => {
+export const getDbConfig = async (id: BackendIdInput): Promise<DbConnectionConfigDto> => {
 	const res = await http.get<DbConnectionConfigDto>(`${PORT1}/codeGen/GetDbConfig`, { id });
 	return res.data;
 };
@@ -193,19 +193,19 @@ export const updateDbConfig = async (data: any): Promise<boolean> => {
 };
 
 /**删除数据库连接配置 */
-export const deleteDbConfig = async (id: number): Promise<boolean> => {
+export const deleteDbConfig = async (id: BackendIdInput): Promise<boolean> => {
 	const res = await http.post<boolean>(`${PORT1}/codeGen/DeleteDbConfig`, { id });
 	return res.data;
 };
 
 /**测试数据库连接 */
-export const testDbConnection = async (id: number): Promise<boolean> => {
+export const testDbConnection = async (id: BackendIdInput): Promise<boolean> => {
 	const res = await http.post<boolean>(`${PORT1}/codeGen/TestDbConnection?id=${id}`);
 	return res.data;
 };
 
 /**获取数据库表信息列表 */
-export const getDbTables = async (id: number): Promise<DbTableInfoDto[]> => {
+export const getDbTables = async (id: BackendIdInput): Promise<DbTableInfoDto[]> => {
 	const res = await http.get<DbTableInfoDto[]>(`${PORT1}/codeGen/GetDbTables`, { id });
 	return res.data;
 };
@@ -294,7 +294,7 @@ export const downloadPackage = async (taskId: string): Promise<void> => {
 export interface CodeGenCategoryDto extends DtoBase {
 	name: string; //分类名称
 	code: string; //分类编码
-	parentId: number; //父分类ID
+	parentId: BackendId; //父分类ID
 	level: number; //层级
 	sortOrder: number; //排序号
 	description: string; //分类描述
@@ -315,7 +315,7 @@ export const getCategories = async (): Promise<CodeGenCategoryDto[]> => {
 };
 
 /**获取分类详情 */
-export const getCategory = async (id: number): Promise<CodeGenCategoryDto> => {
+export const getCategory = async (id: BackendIdInput): Promise<CodeGenCategoryDto> => {
 	const res = await http.get<CodeGenCategoryDto>(`${PORT1}/codeGenCategory/Detail`, { id });
 	return res.data;
 };
@@ -324,20 +324,20 @@ export const getCategory = async (id: number): Promise<CodeGenCategoryDto> => {
 export const addCategory = async (data: {
 	name: string;
 	code: string;
-	parentId?: number;
+	parentId?: BackendIdInput;
 	sortOrder?: number;
 	description?: string;
-}): Promise<number> => {
-	const res = await http.post<number>(`${PORT1}/codeGenCategory/Add`, data);
+}): Promise<BackendId> => {
+	const res = await http.post<BackendId>(`${PORT1}/codeGenCategory/Add`, data);
 	return res.data;
 };
 
 /**更新分类 */
 export const updateCategory = async (data: {
-	id: number;
+	id: BackendIdInput;
 	name: string;
 	code: string;
-	parentId?: number;
+	parentId?: BackendIdInput;
 	sortOrder: number;
 	description?: string;
 	state: number;
@@ -346,7 +346,7 @@ export const updateCategory = async (data: {
 };
 
 /**删除分类 */
-export const deleteCategory = async (id: number): Promise<void> => {
+export const deleteCategory = async (id: BackendIdInput): Promise<void> => {
 	await http.post(`${PORT1}/codeGenCategory/Delete`, { id });
 };
 
@@ -360,7 +360,7 @@ export const importCategories = async (data: {
 	categories: Array<{
 		name: string;
 		code: string;
-		parentId?: number;
+		parentId?: BackendIdInput;
 		sortOrder?: number;
 		description?: string;
 	}>;

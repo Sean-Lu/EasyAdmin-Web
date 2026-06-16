@@ -1,3 +1,6 @@
+export type BackendId = string;
+export type BackendIdInput = BackendId | number;
+
 /**请求响应参数(不包含data) */
 export interface ApiResultBase {
 	success: boolean;
@@ -24,10 +27,10 @@ export interface PageRes<T> extends PageReqBase {
 
 /**DTO基础参数 */
 export interface DtoBase {
-	id: number;
-	createUserId: number;
+	id: BackendId;
+	createUserId: BackendId;
 	createTime: string;
-	updateUserId: number;
+	updateUserId: BackendId;
 	updateTime: string;
 	isDelete: boolean;
 }

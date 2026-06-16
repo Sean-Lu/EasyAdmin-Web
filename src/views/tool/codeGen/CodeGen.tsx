@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Card, Row, Col, message, Segmented } from "antd";
+import { BackendId } from "@/api/interface";
 import {
 	getTemplates,
 	getDbConfigs,
@@ -32,7 +33,7 @@ const CodeGen: React.FC = () => {
 	/** 数据库配置列表 */
 	const [dbConfigs, setDbConfigs] = useState<DbConnectionConfigDto[]>([]);
 	/** 当前选中的数据库配置ID */
-	const [selectedDbConfig, setSelectedDbConfig] = useState<number | null>(null);
+	const [selectedDbConfig, setSelectedDbConfig] = useState<BackendId | null>(null);
 	/** 数据库表列表 */
 	const [dbTables, setDbTables] = useState<DbTableInfoDto[]>([]);
 	/** 选中的数据表列表 */
@@ -43,11 +44,11 @@ const CodeGen: React.FC = () => {
 	/** 分类列表 */
 	const [categories, setCategories] = useState<CodeGenCategoryDto[]>([]);
 	/** 当前选中的分类ID */
-	const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+	const [selectedCategory, setSelectedCategory] = useState<BackendId | null>(null);
 	/** 代码模板列表 */
 	const [templates, setTemplates] = useState<CodeGenTemplateDto[]>([]);
 	/** 选中的模板ID列表 */
-	const [selectedTemplates, setSelectedTemplates] = useState<number[]>([]);
+	const [selectedTemplates, setSelectedTemplates] = useState<BackendId[]>([]);
 
 	/** 代码生成参数配置 */
 	const [genParams, setGenParams] = useState({
@@ -109,7 +110,7 @@ const CodeGen: React.FC = () => {
 	/**
 	 * 加载代码模板列表（需要先选择分类）
 	 */
-	const loadTemplates = async (categoryId?: number) => {
+	const loadTemplates = async (categoryId?: BackendId) => {
 		if (!categoryId) {
 			setTemplates([]);
 			return;
@@ -133,7 +134,7 @@ const CodeGen: React.FC = () => {
 	/**
 	 * 选择数据库配置，加载该配置下的数据表列表
 	 */
-	const handleSelectDbConfig = async (id: number) => {
+	const handleSelectDbConfig = async (id: BackendId) => {
 		setSelectedDbConfig(id);
 		try {
 			const data = await getDbTables(id);
@@ -149,7 +150,7 @@ const CodeGen: React.FC = () => {
 	/**
 	 * 选择分类，加载该分类下的模板列表
 	 */
-	const handleSelectCategory = (id: number | null) => {
+	const handleSelectCategory = (id: BackendId | null) => {
 		setSelectedCategory(id);
 		setSelectedTemplates([]);
 		if (id) {
@@ -204,7 +205,7 @@ const CodeGen: React.FC = () => {
 	/**
 	 * 切换单个代码模板的选中状态
 	 */
-	const handleSelectTemplate = (id: number, checked: boolean) => {
+	const handleSelectTemplate = (id: BackendId, checked: boolean) => {
 		if (checked) {
 			setSelectedTemplates([...selectedTemplates, id]);
 		} else {

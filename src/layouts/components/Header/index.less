@@ -22,6 +22,19 @@
 			line-height: 19px;
 			cursor: pointer;
 		}
+		.message-notice-entry {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 34px;
+			height: 32px;
+			margin-right: 16px;
+			cursor: pointer;
+		}
+		.message-notice-icon {
+			font-size: 19px;
+			line-height: 19px;
+		}
 		.username {
 			margin: 0 20px 0 0;
 			font-size: 15px;
@@ -53,4 +66,39 @@
 .ant-divider-with-text::before,
 .ant-divider-with-text::after {
 	border-top: 1px solid #dcdfe6 !important;
+}
+.message-popover {
+	width: 300px;
+	.message-popover-item {
+		cursor: pointer;
+	}
+	.message-popover-item:hover {
+		background: #f5f7fa;
+	}
+	&.message-popover-dark {
+		.ant-list-item {
+			border-block-end-color: #303030;
+		}
+		.message-popover-item:hover {
+			background: #2a2a2a;
+		}
+		.ant-typography {
+			color: #d9d9d9;
+		}
+		.ant-typography-secondary {
+			color: #8c8c8c;
+		}
+	}
+}
+.message-popover-root-dark {
+	.ant-popover-inner {
+		background: #1f1f1f;
+	}
+	.ant-popover-title {
+		color: #d9d9d9;
+		border-bottom-color: #303030;
+	}
+	.ant-popover-arrow::before {
+		background: #1f1f1f;
+	}
 }

@@ -4,19 +4,21 @@ import {
 	BarChartOutlined,
 	CodeOutlined,
 	CompassOutlined,
+	GiftOutlined,
 	LinkOutlined,
 	QrcodeOutlined,
 	SearchOutlined
 } from "@ant-design/icons";
 import { Card, Col, Empty, Input, Row, Tag, Typography } from "antd";
 import JsonToTable from "./tools/jsonToTable";
+import Lottery from "./tools/lottery";
 import QrCode from "./tools/qrCode";
 import RandomDecision from "./tools/randomDecision";
 import SqlToTable from "./tools/sqlToTable";
 import UrlCodec from "./tools/urlCodec";
 import "./index.less";
 
-type ToolKey = "sqlToTable" | "urlCodec" | "jsonToTable" | "qrCode" | "randomDecision";
+type ToolKey = "sqlToTable" | "urlCodec" | "jsonToTable" | "qrCode" | "randomDecision" | "lottery";
 
 interface ToolItem {
 	key: ToolKey;
@@ -61,6 +63,13 @@ const tools: ToolItem[] = [
 		description: "吃什么/去哪玩",
 		tag: "life_tools",
 		icon: <CompassOutlined />
+	},
+	{
+		key: "lottery",
+		title: "抽奖工具",
+		description: "活动奖项与现场抽奖",
+		tag: "life_tools",
+		icon: <GiftOutlined />
 	}
 ];
 
@@ -93,6 +102,10 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "randomDecision") {
 		return <RandomDecision onBack={() => setActiveTool(null)} />;
+	}
+
+	if (activeTool === "lottery") {
+		return <Lottery onBack={() => setActiveTool(null)} />;
 	}
 
 	return (
@@ -131,7 +144,7 @@ const CommonTools: React.FC = () => {
 					))}
 				</Row>
 			) : (
-				<Empty description="未找到匹配工具" />
+				<Empty description="未找到匹配的工具" />
 			)}
 		</div>
 	);

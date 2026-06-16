@@ -17,8 +17,8 @@ const userRouter = [
 			},
 			{
 				path: "/user/todoList",
-				// element: lazyLoad(React.lazy(() => import("@/views/tool/todoList/index"))), // 纯前端实现（不涉及后端）
-				element: lazyLoad(React.lazy(() => import("@/views/tool/todoListWithPriority/index"))),
+				// element: lazyLoad(React.lazy(() => import("@/views/user/todoList/index"))), // 纯前端实现（不涉及后端）
+				element: lazyLoad(React.lazy(() => import("@/views/user/todoListWithPriority/index"))),
 				meta: {
 					requiresAuth: true,
 					title: "待办事项",
@@ -27,7 +27,7 @@ const userRouter = [
 			},
 			{
 				path: "/user/checkIn",
-				element: lazyLoad(React.lazy(() => import("@/views/tool/checkIn/index"))),
+				element: lazyLoad(React.lazy(() => import("@/views/user/checkIn/index"))),
 				meta: {
 					requiresAuth: true,
 					title: "签到",
@@ -36,7 +36,7 @@ const userRouter = [
 			},
 			{
 				path: "/user/dayWorkReport",
-				element: lazyLoad(React.lazy(() => import("@/views/tool/dayWorkReport/DayWorkReport"))),
+				element: lazyLoad(React.lazy(() => import("@/views/user/dayWorkReport/DayWorkReport"))),
 				meta: {
 					requiresAuth: true,
 					title: "日报",
@@ -45,7 +45,7 @@ const userRouter = [
 			},
 			{
 				path: "/user/weekWorkReport",
-				element: lazyLoad(React.lazy(() => import("@/views/tool/weekWorkReport/WeekWorkReport"))),
+				element: lazyLoad(React.lazy(() => import("@/views/user/weekWorkReport/WeekWorkReport"))),
 				meta: {
 					requiresAuth: true,
 					title: "周报",
@@ -54,7 +54,7 @@ const userRouter = [
 			},
 			{
 				path: "/user/monthWorkReport",
-				element: lazyLoad(React.lazy(() => import("@/views/tool/monthWorkReport/MonthWorkReport"))),
+				element: lazyLoad(React.lazy(() => import("@/views/user/monthWorkReport/MonthWorkReport"))),
 				meta: {
 					requiresAuth: true,
 					title: "月报",

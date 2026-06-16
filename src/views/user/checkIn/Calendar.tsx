@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-import { api } from "../../../actions/tool/checkIn";
+import { api } from "@/actions/tool/checkIn";
 import axios from "../../../api/index";
 
 import "./Calendar.css";

@@ -93,7 +93,7 @@
 ## 文件结构
 
 ```
-EasyAdmin-Web/src/views/tool/todoListWithPriority/
+EasyAdmin-Web/src/views/user/todoListWithPriority/
 ├── Heaher/           # 顶部输入栏组件
 │   ├── index.jsx     # 顶部输入栏组件
 │   └── CategorySelector.jsx  # 分类选择组件【目前没有使用，用CategoryManager替代】

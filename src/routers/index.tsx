@@ -1,7 +1,7 @@
 import { Navigate, useRoutes, RouteObject as ReactRouterRouteObject } from "react-router-dom";
 import { RouteObject } from "@/routers/interface";
 import Login from "@/views/login/index";
-import CheckIn from "@/views/tool/checkIn/Calendar";
+import CheckIn from "@/views/user/checkIn/Calendar";
 
 // * 导入所有router
 // const metaRouters = import.meta.globEager("./modules/*.tsx"); // 支持：*.tsx

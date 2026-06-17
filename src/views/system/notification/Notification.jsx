@@ -12,6 +12,24 @@ const noticeTypeMap = {
 	3: { text: "紧急", color: "red" }
 };
 
+const renderSendChannels = record => {
+	const channels = [];
+	if (record.sendInSystem !== false) {
+		channels.push({ text: "站内", color: "blue" });
+	}
+	if (record.sendEmail) {
+		channels.push({ text: "邮件", color: "green" });
+	}
+	if (record.sendSms) {
+		channels.push({ text: "短信", color: "purple" });
+	}
+	return channels.map(item => (
+		<Tag color={item.color} key={item.text}>
+			{item.text}
+		</Tag>
+	));
+};
+
 export default class Notification extends React.Component {
 	searchFormRef = React.createRef();
 
@@ -70,8 +88,14 @@ export default class Notification extends React.Component {
 	};
 
 	handleAddValues = values => {
+		const sendChannels = values.sendChannels || ["inSystem"];
+
 		return {
 			...values,
+			sendChannels: undefined,
+			sendInSystem: sendChannels.includes("inSystem"),
+			sendEmail: sendChannels.includes("email"),
+			sendSms: sendChannels.includes("sms"),
 			sendToAll: !!values.sendToAll,
 			userIds: values.userIds || [],
 			roleIds: values.roleIds || [],
@@ -102,6 +126,12 @@ export default class Notification extends React.Component {
 				dataIndex: "targetSummary",
 				align: "center",
 				width: 240
+			},
+			{
+				title: "发送方式",
+				align: "center",
+				width: 150,
+				render: (_, record) => renderSendChannels(record)
 			},
 			{
 				title: "发送时间",

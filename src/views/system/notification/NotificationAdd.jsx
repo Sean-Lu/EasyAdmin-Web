@@ -67,6 +67,7 @@ export default class NotificationAdd extends React.Component {
 						onFinish={onSubmit}
 						initialValues={{
 							noticeType: 1,
+							sendChannels: ["inSystem"],
 							sendToAll: true
 						}}
 					>
@@ -79,6 +80,15 @@ export default class NotificationAdd extends React.Component {
 									{ value: 1, label: "普通" },
 									{ value: 2, label: "重要" },
 									{ value: 3, label: "紧急" }
+								]}
+							/>
+						</Form.Item>
+						<Form.Item name="sendChannels" label="发送方式" rules={[{ required: true, message: "请至少选择一种发送方式" }]}>
+							<Checkbox.Group
+								options={[
+									{ label: "站内通知", value: "inSystem" },
+									{ label: "邮件", value: "email" },
+									{ label: "短信", value: "sms" }
 								]}
 							/>
 						</Form.Item>

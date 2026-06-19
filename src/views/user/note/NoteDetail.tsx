@@ -22,6 +22,7 @@ import {
 	UndoOutlined,
 	UnorderedListOutlined
 } from "@ant-design/icons";
+import { useSelector } from "react-redux";
 import { FileBizType, FileStoreType, getFileObjectUrl, uploadFile } from "@/services/system/fileService";
 import { NoteCategoryDto, NoteCategoryService, NoteDto, NoteService, NoteUpdateDto } from "@/services/tool/noteService";
 import "./note.less";
@@ -70,6 +71,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 	onEdit,
 	onSaved
 }) => {
+	const isDark = useSelector((state: any) => state.global.themeConfig.isDark);
 	const editorRef = useRef<HTMLDivElement>(null);
 	const editorShellRef = useRef<HTMLDivElement>(null);
 	const previewRef = useRef<HTMLDivElement>(null);
@@ -603,7 +605,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 	};
 
 	return (
-		<div className="note-page note-detail-panel">
+		<div className={`note-page note-detail-panel${isDark ? " note-dark" : ""}`}>
 			<div className="note-detail-header">
 				<Space>
 					<Button icon={<ArrowLeftOutlined />} onClick={() => void backToList()}>

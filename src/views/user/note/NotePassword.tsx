@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Form, Input, Space, message } from "antd";
 import { ArrowLeftOutlined, KeyOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
 import { NotePasswordService } from "@/services/tool/noteService";
+import "./note.less";
 
 interface NotePasswordProps {
 	onBack: () => void;
@@ -9,6 +11,7 @@ interface NotePasswordProps {
 
 // 笔记密码页
 const NotePassword: React.FC<NotePasswordProps> = ({ onBack }) => {
+	const isDark = useSelector((state: any) => state.global.themeConfig.isDark);
 	const [hasPassword, setHasPassword] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [form] = Form.useForm();
@@ -42,6 +45,7 @@ const NotePassword: React.FC<NotePasswordProps> = ({ onBack }) => {
 
 	return (
 		<Card
+			className={`note-password-panel${isDark ? " note-dark" : ""}`}
 			title={
 				<Space>
 					<Button icon={<ArrowLeftOutlined />} onClick={onBack}>

@@ -12,6 +12,7 @@ import {
 	UnlockOutlined
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { useSelector } from "react-redux";
 import {
 	NoteCategoryDto,
 	NoteCategoryService,
@@ -31,6 +32,7 @@ type NoteView = "list" | "detail" | "password";
 
 // 笔记列表页
 const NoteList: React.FC = () => {
+	const isDark = useSelector((state: any) => state.global.themeConfig.isDark);
 	const [categories, setCategories] = useState<NoteCategoryDto[]>([]);
 	const [tags, setTags] = useState<NoteTagDto[]>([]);
 	const [notes, setNotes] = useState<NoteDto[]>([]);
@@ -276,7 +278,7 @@ const NoteList: React.FC = () => {
 	}
 
 	return (
-		<div className="note-page note-list-layout">
+		<div className={`note-page note-list-layout${isDark ? " note-dark" : ""}`}>
 			<div className="note-category-panel">
 				<div className="note-category-header">
 					<strong>笔记分类</strong>

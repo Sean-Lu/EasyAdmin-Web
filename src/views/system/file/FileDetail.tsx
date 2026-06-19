@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Descriptions, Button, Tag } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
-import { FileDto, FileStoreType } from "../../../services/system/fileService";
+import { FileBizType, FileDto, FileStoreType } from "../../../services/system/fileService";
 import dayjs from "dayjs";
 
 interface FileDetailProps {
@@ -33,6 +33,15 @@ const FileDetail: React.FC<FileDetailProps> = ({ visible, file, onClose, onDownl
 		return typeMap[type] ?? type.toString();
 	};
 
+	const getBizTypeText = (type: FileBizType) => {
+		const typeMap: Record<number, string> = {
+			[FileBizType.Normal]: "普通文件",
+			[FileBizType.NoteImage]: "笔记图片",
+			[FileBizType.UserAvatar]: "用户头像"
+		};
+		return typeMap[type] ?? type.toString();
+	};
+
 	return (
 		<Modal
 			title="文件详情"
@@ -54,6 +63,9 @@ const FileDetail: React.FC<FileDetailProps> = ({ visible, file, onClose, onDownl
 				<Descriptions.Item label="文件大小">{formatSize(file.size)}</Descriptions.Item>
 				<Descriptions.Item label="存储类型">
 					<Tag color="blue">{getStoreTypeText(file.storeType)}</Tag>
+				</Descriptions.Item>
+				<Descriptions.Item label="业务分类">
+					<Tag>{getBizTypeText(file.bizType)}</Tag>
 				</Descriptions.Item>
 				<Descriptions.Item label="上传时间">{formatDate(file.createTime)}</Descriptions.Item>
 				<Descriptions.Item label="文件描述" span={2}>

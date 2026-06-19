@@ -26,6 +26,15 @@ const userRouter = [
 				}
 			},
 			{
+				path: "/user/note",
+				element: lazyLoad(React.lazy(() => import("@/views/user/note/NoteList"))),
+				meta: {
+					requiresAuth: true,
+					title: "我的笔记",
+					key: "user-note"
+				}
+			},
+			{
 				path: "/user/checkIn",
 				element: lazyLoad(React.lazy(() => import("@/views/user/checkIn/index"))),
 				meta: {

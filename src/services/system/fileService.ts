@@ -11,6 +11,18 @@ export enum FileStoreType {
 	AliyunOSS = 1
 }
 
+/**
+ * 文件业务分类
+ */
+export enum FileBizType {
+	/** 普通文件 */
+	Normal = 0,
+	/** 笔记图片 */
+	NoteImage = 1,
+	/** 用户头像 */
+	UserAvatar = 2
+}
+
 export interface FileDto {
 	id: string;
 	name: string;
@@ -18,6 +30,7 @@ export interface FileDto {
 	size: number;
 	contentType: string;
 	storeType: FileStoreType;
+	bizType: FileBizType;
 	createTime: string;
 	description?: string;
 }
@@ -25,6 +38,7 @@ export interface FileDto {
 export interface FilePageReqDto extends PageReqBase {
 	name?: string;
 	description?: string;
+	bizType?: FileBizType;
 }
 
 // export interface FileItem extends FileDto {
@@ -46,12 +60,14 @@ export const getFileById = async (id: string): Promise<ApiResult<FileDto>> => {
 export const uploadFile = async (
 	file: File,
 	storeType: FileStoreType = FileStoreType.LocalFile, // 默认本地文件
-	description?: string
+	description?: string,
+	bizType: FileBizType = FileBizType.Normal
 ): Promise<ApiResult<FileDto>> => {
 	const formData = new FormData();
 	formData.append("file", file);
 	formData.append("storeType", storeType.toString());
 	formData.append("description", description || "");
+	formData.append("bizType", bizType.toString());
 
 	return await http.post<FileDto>("/file/uploadfile", formData, {
 		headers: {
@@ -97,6 +113,13 @@ export const downloadFile = async (id: string): Promise<void> => {
 		console.error("下载文件出错:", error);
 		throw error;
 	}
+};
+
+// 获取文件预览地址
+export const getFileObjectUrl = async (id: string): Promise<string> => {
+	const response = await http.downloadGet("/file/downloadfile", { id }, { headers: { noLoading: true } });
+	const contentType = response.headers["content-type"] || "application/octet-stream";
+	return window.URL.createObjectURL(new Blob([response.data], { type: contentType }));
 };
 
 // 删除文件

@@ -61,7 +61,8 @@ export const uploadUserAvatar = (file: File) => {
 export const deleteUserAvatarFile = (avatarFileId?: BackendIdInput) => {
 	if (!avatarFileId) return Promise.resolve();
 
-	return http.delete<boolean>(PORT1 + `/file/deletefile`, { id: avatarFileId });
+	// 头像属于业务文件，不能走文件管理删除接口；这里使用用户头像专用清理接口。
+	return http.delete<boolean>(PORT1 + `/user/deleteAvatarFile`, { id: avatarFileId });
 };
 
 // * 获取用户头像文件的 Object URL

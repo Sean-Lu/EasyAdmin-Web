@@ -1,12 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Space, Modal, message, Card, Tag, Form, Input } from "antd";
+import { Table, Button, Space, Modal, message, Card, Tag, Form, Input, Select, Tooltip } from "antd";
 import { DeleteOutlined, DownloadOutlined, ExclamationCircleOutlined, SearchOutlined } from "@ant-design/icons";
-import { FileDto, getFiles, deleteFile, downloadFile, FileStoreType, getFileById } from "../../../services/system/fileService";
+import {
+	FileDto,
+	getFiles,
+	deleteFile,
+	downloadFile,
+	FileStoreType,
+	FileBizType,
+	getFileById
+} from "../../../services/system/fileService";
 import FileUpload from "./FileUpload";
 import FileDetail from "./FileDetail";
 import dayjs from "dayjs";
 
 const { confirm } = Modal;
+
+const fileBizTypeMap: Record<number, React.ReactNode> = {
+	[FileBizType.Normal]: <Tag>普通文件</Tag>,
+	[FileBizType.NoteImage]: <Tag color="purple">笔记图片</Tag>,
+	[FileBizType.UserAvatar]: <Tag color="cyan">用户头像</Tag>
+};
 
 // 文件列表
 const FileList: React.FC = () => {
@@ -158,6 +172,12 @@ const FileList: React.FC = () => {
 			}
 		},
 		{
+			title: "业务分类",
+			dataIndex: "bizType",
+			key: "bizType",
+			render: (type: FileBizType) => fileBizTypeMap[type] ?? type
+		},
+		{
 			title: "上传时间",
 			dataIndex: "createTime",
 			key: "createTime",
@@ -167,16 +187,21 @@ const FileList: React.FC = () => {
 			title: "操作",
 			key: "actions",
 			width: 180,
-			render: (_: any, record: FileDto) => (
-				<Space size="middle">
-					<Button type="primary" size="small" icon={<DownloadOutlined />} onClick={() => handleDownload(record.id)}>
-						下载
-					</Button>
-					<Button danger size="small" icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}>
-						删除
-					</Button>
-				</Space>
-			)
+			render: (_: any, record: FileDto) => {
+				const canDelete = record.bizType === FileBizType.Normal;
+				return (
+					<Space size="middle">
+						<Button type="primary" size="small" icon={<DownloadOutlined />} onClick={() => handleDownload(record.id)}>
+							下载
+						</Button>
+						<Tooltip title={canDelete ? "" : "该文件被业务引用，不能在文件管理中删除"}>
+							<Button danger size="small" icon={<DeleteOutlined />} disabled={!canDelete} onClick={() => handleDelete(record.id)}>
+								删除
+							</Button>
+						</Tooltip>
+					</Space>
+				);
+			}
 		}
 	];
 
@@ -188,6 +213,17 @@ const FileList: React.FC = () => {
 				</Form.Item>
 				<Form.Item name="description" label="描述">
 					<Input placeholder="请输入描述" allowClear />
+				</Form.Item>
+				<Form.Item name="bizType" label="业务分类">
+					<Select
+						allowClear
+						style={{ width: 140 }}
+						options={[
+							{ value: FileBizType.Normal, label: "普通文件" },
+							{ value: FileBizType.NoteImage, label: "笔记图片" },
+							{ value: FileBizType.UserAvatar, label: "用户头像" }
+						]}
+					/>
 				</Form.Item>
 				<Form.Item>
 					<Space>

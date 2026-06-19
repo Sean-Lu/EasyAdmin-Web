@@ -4,6 +4,7 @@ import {
 	BarChartOutlined,
 	CodeOutlined,
 	CompassOutlined,
+	FundProjectionScreenOutlined,
 	GiftOutlined,
 	LinkOutlined,
 	QrcodeOutlined,
@@ -15,10 +16,11 @@ import Lottery from "./tools/lottery";
 import QrCode from "./tools/qrCode";
 import RandomDecision from "./tools/randomDecision";
 import SqlToTable from "./tools/sqlToTable";
+import StockPortfolio from "./tools/stockPortfolio";
 import UrlCodec from "./tools/urlCodec";
 import "./index.less";
 
-type ToolKey = "sqlToTable" | "urlCodec" | "jsonToTable" | "qrCode" | "randomDecision" | "lottery";
+type ToolKey = "sqlToTable" | "urlCodec" | "jsonToTable" | "qrCode" | "randomDecision" | "lottery" | "stockPortfolio";
 
 interface ToolItem {
 	key: ToolKey;
@@ -70,6 +72,13 @@ const tools: ToolItem[] = [
 		description: "活动奖项与现场抽奖",
 		tag: "life_tools",
 		icon: <GiftOutlined />
+	},
+	{
+		key: "stockPortfolio",
+		title: "股票持仓管理",
+		description: "记录持仓并统计盈亏",
+		tag: "finance_tools",
+		icon: <FundProjectionScreenOutlined />
 	}
 ];
 
@@ -106,6 +115,10 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "lottery") {
 		return <Lottery onBack={() => setActiveTool(null)} />;
+	}
+
+	if (activeTool === "stockPortfolio") {
+		return <StockPortfolio onBack={() => setActiveTool(null)} />;
 	}
 
 	return (

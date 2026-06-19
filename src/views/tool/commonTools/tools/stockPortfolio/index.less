@@ -1,0 +1,135 @@
+.stock-portfolio-page {
+	.portfolio-summary {
+		margin-bottom: 16px;
+		.ant-card {
+			border-radius: 8px;
+		}
+	}
+	.portfolio-toolbar {
+		display: flex;
+		gap: 16px;
+		align-items: center;
+		justify-content: flex-end;
+		margin-bottom: 16px;
+	}
+	.portfolio-table-title {
+		font-weight: 600;
+		color: #1f2937;
+	}
+	.portfolio-search {
+		width: min(320px, 100%);
+		margin-left: auto;
+	}
+	.stock-name {
+		font-weight: 600;
+		color: #1f2937;
+	}
+	.stock-code {
+		font-size: 12px;
+		color: #8c8c8c;
+	}
+	.current-price-input,
+	.form-number-input {
+		width: 100%;
+	}
+	.profit-up {
+		color: #cf1322;
+	}
+	.profit-down {
+		color: #389e0d;
+	}
+	.ant-statistic.profit-up {
+		.ant-statistic-content {
+			color: #cf1322;
+		}
+	}
+	.ant-statistic.profit-down {
+		.ant-statistic-content {
+			color: #389e0d;
+		}
+	}
+	&.stock-portfolio-dark {
+		.portfolio-table-title,
+		.stock-name {
+			color: #d9d9d9;
+		}
+		.stock-code {
+			color: #8c8c8c;
+		}
+		.portfolio-summary {
+			.ant-card {
+				background: #141414;
+				border-color: #303030;
+			}
+			.ant-statistic-title {
+				color: #8c8c8c;
+			}
+			.ant-statistic-content {
+				color: #d9d9d9;
+			}
+		}
+		.ant-table {
+			color: #d9d9d9;
+			background: #141414;
+		}
+		.ant-table-container,
+		.ant-table-content,
+		.ant-table-thead > tr > th,
+		.ant-table-tbody > tr > td {
+			border-color: #303030;
+		}
+		.ant-table-thead > tr > th {
+			color: #f0f0f0;
+			background: #1f1f1f;
+		}
+		.ant-table-tbody > tr > td,
+		.ant-table-tbody > tr.ant-table-row:hover > td {
+			background: #141414;
+		}
+		.ant-pagination-total-text,
+		.ant-pagination-item-link {
+			color: #d9d9d9;
+		}
+		.current-price-input {
+			.ant-input-number,
+			.ant-input-number-group-addon {
+				color: #d9d9d9;
+				background: #141414;
+				border-color: #414243;
+			}
+			.ant-input-number-input {
+				color: #d9d9d9;
+			}
+		}
+		.profit-up {
+			color: #ff4d4f;
+		}
+		.profit-down {
+			color: #52c41a;
+		}
+		.ant-statistic.profit-up {
+			.ant-statistic-content {
+				color: #ff4d4f;
+			}
+		}
+		.ant-statistic.profit-down {
+			.ant-statistic-content {
+				color: #52c41a;
+			}
+		}
+	}
+}
+
+@media (width <= 768px) {
+	.stock-portfolio-page {
+		.portfolio-toolbar {
+			flex-direction: column;
+			align-items: stretch;
+			justify-content: stretch;
+		}
+		.portfolio-search {
+			width: 100%;
+			margin-left: 0;
+		}
+	}
+}

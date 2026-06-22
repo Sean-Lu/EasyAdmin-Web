@@ -198,7 +198,8 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			costPrice: record.costPrice,
 			quantity: record.quantity,
 			currentPrice: record.currentPrice,
-			isEnabled: record.isEnabled
+			isEnabled: record.isEnabled,
+			sortOrder: record.sortOrder
 		});
 		setModalOpen(true);
 	};
@@ -217,7 +218,8 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			brokerName: selectedAccount.brokerName,
 			initialAsset: selectedAccount.initialAsset,
 			currentAsset: selectedAccount.currentAsset,
-			remark: selectedAccount.remark
+			remark: selectedAccount.remark,
+			sortOrder: selectedAccount.sortOrder
 		});
 		setAccountModalOpen(true);
 	};
@@ -233,7 +235,8 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			brokerName: values.brokerName.trim(),
 			initialAsset: normalizeOptionalNumber(values.initialAsset),
 			currentAsset: normalizeOptionalNumber(values.currentAsset),
-			remark: values.remark?.trim() || undefined
+			remark: values.remark?.trim() || undefined,
+			sortOrder: values.sortOrder ?? 0
 		};
 
 		const response = editingAccountId
@@ -276,7 +279,8 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			...values,
 			accountId: selectedAccountId,
 			code: values.code.trim(),
-			name: values.name.trim()
+			name: values.name.trim(),
+			sortOrder: values.sortOrder ?? 0
 		};
 
 		const response = editingId
@@ -659,6 +663,9 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 					<Form.Item name="remark" label="备注">
 						<Input.TextArea placeholder="如：万一佣金、开户于2023年" maxLength={500} showCount rows={3} />
 					</Form.Item>
+					<Form.Item name="sortOrder" label="排序顺序">
+						<InputNumber min={0} precision={0} className="form-number-input" placeholder="数值越小越靠前，默认 0" />
+					</Form.Item>
 				</Form>
 			</Modal>
 
@@ -671,7 +678,11 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 				onCancel={() => setModalOpen(false)}
 				destroyOnHidden
 			>
-				<Form form={form} layout="vertical" initialValues={{ quantity: 100, costPrice: 0, currentPrice: 0, isEnabled: true }}>
+				<Form
+					form={form}
+					layout="vertical"
+					initialValues={{ quantity: 100, costPrice: 0, currentPrice: 0, isEnabled: true, sortOrder: 0 }}
+				>
 					<Form.Item name="name" label="股票名称" rules={[{ required: true, whitespace: true, message: "请输入股票名称" }]}>
 						<Input placeholder="如：平安银行" />
 					</Form.Item>
@@ -695,6 +706,9 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 					</Form.Item>
 					<Form.Item name="isEnabled" label="是否启用" valuePropName="checked">
 						<Switch checkedChildren="启用" unCheckedChildren="禁用" />
+					</Form.Item>
+					<Form.Item name="sortOrder" label="排序顺序">
+						<InputNumber min={0} precision={0} className="form-number-input" placeholder="数值越小越靠前，默认 0" />
 					</Form.Item>
 				</Form>
 			</Modal>

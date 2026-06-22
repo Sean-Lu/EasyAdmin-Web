@@ -21,6 +21,8 @@ export interface StockHolding extends DtoBase {
 	currentPrice: number;
 	/** 是否启用 */
 	isEnabled: boolean;
+	/** 排序顺序 */
+	sortOrder: number;
 	/** 成本金额，公式：持仓成本 × 持仓数量 */
 	costAmount: number;
 	/** 持仓市值，公式：当前价格 × 持仓数量 */
@@ -49,6 +51,8 @@ export interface StockHoldingPayload {
 	currentPrice: number;
 	/** 是否启用 */
 	isEnabled: boolean;
+	/** 排序顺序 */
+	sortOrder?: number;
 }
 
 /**

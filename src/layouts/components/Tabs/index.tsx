@@ -25,7 +25,7 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 	const { tabsList } = props.tabs;
 	const { themeConfig } = props.global;
 	const { setTabsList } = props;
-	const { pathname } = useLocation();
+	const { pathname, search } = useLocation();
 	const navigate = useNavigate();
 	const tabsContentRef = useRef<HTMLDivElement>(null);
 	const [activeValue, setActiveValue] = useState<string>(pathname);
@@ -36,7 +36,7 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 			addTabs();
 		}
 		setIsDeleting(false);
-	}, [pathname]);
+	}, [pathname, search]);
 
 	useLayoutEffect(() => {
 		scrollActiveTabIntoView();
@@ -55,8 +55,8 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 	};
 
 	// click tabs
-	const clickTabs = (path: string) => {
-		navigate(path);
+	const clickTabs = (item: Menu.MenuOptions) => {
+		navigate(item.fullPath ?? item.path);
 	};
 
 	// add tabs
@@ -88,9 +88,14 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 
 		if (!title) return;
 
-		let newTabsList = JSON.parse(JSON.stringify(tabsList));
-		if (tabsList.length === 0 || tabsList.every((item: any) => item.path !== pathname)) {
-			newTabsList.push({ title, path: pathname, icon });
+		const fullPath = pathname + search;
+		let newTabsList: Menu.MenuOptions[] = JSON.parse(JSON.stringify(tabsList));
+		const existingIndex = newTabsList.findIndex((item: Menu.MenuOptions) => item.path === pathname);
+		if (existingIndex === -1) {
+			newTabsList.push({ title, path: pathname, icon, fullPath });
+		} else {
+			// Tab 已存在，更新 fullPath 以记住最新 query 参数
+			newTabsList[existingIndex] = { ...newTabsList[existingIndex], fullPath };
 		}
 		setTabsList(newTabsList);
 		setActiveValue(pathname);
@@ -192,7 +197,7 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 									document.addEventListener("mousemove", handleMouseMove);
 									document.addEventListener("mouseup", handleMouseUp);
 								}}
-								onClick={() => clickTabs(item.path)}
+								onClick={() => clickTabs(item)}
 							>
 								<span className="tabs-tab-content">
 									{renderIcon(item.icon)}

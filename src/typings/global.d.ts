@@ -7,6 +7,8 @@ declare namespace Menu {
 		outLink?: string;
 		close?: boolean;
 		children?: MenuOptions[];
+		/** Tab 记录的完整路径（含 query 参数），用于切换 Tab 时恢复状态 */
+		fullPath?: string;
 	}
 }
 

@@ -14,6 +14,7 @@ import {
 	Select,
 	Space,
 	Statistic,
+	Switch,
 	Table,
 	Tag,
 	Tooltip,
@@ -35,6 +36,20 @@ type AccountFormValues = StockAccountPayload;
 
 const currencyFormatter = (value: number) =>
 	`¥${value.toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+/** 大金额紧凑展示：>= 1亿 显示"亿"，>= 1万 显示"万"，否则正常格式 */
+const compactCurrencyFormatter = (value: number) => {
+	const abs = Math.abs(value);
+	const sign = value < 0 ? "-" : "";
+	if (abs >= 1_0000_0000) {
+		return `${sign}¥${(abs / 1_0000_0000).toFixed(2)}亿`;
+	}
+	if (abs >= 1_0000) {
+		return `${sign}¥${(abs / 1_0000).toFixed(2)}万`;
+	}
+	return currencyFormatter(value);
+};
+
 const percentFormatter = (value: number) => `${value.toFixed(2)}%`;
 const quantityFormatter = (value: number) => value.toLocaleString("zh-CN");
 const getProfitClassName = (value: number) => {
@@ -74,6 +89,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 	const holdingRequestSeq = useRef(0);
 	const accountRequestSeq = useRef(0);
 	const savingPriceIds = useRef(new Set<BackendId>());
+	const togglingEnabledIds = useRef(new Set<BackendId>());
 
 	const selectedAccount = useMemo(
 		() => accounts.find(account => account.id === selectedAccountId),
@@ -181,7 +197,8 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			code: record.code,
 			costPrice: record.costPrice,
 			quantity: record.quantity,
-			currentPrice: record.currentPrice
+			currentPrice: record.currentPrice,
+			isEnabled: record.isEnabled
 		});
 		setModalOpen(true);
 	};
@@ -199,7 +216,8 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 		accountForm.setFieldsValue({
 			brokerName: selectedAccount.brokerName,
 			initialAsset: selectedAccount.initialAsset,
-			currentAsset: selectedAccount.currentAsset
+			currentAsset: selectedAccount.currentAsset,
+			remark: selectedAccount.remark
 		});
 		setAccountModalOpen(true);
 	};
@@ -214,7 +232,8 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 		const normalizedValues: StockAccountPayload = {
 			brokerName: values.brokerName.trim(),
 			initialAsset: normalizeOptionalNumber(values.initialAsset),
-			currentAsset: normalizeOptionalNumber(values.currentAsset)
+			currentAsset: normalizeOptionalNumber(values.currentAsset),
+			remark: values.remark?.trim() || undefined
 		};
 
 		const response = editingAccountId
@@ -319,6 +338,21 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 		}
 	};
 
+	const handleToggleEnabled = async (record: StockHolding, isEnabled: boolean) => {
+		if (!selectedAccountId) return;
+		if (togglingEnabledIds.current.has(record.id)) return;
+
+		togglingEnabledIds.current.add(record.id);
+		try {
+			const response = await StockHoldingService.updateIsEnabled(record.accountId, record.id, isEnabled);
+			if (!response.success) return;
+
+			loadHoldings(selectedAccountId, keyword);
+		} finally {
+			togglingEnabledIds.current.delete(record.id);
+		}
+	};
+
 	const columns: ColumnsType<StockHolding> = [
 		{
 			title: "股票名称",
@@ -373,7 +407,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			key: "marketValue",
 			width: 130,
 			align: "right",
-			render: (value: number) => currencyFormatter(value)
+			render: (value: number) => compactCurrencyFormatter(value)
 		},
 		{
 			title: "盈亏金额",
@@ -381,7 +415,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			key: "profitAmount",
 			width: 130,
 			align: "right",
-			render: (value: number) => <span className={getProfitClassName(value)}>{currencyFormatter(value)}</span>
+			render: (value: number) => <span className={getProfitClassName(value)}>{compactCurrencyFormatter(value)}</span>
 		},
 		{
 			title: "盈亏比例",
@@ -390,6 +424,22 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			width: 120,
 			align: "right",
 			render: (value: number) => <Tag color={value > 0 ? "red" : value < 0 ? "green" : "default"}>{percentFormatter(value)}</Tag>
+		},
+		{
+			title: "状态",
+			dataIndex: "isEnabled",
+			key: "isEnabled",
+			width: 80,
+			align: "center",
+			render: (value: boolean, record) => (
+				<Switch
+					size="small"
+					checked={value}
+					checkedChildren="启用"
+					unCheckedChildren="禁用"
+					onChange={nextValue => handleToggleEnabled(record, nextValue)}
+				/>
+			)
 		},
 		{
 			title: "操作",
@@ -466,7 +516,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 								<Statistic
 									title="初始资产"
 									value={selectedAccount.initialAsset ?? 0}
-									formatter={value => currencyFormatter(Number(value))}
+									formatter={value => compactCurrencyFormatter(Number(value))}
 								/>
 							</Card>
 						</Col>
@@ -475,7 +525,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 								<Statistic
 									title="当前资产"
 									value={selectedAccount.currentAsset ?? 0}
-									formatter={value => currencyFormatter(Number(value))}
+									formatter={value => compactCurrencyFormatter(Number(value))}
 								/>
 							</Card>
 						</Col>
@@ -485,7 +535,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 									title="资产盈亏"
 									value={selectedAccount.assetProfitAmount}
 									formatter={value =>
-										`${currencyFormatter(Number(value))} / ${percentFormatter(selectedAccount.assetProfitRatio)}`
+										`${compactCurrencyFormatter(Number(value))} / ${percentFormatter(selectedAccount.assetProfitRatio)}`
 									}
 									className={getProfitClassName(selectedAccount.assetProfitAmount)}
 								/>
@@ -510,7 +560,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 									<Statistic
 										title="总持仓市值"
 										value={summary.totalMarketValue}
-										formatter={value => currencyFormatter(Number(value))}
+										formatter={value => compactCurrencyFormatter(Number(value))}
 									/>
 								</Card>
 							</Col>
@@ -519,7 +569,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 									<Statistic
 										title="总持仓成本"
 										value={summary.totalCostAmount}
-										formatter={value => currencyFormatter(Number(value))}
+										formatter={value => compactCurrencyFormatter(Number(value))}
 									/>
 								</Card>
 							</Col>
@@ -528,7 +578,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 									<Statistic
 										title="总盈亏金额"
 										value={summary.totalProfitAmount}
-										formatter={value => currencyFormatter(Number(value))}
+										formatter={value => compactCurrencyFormatter(Number(value))}
 										className={getProfitClassName(summary.totalProfitAmount)}
 									/>
 								</Card>
@@ -575,6 +625,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 							dataSource={holdings}
 							scroll={{ x: "max-content" }}
 							pagination={{ pageSize: 10, showTotal: total => `共 ${total} 条` }}
+							rowClassName={(record: StockHolding) => (!record.isEnabled ? "holding-row-disabled" : "")}
 						/>
 					</>
 				)}
@@ -605,6 +656,9 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 							</Form.Item>
 						</Col>
 					</Row>
+					<Form.Item name="remark" label="备注">
+						<Input.TextArea placeholder="如：万一佣金、开户于2023年" maxLength={500} showCount rows={3} />
+					</Form.Item>
 				</Form>
 			</Modal>
 
@@ -617,7 +671,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 				onCancel={() => setModalOpen(false)}
 				destroyOnHidden
 			>
-				<Form form={form} layout="vertical" initialValues={{ quantity: 100, costPrice: 0, currentPrice: 0 }}>
+				<Form form={form} layout="vertical" initialValues={{ quantity: 100, costPrice: 0, currentPrice: 0, isEnabled: true }}>
 					<Form.Item name="name" label="股票名称" rules={[{ required: true, whitespace: true, message: "请输入股票名称" }]}>
 						<Input placeholder="如：平安银行" />
 					</Form.Item>
@@ -638,6 +692,9 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 					</Row>
 					<Form.Item name="currentPrice" label="当前价格" rules={[{ required: true, message: "请输入当前价格" }]}>
 						<InputNumber min={0} precision={3} addonBefore="¥" className="form-number-input" />
+					</Form.Item>
+					<Form.Item name="isEnabled" label="是否启用" valuePropName="checked">
+						<Switch checkedChildren="启用" unCheckedChildren="禁用" />
 					</Form.Item>
 				</Form>
 			</Modal>

@@ -19,6 +19,8 @@ export interface StockHolding extends DtoBase {
 	quantity: number;
 	/** 当前价格 */
 	currentPrice: number;
+	/** 是否启用 */
+	isEnabled: boolean;
 	/** 成本金额，公式：持仓成本 × 持仓数量 */
 	costAmount: number;
 	/** 持仓市值，公式：当前价格 × 持仓数量 */
@@ -45,6 +47,8 @@ export interface StockHoldingPayload {
 	quantity: number;
 	/** 当前价格 */
 	currentPrice: number;
+	/** 是否启用 */
+	isEnabled: boolean;
 }
 
 /**
@@ -98,5 +102,10 @@ export class StockHoldingService {
 	/** 更新当前价格 */
 	static async updateCurrentPrice(accountId: BackendIdInput, id: BackendIdInput, currentPrice: number) {
 		return request.post<boolean>(`/StockHolding/UpdateCurrentPrice`, { accountId, id, currentPrice });
+	}
+
+	/** 更新启用状态 */
+	static async updateIsEnabled(accountId: BackendIdInput, id: BackendIdInput, isEnabled: boolean) {
+		return request.post<boolean>(`/StockHolding/UpdateIsEnabled`, { accountId, id, isEnabled });
 	}
 }

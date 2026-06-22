@@ -13,6 +13,8 @@ export interface StockAccount extends DtoBase {
 	initialAsset?: number;
 	/** 现资产 */
 	currentAsset?: number;
+	/** 备注 */
+	remark?: string;
 	/** 账户资产盈亏金额 */
 	assetProfitAmount: number;
 	/** 账户资产盈亏比例 */
@@ -29,6 +31,8 @@ export interface StockAccountPayload {
 	initialAsset?: number;
 	/** 现资产 */
 	currentAsset?: number;
+	/** 备注 */
+	remark?: string;
 }
 
 /**

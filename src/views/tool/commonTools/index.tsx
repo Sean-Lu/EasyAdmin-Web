@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
 	ArrowRightOutlined,
 	BarChartOutlined,
@@ -11,6 +11,7 @@ import {
 	SearchOutlined
 } from "@ant-design/icons";
 import { Card, Col, Empty, Input, Row, Tag, Typography } from "antd";
+import { useSearchParams } from "react-router-dom";
 import JsonToTable from "./tools/jsonToTable";
 import Lottery from "./tools/lottery";
 import QrCode from "./tools/qrCode";
@@ -82,9 +83,15 @@ const tools: ToolItem[] = [
 	}
 ];
 
+const VALID_TOOL_KEYS: ReadonlySet<string> = new Set(tools.map(t => t.key));
+
 const CommonTools: React.FC = () => {
-	const [activeTool, setActiveTool] = useState<ToolKey | null>(null);
-	const [keyword, setKeyword] = useState("");
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	const toolParam = searchParams.get("tool");
+	const activeTool: ToolKey | null = toolParam && VALID_TOOL_KEYS.has(toolParam) ? (toolParam as ToolKey) : null;
+
+	const keyword = searchParams.get("q") ?? "";
 
 	const filteredTools = useMemo(() => {
 		const normalizedKeyword = keyword.trim().toLowerCase();
@@ -94,31 +101,31 @@ const CommonTools: React.FC = () => {
 	}, [keyword]);
 
 	if (activeTool === "sqlToTable") {
-		return <SqlToTable onBack={() => setActiveTool(null)} />;
+		return <SqlToTable onBack={() => setSearchParams({})} />;
 	}
 
 	if (activeTool === "urlCodec") {
-		return <UrlCodec onBack={() => setActiveTool(null)} />;
+		return <UrlCodec onBack={() => setSearchParams({})} />;
 	}
 
 	if (activeTool === "jsonToTable") {
-		return <JsonToTable onBack={() => setActiveTool(null)} />;
+		return <JsonToTable onBack={() => setSearchParams({})} />;
 	}
 
 	if (activeTool === "qrCode") {
-		return <QrCode onBack={() => setActiveTool(null)} />;
+		return <QrCode onBack={() => setSearchParams({})} />;
 	}
 
 	if (activeTool === "randomDecision") {
-		return <RandomDecision onBack={() => setActiveTool(null)} />;
+		return <RandomDecision onBack={() => setSearchParams({})} />;
 	}
 
 	if (activeTool === "lottery") {
-		return <Lottery onBack={() => setActiveTool(null)} />;
+		return <Lottery onBack={() => setSearchParams({})} />;
 	}
 
 	if (activeTool === "stockPortfolio") {
-		return <StockPortfolio onBack={() => setActiveTool(null)} />;
+		return <StockPortfolio onBack={() => setSearchParams({})} />;
 	}
 
 	return (
@@ -133,7 +140,14 @@ const CommonTools: React.FC = () => {
 					prefix={<SearchOutlined />}
 					placeholder="搜索工具名称"
 					value={keyword}
-					onChange={event => setKeyword(event.target.value)}
+					onChange={event => {
+						const val = event.target.value;
+						if (val) {
+							setSearchParams({ q: val });
+						} else {
+							setSearchParams({});
+						}
+					}}
 					className="tool-search"
 				/>
 			</div>
@@ -142,7 +156,7 @@ const CommonTools: React.FC = () => {
 				<Row gutter={[24, 24]}>
 					{filteredTools.map(tool => (
 						<Col key={tool.key} xs={24} sm={12} lg={8} xl={6}>
-							<Card className="tool-card" hoverable onClick={() => setActiveTool(tool.key)}>
+							<Card className="tool-card" hoverable onClick={() => setSearchParams({ tool: tool.key })}>
 								<div className="tool-card-arrow">
 									<ArrowRightOutlined />
 								</div>

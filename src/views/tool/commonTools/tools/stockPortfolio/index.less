@@ -1,9 +1,23 @@
 .stock-portfolio-page {
+	.account-toolbar {
+		display: flex;
+		gap: 16px;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 16px;
+	}
+	.account-select {
+		width: min(260px, 100%);
+	}
+	.account-summary,
 	.portfolio-summary {
 		margin-bottom: 16px;
 		.ant-card {
 			border-radius: 8px;
 		}
+	}
+	.account-empty {
+		padding: 40px 0 24px;
 	}
 	.portfolio-toolbar {
 		display: flex;
@@ -56,6 +70,12 @@
 		.stock-code {
 			color: #8c8c8c;
 		}
+		.account-empty {
+			.ant-empty-description {
+				color: #8c8c8c;
+			}
+		}
+		.account-summary,
 		.portfolio-summary {
 			.ant-card {
 				background: #141414;
@@ -122,6 +142,19 @@
 
 @media (width <= 768px) {
 	.stock-portfolio-page {
+		.account-toolbar {
+			align-items: stretch;
+			justify-content: stretch;
+			.ant-space {
+				width: 100%;
+			}
+			.ant-space-item {
+				max-width: 100%;
+			}
+		}
+		.account-select {
+			width: 100%;
+		}
 		.portfolio-toolbar {
 			flex-direction: column;
 			align-items: stretch;

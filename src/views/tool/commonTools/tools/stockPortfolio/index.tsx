@@ -486,6 +486,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 							className="account-select"
 							options={accounts.map(account => ({ label: account.brokerName, value: account.id }))}
 							onChange={handleAccountChange}
+							popupMatchSelectWidth={false}
 						/>
 						<Button type="primary" icon={<PlusOutlined />} onClick={openCreateAccountModal}>
 							新增账户

@@ -103,6 +103,13 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			// 	}
 			// },
 			rollupOptions: {
+				onwarn(warning, warn) {
+					// 忽略 'use client' 指令警告（React Server Components 指令，在 Vite 中不适用）
+					if (warning.code === "MODULE_LEVEL_DIRECTIVE" && /use client/i.test(warning.message)) {
+						return;
+					}
+					warn(warning);
+				},
 				plugins: [
 					// * 是否生成包预览
 					viteEnv.VITE_REPORT && visualizer()

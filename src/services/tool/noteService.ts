@@ -179,6 +179,11 @@ export class NoteTagService {
 		const response = await request.get<NoteTagDto[]>("/NoteTag/Suggest", { keyword });
 		return response.data || [];
 	}
+
+	/** 删除标签 */
+	static async delete(id: BackendIdInput) {
+		return request.post<boolean>("/NoteTag/Delete", { id });
+	}
 }
 
 /** 笔记密码接口，密码用于打开受保护笔记，不加密正文内容 */

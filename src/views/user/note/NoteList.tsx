@@ -194,6 +194,26 @@ const NoteList: React.FC = () => {
 		});
 	};
 
+	const deleteTag = (tag: NoteTagDto) => {
+		confirm({
+			title: "确认删除标签？",
+			content: `删除标签「${tag.name}」后，关联的笔记将不再显示该标签。`,
+			okText: "删除",
+			okType: "danger",
+			cancelText: "取消",
+			onOk: async () => {
+				const result = await NoteTagService.delete(tag.id);
+				if (!result.data) {
+					message.error("删除失败");
+					return;
+				}
+				message.success("标签已删除");
+				await fetchTags();
+				await fetchNotes();
+			}
+		});
+	};
+
 	const columns = [
 		{
 			title: "标题",
@@ -326,6 +346,20 @@ const NoteList: React.FC = () => {
 							</Space>
 						</div>
 					))}
+				</div>
+
+				<div className="note-tag-section">
+					<div className="note-tag-header">
+						<strong>标签管理</strong>
+					</div>
+					<div className="note-tag-list">
+						{tags.map(tag => (
+							<div key={tag.id} className="note-tag-item">
+								<Tag>{tag.name}</Tag>
+								<Button size="small" type="text" danger icon={<DeleteOutlined />} onClick={() => deleteTag(tag)} />
+							</div>
+						))}
+					</div>
 				</div>
 			</div>
 

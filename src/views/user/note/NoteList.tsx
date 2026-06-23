@@ -211,7 +211,11 @@ const NoteList: React.FC = () => {
 		{
 			title: "摘要",
 			dataIndex: "summary",
-			render: (value: string) => <div className="note-summary">{value || "暂无内容"}</div>
+			render: (_: string, record: NoteDto) => (
+				<div className="note-summary">
+					{record.isProtected ? <span className="note-summary-protected">***</span> : record.summary || "暂无内容"}
+				</div>
+			)
 		},
 		{
 			title: "标签",

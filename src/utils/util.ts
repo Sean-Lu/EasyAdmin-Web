@@ -57,6 +57,31 @@ export const getBrowserLang = () => {
 };
 
 /**
+ * @description 递归扁平化菜单树，保留父级路径信息
+ * @param {Array} menus 菜单树
+ * @param {Array} parentTitles 父级菜单标题集合
+ * @returns array
+ */
+export const flattenMenuTree = (
+	menus: Menu.MenuOptions[],
+	parentTitles: string[] = []
+): (Menu.MenuOptions & { parentTitles: string[]; fullTitle: string })[] => {
+	const result: (Menu.MenuOptions & { parentTitles: string[]; fullTitle: string })[] = [];
+	menus.forEach((menu: Menu.MenuOptions) => {
+		const current = {
+			...menu,
+			parentTitles: [...parentTitles],
+			fullTitle: [...parentTitles, menu.title].join(" / ")
+		};
+		result.push(current);
+		if (menu.children?.length) {
+			result.push(...flattenMenuTree(menu.children, [...parentTitles, menu.title]));
+		}
+	});
+	return result;
+};
+
+/**
  * @description 获取需要展开的 subMenu
  * @param {String} path 当前访问地址
  * @returns array

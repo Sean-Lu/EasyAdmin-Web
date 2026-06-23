@@ -73,7 +73,10 @@ export const flattenMenuTree = (
 			parentTitles: [...parentTitles],
 			fullTitle: [...parentTitles, menu.title].join(" / ")
 		};
-		result.push(current);
+		// 只保留叶子节点或外链菜单，避免父级分组菜单被导航到 404
+		if (!menu.children?.length || menu.outLink) {
+			result.push(current);
+		}
 		if (menu.children?.length) {
 			result.push(...flattenMenuTree(menu.children, [...parentTitles, menu.title]));
 		}

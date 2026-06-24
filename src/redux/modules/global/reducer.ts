@@ -15,6 +15,7 @@ const globalState: GlobalState = {
 		isDark: false,
 		// 色弱模式(weak) || 灰色模式(gray)
 		weakOrGray: "",
+		layout: "side",
 		// 面包屑导航
 		breadcrumb: true,
 		// 标签页

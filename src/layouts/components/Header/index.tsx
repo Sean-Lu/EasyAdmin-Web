@@ -4,16 +4,20 @@ import AvatarIcon from "./components/AvatarIcon";
 import CollapseIcon from "./components/CollapseIcon";
 import BreadcrumbNav from "./components/BreadcrumbNav";
 import MenuSearch from "./components/MenuSearch";
+import LayoutMenu from "../Menu";
 import AssemblySize from "./components/AssemblySize";
 import Language from "./components/Language";
 import Theme from "./components/Theme";
 import Fullscreen from "./components/Fullscreen";
 import MessageNotice from "./components/MessageNotice";
 import { getUserInfo, UserInfo } from "@/api/modules/login";
+import { connect } from "react-redux";
 import "./index.less";
 
-const LayoutHeader = () => {
+const LayoutHeader = (props: any) => {
 	const { Header } = Layout;
+	const { layoutMode = "side" } = props;
+	const isTopLayout = layoutMode === "top";
 
 	const [userInfo, setUserInfo] = useState<UserInfo>();
 
@@ -31,13 +35,26 @@ const LayoutHeader = () => {
 	}, []); // 空数组确保副作用仅运行一次
 
 	return (
-		<Header>
+		<Header className={isTopLayout ? "layout-header-top" : ""}>
 			<div className="header-lf">
-				<CollapseIcon />
-				<MenuSearch />
-				<BreadcrumbNav />
+				{isTopLayout ? (
+					<LayoutMenu
+						className="top-layout-menu"
+						mode="horizontal"
+						showLogo
+						forceLogoExpanded
+						theme={props.global?.themeConfig?.isDark ? "dark" : "light"}
+					/>
+				) : (
+					<>
+						<CollapseIcon />
+						<MenuSearch />
+						<BreadcrumbNav />
+					</>
+				)}
 			</div>
 			<div className="header-ri">
+				{isTopLayout && <MenuSearch />}
 				<AssemblySize />
 				<Language />
 				<Theme />
@@ -50,4 +67,5 @@ const LayoutHeader = () => {
 	);
 };
 
-export default LayoutHeader;
+const mapStateToProps = (state: any) => ({ global: state.global });
+export default connect(mapStateToProps)(LayoutHeader);

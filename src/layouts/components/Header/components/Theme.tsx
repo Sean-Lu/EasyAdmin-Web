@@ -1,4 +1,4 @@
-import { Drawer, Divider, Switch } from "antd";
+import { Drawer, Divider, Segmented, Switch } from "antd";
 import { useState } from "react";
 import { connect } from "react-redux";
 import { FireOutlined, SettingOutlined } from "@ant-design/icons";
@@ -11,7 +11,7 @@ const Theme = (props: any) => {
 	const { setThemeConfig, updateCollapse } = props;
 	const { isCollapse } = props.menu;
 	const { themeConfig } = props.global;
-	const { weakOrGray, breadcrumb, tabs, footer } = themeConfig;
+	const { weakOrGray, layout, breadcrumb, tabs, footer } = themeConfig;
 
 	const setWeakOrGray = (checked: boolean, theme: string) => {
 		if (checked) return setThemeConfig({ ...themeConfig, weakOrGray: theme });
@@ -73,8 +73,22 @@ const Theme = (props: any) => {
 					界面设置
 				</Divider>
 				<div className="theme-item">
+					<span>菜单布局</span>
+					<Segmented
+						value={layout || "side"}
+						options={[
+							{ label: "左侧", value: "side" },
+							{ label: "顶部", value: "top" }
+						]}
+						onChange={value => {
+							setThemeConfig({ ...themeConfig, layout: value as "side" | "top" });
+						}}
+					/>
+				</div>
+				<div className="theme-item">
 					<span>折叠菜单</span>
 					<Switch
+						disabled={(layout || "side") === "top"}
 						checked={isCollapse}
 						onChange={e => {
 							updateCollapse(e);
@@ -84,6 +98,7 @@ const Theme = (props: any) => {
 				<div className="theme-item">
 					<span>面包屑导航</span>
 					<Switch
+						disabled={(layout || "side") === "top"}
 						checked={!breadcrumb}
 						onChange={e => {
 							onChange(e, "breadcrumb");

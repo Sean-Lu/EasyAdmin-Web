@@ -5,6 +5,7 @@ export interface ThemeConfigProp {
 	primary: string;
 	isDark: boolean;
 	weakOrGray: string;
+	layout: "side" | "top";
 	breadcrumb: boolean;
 	tabs: boolean;
 	footer: boolean;

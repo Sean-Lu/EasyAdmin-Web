@@ -15,6 +15,8 @@ import "./index.less";
 const LayoutIndex = (props: any) => {
 	const { Sider, Content } = Layout;
 	const { isCollapse, updateCollapse, setAuthButtons, tabsList } = props;
+	const layoutMode = props.global?.themeConfig?.layout || "side";
+	const isTopLayout = layoutMode === "top";
 	const { pathname } = useLocation();
 	const [menuFullscreen, setMenuFullscreen] = useState(false);
 	const [showFullscreenTip, setShowFullscreenTip] = useState(false);
@@ -32,6 +34,7 @@ const LayoutIndex = (props: any) => {
 		window.onresize = () => {
 			return (() => {
 				let screenWidth = document.body.clientWidth;
+				if (isTopLayout) return;
 				if (!isCollapse && screenWidth < 1200) updateCollapse(true);
 				if (!isCollapse && screenWidth > 1200) updateCollapse(false);
 			})();
@@ -44,9 +47,15 @@ const LayoutIndex = (props: any) => {
 	};
 
 	useEffect(() => {
-		listeningWindow();
 		getAuthButtonsList();
 	}, []);
+
+	useEffect(() => {
+		listeningWindow();
+		return () => {
+			window.onresize = null;
+		};
+	}, [isCollapse, isTopLayout]);
 
 	useEffect(() => {
 		setMenuFullscreen(false);
@@ -77,14 +86,14 @@ const LayoutIndex = (props: any) => {
 
 	return (
 		// 这里不用 Layout 组件原因是切换页面时样式会先错乱然后在正常显示，造成页面闪屏效果
-		<section className={`container ${menuFullscreen ? "menu-fullscreen" : ""}`}>
-			{!menuFullscreen && (
+		<section className={`container layout-${layoutMode} ${menuFullscreen ? "menu-fullscreen" : ""}`}>
+			{!menuFullscreen && !isTopLayout && (
 				<Sider trigger={null} collapsed={props.isCollapse} width={220} theme="dark">
 					<LayoutMenu></LayoutMenu>
 				</Sider>
 			)}
 			<Layout>
-				{!menuFullscreen && <LayoutHeader></LayoutHeader>}
+				{!menuFullscreen && <LayoutHeader layoutMode={layoutMode}></LayoutHeader>}
 				{!menuFullscreen && (
 					<LayoutTabs
 						menuFullscreen={menuFullscreen}

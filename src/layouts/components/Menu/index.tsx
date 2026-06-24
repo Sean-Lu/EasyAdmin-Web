@@ -9,20 +9,26 @@ import { getMenuList } from "@/api/modules/login";
 import { connect } from "react-redux";
 import type { MenuProps } from "antd";
 import * as Icons from "@ant-design/icons";
+import { MoreOutlined } from "@ant-design/icons";
 import Logo from "./components/Logo";
 import "./index.less";
 
 const LayoutMenu = (props: any) => {
 	const { pathname } = useLocation();
 	const { isCollapse, setBreadcrumbList, setAuthRouter, setMenuList: setMenuListAction } = props;
+	const { className = "", mode = "inline", theme = "dark", showLogo = true, forceLogoExpanded = false } = props;
 	const [selectedKeys, setSelectedKeys] = useState<string[]>([pathname]);
 	const [openKeys, setOpenKeys] = useState<string[]>([]);
+	const isHorizontal = mode === "horizontal";
+	const horizontalMenuStyle: React.CSSProperties | undefined = isHorizontal
+		? { flex: "1 1 0", width: 0, minWidth: 0, height: 55, lineHeight: "55px" }
+		: undefined;
 
 	// 刷新页面菜单保持高亮
 	useEffect(() => {
 		setSelectedKeys([pathname]);
-		isCollapse ? null : setOpenKeys(getOpenKeys(pathname));
-	}, [pathname, isCollapse]);
+		isCollapse || mode === "horizontal" ? setOpenKeys([]) : setOpenKeys(getOpenKeys(pathname));
+	}, [pathname, isCollapse, mode]);
 
 	// 设置当前展开的 subMenu
 	const onOpenChange = (openKeys: string[]) => {
@@ -104,14 +110,24 @@ const LayoutMenu = (props: any) => {
 	};
 
 	return (
-		<div className="menu">
+		<div className={`menu ${className}`}>
 			<Spin spinning={loading} description="Loading...">
-				<Logo></Logo>
+				{showLogo && <Logo forceExpanded={forceLogoExpanded}></Logo>}
 				<Menu
-					theme="dark"
-					mode="inline"
-					triggerSubMenuAction="click"
-					openKeys={openKeys}
+					className={isHorizontal ? "top-menu-horizontal" : undefined}
+					style={horizontalMenuStyle}
+					theme={theme}
+					mode={mode}
+					triggerSubMenuAction={isHorizontal ? "hover" : "click"}
+					overflowedIndicator={
+						isHorizontal ? (
+							<span className="top-menu-more">
+								<MoreOutlined />
+								<span>更多</span>
+							</span>
+						) : undefined
+					}
+					openKeys={isHorizontal ? undefined : openKeys}
 					selectedKeys={selectedKeys}
 					items={menuList}
 					onClick={clickMenu}
@@ -124,4 +140,4 @@ const LayoutMenu = (props: any) => {
 
 const mapStateToProps = (state: any) => state.menu;
 const mapDispatchToProps = { setMenuList, setBreadcrumbList, setAuthRouter };
-export default connect(mapStateToProps, mapDispatchToProps)(LayoutMenu);
+export default connect<any, any, any>(mapStateToProps, mapDispatchToProps)(LayoutMenu);

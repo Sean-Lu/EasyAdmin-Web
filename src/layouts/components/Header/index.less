@@ -1,11 +1,13 @@
 .ant-layout-header {
 	display: flex;
+	gap: 16px;
 	align-items: center;
 	justify-content: space-between;
 	border-bottom: 1px solid #f6f6f6;
 	.header-lf {
 		display: flex;
 		align-items: center;
+		min-width: 0;
 		.collapsed {
 			margin-right: 20px;
 			font-size: 18px;
@@ -16,11 +18,36 @@
 			flex-shrink: 0;
 		}
 	}
+	&.layout-header-top {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		height: 55px;
+		padding: 0 24px 0 18px !important;
+		line-height: 55px;
+		.header-lf {
+			width: 100%;
+			min-width: 0;
+			height: 55px;
+			overflow: visible;
+			line-height: 55px;
+		}
+		.header-ri {
+			flex-shrink: 0;
+			height: 55px;
+			line-height: 55px;
+		}
+	}
 	.header-ri {
 		display: flex;
+		gap: 14px;
 		align-items: center;
 		.icon-style {
-			margin-right: 22px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 26px;
+			height: 32px;
+			margin-right: 0;
 			font-size: 19px;
 			line-height: 19px;
 			cursor: pointer;
@@ -29,9 +56,8 @@
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
-			width: 34px;
+			width: 26px;
 			height: 32px;
-			margin-right: 16px;
 			cursor: pointer;
 		}
 		.message-notice-icon {
@@ -39,11 +65,35 @@
 			line-height: 19px;
 		}
 		.username {
-			margin: 0 20px 0 0;
+			margin: 0;
 			font-size: 15px;
+			white-space: nowrap;
 		}
 		.ant-avatar {
 			cursor: pointer;
+		}
+	}
+}
+
+@media screen and (width <= 1200px) {
+	.ant-layout-header.layout-header-top {
+		gap: 10px;
+		padding-right: 20px;
+		.header-ri {
+			gap: 10px;
+			.username {
+				display: none;
+			}
+		}
+	}
+}
+
+@media screen and (width <= 900px) {
+	.ant-layout-header.layout-header-top {
+		.header-ri {
+			.menu-search-trigger {
+				display: none;
+			}
 		}
 	}
 }

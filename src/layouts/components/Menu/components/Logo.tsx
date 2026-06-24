@@ -2,14 +2,14 @@ import logo from "@/assets/images/logo.png";
 import { connect } from "react-redux";
 
 const Logo = (props: any) => {
-	const { isCollapse } = props;
+	const { isCollapse, forceExpanded } = props;
 	return (
 		<div className="logo-box">
 			<img src={logo} alt="logo" className="logo-img" />
-			{!isCollapse ? <h2 className="logo-text">EasyAdmin</h2> : null}
+			{forceExpanded || !isCollapse ? <h2 className="logo-text">EasyAdmin</h2> : null}
 		</div>
 	);
 };
 
 const mapStateToProps = (state: any) => state.menu;
-export default connect(mapStateToProps)(Logo);
+export default connect<any, any, any>(mapStateToProps)(Logo);

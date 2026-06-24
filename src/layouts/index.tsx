@@ -19,6 +19,7 @@ const LayoutIndex = (props: any) => {
 	const [menuFullscreen, setMenuFullscreen] = useState(false);
 	const [showFullscreenTip, setShowFullscreenTip] = useState(false);
 	const [showFullscreenExit, setShowFullscreenExit] = useState(false);
+	const [contentRefreshKey, setContentRefreshKey] = useState(0);
 
 	// 获取按钮权限列表
 	const getAuthButtonsList = async () => {
@@ -35,6 +36,11 @@ const LayoutIndex = (props: any) => {
 				if (!isCollapse && screenWidth > 1200) updateCollapse(false);
 			})();
 		};
+	};
+
+	// 刷新当前菜单
+	const refreshCurrentMenu = () => {
+		setContentRefreshKey(Date.now());
 	};
 
 	useEffect(() => {
@@ -79,7 +85,13 @@ const LayoutIndex = (props: any) => {
 			)}
 			<Layout>
 				{!menuFullscreen && <LayoutHeader></LayoutHeader>}
-				{!menuFullscreen && <LayoutTabs menuFullscreen={menuFullscreen} onMenuFullscreenChange={setMenuFullscreen}></LayoutTabs>}
+				{!menuFullscreen && (
+					<LayoutTabs
+						menuFullscreen={menuFullscreen}
+						onMenuFullscreenChange={setMenuFullscreen}
+						onRefreshCurrentMenu={refreshCurrentMenu}
+					></LayoutTabs>
+				)}
 				<Content>
 					{menuFullscreen && (
 						<>
@@ -103,7 +115,7 @@ const LayoutIndex = (props: any) => {
 							</div>
 						</>
 					)}
-					<Outlet />
+					<Outlet key={`${pathname}-${contentRefreshKey}`} />
 				</Content>
 				{!menuFullscreen && <LayoutFooter></LayoutFooter>}
 			</Layout>

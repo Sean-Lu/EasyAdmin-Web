@@ -2,16 +2,29 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ComponentType } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
+import { Dropdown, MenuProps } from "antd";
+import {
+	ArrowLeftOutlined,
+	ArrowRightOutlined,
+	CloseCircleOutlined,
+	CloseOutlined,
+	DeleteOutlined,
+	FullscreenExitOutlined,
+	FullscreenOutlined,
+	ReloadOutlined,
+	SelectOutlined
+} from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import { setTabsList } from "@/redux/modules/tabs/action";
 import { routerArray } from "@/routers";
 import { searchRoute } from "@/utils/util";
-import MoreButton from "./components/MoreButton";
 import * as Icons from "@ant-design/icons";
 import "./index.less";
 
 interface LayoutTabsOwnProps {
 	menuFullscreen?: boolean;
 	onMenuFullscreenChange?: (menuFullscreen: boolean) => void;
+	onRefreshCurrentMenu?: () => void;
 }
 
 const renderIcon = (iconName?: string) => {
@@ -22,6 +35,7 @@ const renderIcon = (iconName?: string) => {
 };
 
 const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
+	const { t } = useTranslation();
 	const { tabsList } = props.tabs;
 	const { themeConfig } = props.global;
 	const { setTabsList } = props;
@@ -58,6 +72,104 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 	const clickTabs = (item: Menu.MenuOptions) => {
 		navigate(item.fullPath ?? item.path);
 	};
+
+	const toggleMenuFullscreen = () => {
+		props.onMenuFullscreenChange?.(!props.menuFullscreen);
+	};
+
+	const ensureActiveTabVisible = (nextTabsList: Menu.MenuOptions[], fallbackTab?: Menu.MenuOptions) => {
+		const activeTab = nextTabsList.find((item: Menu.MenuOptions) => item.path === pathname);
+		if (activeTab) return;
+
+		if (fallbackTab && nextTabsList.some((item: Menu.MenuOptions) => item.path === fallbackTab.path)) {
+			navigate(fallbackTab.fullPath ?? fallbackTab.path);
+			return;
+		}
+
+		const nextTab = nextTabsList[nextTabsList.length - 1];
+		navigate(nextTab ? nextTab.fullPath ?? nextTab.path : "/empty");
+	};
+
+	const refreshTab = (tab: Menu.MenuOptions) => {
+		if (pathname !== tab.path || pathname + search !== tab.fullPath) {
+			navigate(tab.fullPath ?? tab.path);
+		}
+		props.onRefreshCurrentMenu?.();
+	};
+
+	const closeMultipleTab = (tab?: Menu.MenuOptions) => {
+		if (tab) {
+			const handleTabsList = [tab];
+			setTabsList(handleTabsList);
+			ensureActiveTabVisible(handleTabsList, tab);
+			return;
+		}
+
+		setTabsList([]);
+		navigate("/empty");
+	};
+
+	const closeLeftTabs = (tab: Menu.MenuOptions) => {
+		const currentIndex = tabsList.findIndex((item: Menu.MenuOptions) => item.path === tab.path);
+		const handleTabsList = tabsList.filter((_item: Menu.MenuOptions, index: number) => index >= currentIndex);
+		setTabsList(handleTabsList);
+		ensureActiveTabVisible(handleTabsList, tab);
+	};
+
+	const closeRightTabs = (tab: Menu.MenuOptions) => {
+		const currentIndex = tabsList.findIndex((item: Menu.MenuOptions) => item.path === tab.path);
+		const handleTabsList = tabsList.filter((_item: Menu.MenuOptions, index: number) => index <= currentIndex);
+		setTabsList(handleTabsList);
+		ensureActiveTabVisible(handleTabsList, tab);
+	};
+
+	const getTabContextMenuItems = (tab: Menu.MenuOptions): MenuProps["items"] => [
+		{
+			key: "refresh",
+			icon: <ReloadOutlined />,
+			label: <span>{t("tabs.refreshCurrent")}</span>,
+			onClick: () => refreshTab(tab)
+		},
+		{
+			key: "fullscreen",
+			icon: props.menuFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />,
+			label: <span>{props.menuFullscreen ? t("tabs.exitMenuFullscreen") : t("tabs.menuFullscreen")}</span>,
+			onClick: toggleMenuFullscreen
+		},
+		{
+			type: "divider"
+		},
+		{
+			key: "closeCurrent",
+			icon: <CloseCircleOutlined />,
+			label: <span>{t("tabs.closeCurrent")}</span>,
+			onClick: () => delTabs(tab.path)
+		},
+		{
+			key: "closeLeft",
+			icon: <ArrowLeftOutlined />,
+			label: <span>{t("tabs.closeLeft")}</span>,
+			onClick: () => closeLeftTabs(tab)
+		},
+		{
+			key: "closeRight",
+			icon: <ArrowRightOutlined />,
+			label: <span>{t("tabs.closeRight")}</span>,
+			onClick: () => closeRightTabs(tab)
+		},
+		{
+			key: "closeOther",
+			icon: <SelectOutlined />,
+			label: <span>{t("tabs.closeOther")}</span>,
+			onClick: () => closeMultipleTab(tab)
+		},
+		{
+			key: "closeAll",
+			icon: <DeleteOutlined />,
+			label: <span>{t("tabs.closeAll")}</span>,
+			onClick: () => closeMultipleTab()
+		}
+	];
 
 	// add tabs
 	const addTabs = () => {
@@ -109,7 +221,7 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 				const nextTab = tabsList[index + 1] || tabsList[index - 1];
 				if (nextTab) {
 					setIsDeleting(true);
-					navigate(nextTab.path);
+					navigate(nextTab.fullPath ?? nextTab.path);
 				}
 			});
 		} else if (pathname === tabPath && tabsList.length === 1) {
@@ -162,68 +274,62 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 				<div className="tabs">
 					<div className="tabs-content" ref={tabsContentRef} onWheel={handleTabsWheel}>
 						{tabsList.map((item: Menu.MenuOptions, index: number) => (
-							<div
-								key={item.path}
-								className={`tabs-tab ${item.path === pathname ? "tabs-tab-active" : ""}`}
-								onMouseDown={e => {
-									e.preventDefault(); // 阻止默认行为，防止文本复制
-									const targetTab = e.currentTarget;
-									const originalIndex = index; // 保持原始索引不变
-									let currentOverIndex = index;
+							<Dropdown key={item.path} menu={{ items: getTabContextMenuItems(item) }} trigger={["contextMenu"]}>
+								<div
+									className={`tabs-tab ${item.path === pathname ? "tabs-tab-active" : ""}`}
+									onMouseDown={e => {
+										if (e.button !== 0) return;
+										e.preventDefault(); // 阻止默认行为，防止文本复制
+										const targetTab = e.currentTarget;
+										const originalIndex = index; // 保持原始索引不变
+										let currentOverIndex = index;
 
-									const handleMouseMove = (moveEvent: MouseEvent) => {
-										targetTab.classList.add("tabs-tab-dragging");
+										const handleMouseMove = (moveEvent: MouseEvent) => {
+											targetTab.classList.add("tabs-tab-dragging");
 
-										const tabs = document.querySelectorAll(".tabs-tab");
-										tabs.forEach((tab, tabIndex) => {
-											const rect = tab.getBoundingClientRect();
-											const centerX = rect.left + rect.width / 2;
-											if (moveEvent.clientX >= rect.left && moveEvent.clientX <= rect.right) {
-												currentOverIndex = tabIndex;
+											const tabs = document.querySelectorAll(".tabs-tab");
+											tabs.forEach((tab, tabIndex) => {
+												const rect = tab.getBoundingClientRect();
+												if (moveEvent.clientX >= rect.left && moveEvent.clientX <= rect.right) {
+													currentOverIndex = tabIndex;
+												}
+											});
+
+											if (currentOverIndex !== originalIndex) {
+												handleDragEnd(originalIndex, currentOverIndex);
 											}
-										});
+										};
 
-										if (currentOverIndex !== originalIndex) {
-											handleDragEnd(originalIndex, currentOverIndex); // 使用原始索引
-										}
-									};
+										const handleMouseUp = () => {
+											targetTab.classList.remove("tabs-tab-dragging");
+											document.removeEventListener("mousemove", handleMouseMove);
+											document.removeEventListener("mouseup", handleMouseUp);
+										};
 
-									const handleMouseUp = () => {
-										targetTab.classList.remove("tabs-tab-dragging");
-										document.removeEventListener("mousemove", handleMouseMove);
-										document.removeEventListener("mouseup", handleMouseUp);
-									};
-
-									document.addEventListener("mousemove", handleMouseMove);
-									document.addEventListener("mouseup", handleMouseUp);
-								}}
-								onClick={() => clickTabs(item)}
-							>
-								<span className="tabs-tab-content">
-									{renderIcon(item.icon)}
-									<span className="tabs-tab-title" title={item.title}>
-										{item.title}
-									</span>
-								</span>
-								<span
-									className="tabs-tab-close"
-									onClick={e => {
-										e.stopPropagation();
-										delTabs(item.path);
+										document.addEventListener("mousemove", handleMouseMove);
+										document.addEventListener("mouseup", handleMouseUp);
 									}}
+									onClick={() => clickTabs(item)}
 								>
-									×
-								</span>
-							</div>
+									<span className="tabs-tab-content">
+										{renderIcon(item.icon)}
+										<span className="tabs-tab-title" title={item.title}>
+											{item.title}
+										</span>
+									</span>
+									<span
+										className="tabs-tab-close"
+										onClick={e => {
+											e.stopPropagation();
+											delTabs(item.path);
+										}}
+									>
+										<CloseOutlined />
+									</span>
+								</div>
+							</Dropdown>
 						))}
 					</div>
-					<MoreButton
-						tabsList={tabsList}
-						delTabs={delTabs}
-						setTabsList={setTabsList}
-						menuFullscreen={props.menuFullscreen}
-						onMenuFullscreenChange={props.onMenuFullscreenChange}
-					></MoreButton>
 				</div>
 			)}
 		</>

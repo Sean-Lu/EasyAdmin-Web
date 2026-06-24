@@ -7,7 +7,7 @@ export default {
 		welcome: "Welcome"
 	},
 	tabs: {
-		more: "More",
+		refreshCurrent: "Refresh Current",
 		closeCurrent: "Close Current",
 		closeOther: "Close Other",
 		closeAll: "Close All",

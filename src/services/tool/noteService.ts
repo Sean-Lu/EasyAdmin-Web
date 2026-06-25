@@ -41,10 +41,10 @@ export interface NoteDto {
 	isTop: boolean;
 	/** 是否需要笔记密码打开 */
 	isProtected: boolean;
-	/** 最后编辑时间 */
-	lastEditTime?: string;
 	/** 创建时间 */
 	createTime?: string;
+	/** 更新时间 */
+	updateTime?: string;
 	/** 分类名称 */
 	categoryName?: string;
 	/** 关联标签 */

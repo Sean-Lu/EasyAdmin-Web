@@ -251,9 +251,9 @@ const NoteList: React.FC = () => {
 		},
 		{
 			title: "更新时间",
-			dataIndex: "lastEditTime",
+			dataIndex: "updateTime",
 			width: 170,
-			render: (value: string) => (value ? dayjs(value).format("YYYY-MM-DD HH:mm") : "-")
+			render: (value: string) => (value ? dayjs(value).format("YYYY-MM-DD HH:mm:ss") : "-")
 		},
 		{
 			title: "操作",

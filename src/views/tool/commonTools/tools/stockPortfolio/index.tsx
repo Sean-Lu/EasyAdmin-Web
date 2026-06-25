@@ -37,6 +37,9 @@ type AccountFormValues = StockAccountPayload;
 const currencyFormatter = (value: number) =>
 	`¥${value.toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+const priceFormatter = (value: number) =>
+	`¥${value.toLocaleString("zh-CN", { minimumFractionDigits: 3, maximumFractionDigits: 3 })}`;
+
 /** 大金额紧凑展示：>= 1亿 显示"亿"，>= 1万 显示"万"，否则正常格式 */
 const compactCurrencyFormatter = (value: number) => {
 	const abs = Math.abs(value);
@@ -377,7 +380,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			key: "costPrice",
 			width: 120,
 			align: "right",
-			render: (value: number) => currencyFormatter(value)
+			render: (value: number) => priceFormatter(value)
 		},
 		{
 			title: "持仓数量",
@@ -397,7 +400,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 					min={0}
 					precision={3}
 					value={priceDrafts[record.id] ?? value}
-					addonBefore="¥"
+					prefix="¥"
 					className="current-price-input"
 					onChange={nextValue => handleCurrentPriceChange(record.id, nextValue)}
 					onBlur={() => handleCurrentPriceCommit(record)}
@@ -652,12 +655,12 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 					<Row gutter={16}>
 						<Col span={12}>
 							<Form.Item name="initialAsset" label="初始资产">
-								<InputNumber min={0} precision={2} addonBefore="¥" className="form-number-input" />
+								<InputNumber min={0} precision={2} prefix="¥" className="form-number-input" />
 							</Form.Item>
 						</Col>
 						<Col span={12}>
 							<Form.Item name="currentAsset" label="当前资产">
-								<InputNumber min={0} precision={2} addonBefore="¥" className="form-number-input" />
+								<InputNumber min={0} precision={2} prefix="¥" className="form-number-input" />
 							</Form.Item>
 						</Col>
 					</Row>
@@ -693,7 +696,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 					<Row gutter={16}>
 						<Col span={12}>
 							<Form.Item name="costPrice" label="持仓成本" rules={[{ required: true, message: "请输入持仓成本" }]}>
-								<InputNumber min={0} precision={3} addonBefore="¥" className="form-number-input" />
+								<InputNumber min={0} precision={3} prefix="¥" className="form-number-input" />
 							</Form.Item>
 						</Col>
 						<Col span={12}>
@@ -703,7 +706,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 						</Col>
 					</Row>
 					<Form.Item name="currentPrice" label="当前价格" rules={[{ required: true, message: "请输入当前价格" }]}>
-						<InputNumber min={0} precision={3} addonBefore="¥" className="form-number-input" />
+						<InputNumber min={0} precision={3} prefix="¥" className="form-number-input" />
 					</Form.Item>
 					<Form.Item name="isEnabled" label="是否启用" valuePropName="checked">
 						<Switch checkedChildren="启用" unCheckedChildren="禁用" />

@@ -10,6 +10,7 @@
 .note-category-panel,
 .note-main-panel,
 .note-detail-panel {
+	box-sizing: border-box;
 	background: #ffffff;
 	border: 1px solid #f0f0f0;
 	border-radius: 6px;
@@ -100,7 +101,29 @@
 	-webkit-line-clamp: 2;
 }
 .note-detail-panel {
+	display: flex;
+	flex-direction: column;
 	padding: 16px;
+	overflow: hidden;
+}
+.note-detail-panel > .note-detail-header,
+.note-detail-panel > .ant-form,
+.note-detail-panel > .note-editor-toolbar {
+	flex-shrink: 0;
+}
+.note-detail-panel .note-editor-shell {
+	display: flex;
+	flex: 1 1 0;
+	flex-direction: column;
+	min-height: 0;
+	overflow: hidden;
+}
+.note-detail-panel .note-editor,
+.note-detail-panel .note-preview {
+	flex: 1 1 0;
+	min-height: 0;
+	overflow: auto;
+	word-break: break-word;
 }
 .note-editor-toolbar {
 	display: flex;

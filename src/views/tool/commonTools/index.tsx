@@ -4,6 +4,7 @@ import {
 	BarChartOutlined,
 	CodeOutlined,
 	CompassOutlined,
+	FileTextOutlined,
 	FundProjectionScreenOutlined,
 	GiftOutlined,
 	LinkOutlined,
@@ -12,6 +13,7 @@ import {
 } from "@ant-design/icons";
 import { Card, Col, Empty, Input, Row, Tag, Typography } from "antd";
 import { useSearchParams } from "react-router-dom";
+import JsonParser from "./tools/jsonParser";
 import JsonToTable from "./tools/jsonToTable";
 import Lottery from "./tools/lottery";
 import QrCode from "./tools/qrCode";
@@ -21,7 +23,15 @@ import StockPortfolio from "./tools/stockPortfolio";
 import UrlCodec from "./tools/urlCodec";
 import "./index.less";
 
-type ToolKey = "sqlToTable" | "urlCodec" | "jsonToTable" | "qrCode" | "randomDecision" | "lottery" | "stockPortfolio";
+type ToolKey =
+	| "sqlToTable"
+	| "urlCodec"
+	| "jsonToTable"
+	| "jsonParser"
+	| "qrCode"
+	| "randomDecision"
+	| "lottery"
+	| "stockPortfolio";
 
 interface ToolItem {
 	key: ToolKey;
@@ -45,6 +55,13 @@ const tools: ToolItem[] = [
 		description: "JSON 数组转可筛选表格",
 		tag: "developer_tools",
 		icon: <CodeOutlined />
+	},
+	{
+		key: "jsonParser",
+		title: "JSON 解析工具",
+		description: "格式化、压缩、折叠、校验 JSON",
+		tag: "developer_tools",
+		icon: <FileTextOutlined />
 	},
 	{
 		key: "urlCodec",
@@ -110,6 +127,10 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "jsonToTable") {
 		return <JsonToTable onBack={() => setSearchParams({})} />;
+	}
+
+	if (activeTool === "jsonParser") {
+		return <JsonParser onBack={() => setSearchParams({})} />;
 	}
 
 	if (activeTool === "qrCode") {

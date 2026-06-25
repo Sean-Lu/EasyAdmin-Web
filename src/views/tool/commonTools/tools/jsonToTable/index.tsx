@@ -1,15 +1,16 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ArrowLeftOutlined, DownloadOutlined, PlayCircleOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Input, Row, Space, Table, Tag, Typography, message } from "antd";
+import { Button, Card, Col, Input, Popover, Row, Space, Table, Tag, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import "./index.less";
 
-type JsonValue = string | number | boolean | null;
-type TableRow = Record<string, JsonValue>;
+type TableRow = Record<string, unknown>;
 
 interface JsonToTableProps {
 	onBack?: () => void;
 }
+
+const TRANSFER_KEY = "__jsonParser_transfer__";
 
 const sampleJson = `[
   {
@@ -26,33 +27,56 @@ const sampleJson = `[
   }
 ]`;
 
-const stringifyCell = (value: JsonValue) => {
+const isPrimitive = (value: unknown): value is string | number | boolean | null =>
+	value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean";
+
+const isPrimitiveArray = (value: unknown): value is Array<string | number | boolean | null> =>
+	Array.isArray(value) && value.length > 0 && value.every(item => isPrimitive(item));
+
+const isObject = (value: unknown): value is Record<string, unknown> =>
+	value !== null && typeof value === "object" && !Array.isArray(value);
+
+const isObjectArray = (value: unknown): value is Array<Record<string, unknown>> =>
+	Array.isArray(value) && value.length > 0 && value.every(item => isObject(item));
+
+const stringifyCell = (value: unknown) => {
 	if (value === null) return "null";
+	if (value === undefined) return "";
 	if (typeof value === "boolean") return value ? "true" : "false";
+	if (isObjectArray(value)) return `${value.length} items`;
+	if (isObject(value)) return "对象";
 	return String(value);
 };
 
-const toCellValue = (value: unknown): JsonValue => {
-	if (value === null || value === undefined) return null;
-	if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return value;
-	return JSON.stringify(value);
-};
-
 const flattenObject = (value: unknown, prefix = "", result: TableRow = {}) => {
-	if (!value || typeof value !== "object" || Array.isArray(value)) {
-		result[prefix || "value"] = toCellValue(value);
+	if (isPrimitive(value)) {
+		result[prefix || "value"] = value;
 		return result;
 	}
 
-	Object.entries(value as Record<string, unknown>).forEach(([key, item]) => {
-		const columnKey = prefix ? `${prefix}.${key}` : key;
-		if (item && typeof item === "object" && !Array.isArray(item)) {
-			flattenObject(item, columnKey, result);
+	if (Array.isArray(value)) {
+		if (value.length === 0) {
+			result[prefix || "value"] = "[]";
+		} else if (isPrimitiveArray(value)) {
+			result[prefix || "value"] = value.join(", ");
 		} else {
-			result[columnKey] = toCellValue(item);
+			result[prefix || "value"] = value;
 		}
-	});
+		return result;
+	}
 
+	if (isObject(value)) {
+		if (prefix) {
+			result[prefix] = value;
+		} else {
+			Object.entries(value).forEach(([key, item]) => {
+				flattenObject(item, key, result);
+			});
+		}
+		return result;
+	}
+
+	result[prefix || "value"] = String(value);
 	return result;
 };
 
@@ -61,8 +85,10 @@ const extractRows = (data: unknown) => {
 
 	if (data && typeof data === "object") {
 		const entries = Object.entries(data as Record<string, unknown>);
-		const arrayEntry = entries.find(([, value]) => Array.isArray(value));
-		if (arrayEntry) return arrayEntry[1] as unknown[];
+		// 只有一个字段且该字段是数组时，认为对象是对数组的包装
+		if (entries.length === 1 && Array.isArray(entries[0][1])) {
+			return entries[0][1] as unknown[];
+		}
 		return [data];
 	}
 
@@ -79,9 +105,84 @@ const downloadText = (content: string, filename: string, type: string) => {
 	URL.revokeObjectURL(url);
 };
 
+const SubTable: React.FC<{ data: Array<Record<string, unknown>> }> = ({ data }) => {
+	const subRows = useMemo<TableRow[]>(() => data.map(row => flattenObject(row)), [data]);
+	const keys = useMemo(() => Array.from(new Set(subRows.flatMap(row => Object.keys(row)))), [subRows]);
+
+	const subColumns: ColumnsType<TableRow> = useMemo(() => {
+		const indexColumn: ColumnsType<TableRow>[number] = {
+			title: "序号",
+			key: "index",
+			width: 60,
+			fixed: "left",
+			align: "center",
+			render: (_value, _record, index) => index + 1
+		};
+
+		return [
+			indexColumn,
+			...keys.map(key => {
+				const filterValues = Array.from(new Set(subRows.map(row => stringifyCell(row[key])))).sort();
+
+				return {
+					title: key,
+					dataIndex: key,
+					key,
+					ellipsis: true,
+					filters: filterValues.slice(0, 200).map(value => ({ text: value, value })),
+					filterSearch: true,
+					onFilter: (value: React.Key | boolean, record: TableRow) => stringifyCell(record[key]) === String(value),
+					render: (_value: unknown, record: TableRow) => renderCell(record[key])
+				};
+			})
+		];
+	}, [keys, subRows]);
+
+	return (
+		<Table
+			rowKey={(_record, index) => `sub-${index}`}
+			columns={subColumns}
+			dataSource={subRows}
+			size="small"
+			pagination={{ showSizeChanger: true, defaultPageSize: 20, showTotal: total => `共 ${total} 行` }}
+			scroll={{ x: "max-content" }}
+		/>
+	);
+};
+
+const renderCell = (value: unknown) => {
+	if (isObjectArray(value)) {
+		return (
+			<Popover content={<SubTable data={value} />} title={`共 ${value.length} 条`} trigger="click" placement="bottom">
+				<Button type="link" size="small">
+					{value.length} items
+				</Button>
+			</Popover>
+		);
+	}
+	if (isObject(value)) {
+		return (
+			<Popover content={<SubTable data={[value]} />} title="对象" trigger="click" placement="bottom">
+				<Button type="link" size="small">
+					查看
+				</Button>
+			</Popover>
+		);
+	}
+	return <span className={value === null ? "json-null-value" : undefined}>{stringifyCell(value)}</span>;
+};
+
 // JSON 转表格工具
 const JsonToTable: React.FC<JsonToTableProps> = ({ onBack }) => {
-	const [jsonText, setJsonText] = useState(sampleJson);
+	const [jsonText, setJsonText] = useState("");
+
+	useEffect(() => {
+		const transfer = sessionStorage.getItem(TRANSFER_KEY);
+		if (transfer) {
+			setJsonText(transfer);
+			sessionStorage.removeItem(TRANSFER_KEY);
+		}
+	}, []);
 	const [rows, setRows] = useState<TableRow[]>([]);
 	const [columns, setColumns] = useState<string[]>([]);
 	const [tableVersion, setTableVersion] = useState(0);
@@ -97,7 +198,7 @@ const JsonToTable: React.FC<JsonToTableProps> = ({ onBack }) => {
 			const nextRows = extractRows(parsed).map(item => flattenObject(item));
 			const nextColumns = Array.from(new Set(nextRows.flatMap(row => Object.keys(row))));
 
-			setRows(nextRows.map((row, index) => ({ ...row, key: index + 1 })));
+			setRows(nextRows);
 			setColumns(nextColumns);
 			setTableVersion(version => version + 1);
 			message.success(`解析成功，共 ${nextRows.length} 行`);
@@ -132,16 +233,14 @@ const JsonToTable: React.FC<JsonToTableProps> = ({ onBack }) => {
 					filters: filterValues.slice(0, 200).map(value => ({ text: value, value })),
 					filterSearch: true,
 					onFilter: (value: React.Key | boolean, record: TableRow) => stringifyCell(record[column]) === String(value),
-					render: (value: JsonValue) => (
-						<span className={value === null ? "json-null-value" : undefined}>{stringifyCell(value)}</span>
-					)
+					render: (_value: unknown, record: TableRow) => renderCell(record[column])
 				};
 			})
 		];
 	}, [columns, rows]);
 
 	const handleExportCsv = () => {
-		const escapeCsv = (value: JsonValue) => `"${stringifyCell(value).replace(/"/g, '""')}"`;
+		const escapeCsv = (value: unknown) => `"${stringifyCell(value).replace(/"/g, '""')}"`;
 		const header = ["序号", ...columns].map(value => `"${value}"`).join(",");
 		const csvRows = rows.map((row, index) => [String(index + 1), ...columns.map(column => escapeCsv(row[column]))].join(","));
 		downloadText([header, ...csvRows].join("\n"), "json-table.csv", "text/csv;charset=utf-8");
@@ -164,7 +263,9 @@ const JsonToTable: React.FC<JsonToTableProps> = ({ onBack }) => {
 			>
 				<Row gutter={[16, 16]}>
 					<Col span={24}>
-						<Typography.Text type="secondary">支持 JSON 数组、对象数组字段、单个对象，并自动展开嵌套对象字段。</Typography.Text>
+						<Typography.Text type="secondary">
+							支持 JSON 数组、对象数组字段、单个对象；基本类型数组合并为一列，嵌套对象和对象数组可点击展开查看子表格。
+						</Typography.Text>
 					</Col>
 					<Col span={24}>
 						<Input.TextArea
@@ -197,7 +298,7 @@ const JsonToTable: React.FC<JsonToTableProps> = ({ onBack }) => {
 				<Card className="json-result-card" title="解析结果">
 					<Table
 						key={tableVersion}
-						rowKey="key"
+						rowKey={(_record, index) => `row-${index}`}
 						columns={tableColumns}
 						dataSource={rows}
 						scroll={{ x: "max-content" }}

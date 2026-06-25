@@ -352,7 +352,7 @@ interface SqlToTableProps {
 
 // SQL 转表格工具
 const SqlToTable: React.FC<SqlToTableProps> = ({ onBack }) => {
-	const [sqlText, setSqlText] = useState(sampleSql);
+	const [sqlText, setSqlText] = useState("");
 	const [parsedTable, setParsedTable] = useState<ParsedSqlTable | null>(null);
 	const [tableVersion, setTableVersion] = useState(0);
 

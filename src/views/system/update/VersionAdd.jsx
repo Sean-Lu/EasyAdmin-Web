@@ -157,14 +157,22 @@ export default class VersionAdd extends React.Component {
 				<Form ref={this.formRef} labelCol={{ span: 5 }} wrapperCol={{ span: 18 }}>
 					{/* 应用标识 */}
 					<Form.Item label="应用标识" name="appCode" rules={[{ required: true, message: "请选择应用标识" }]}>
-						<Select placeholder="请选择应用标识" onChange={this.handleAppCodeChange} showSearch optionFilterProp="label">
-							{appCodeList.map(item => (
-								<Select.Option key={item.code} value={item.code} label={`${item.code} ${item.name}`}>
-									<span style={{ fontWeight: 500 }}>{item.code}</span>
-									<span style={{ color: "#888", marginLeft: 8, fontSize: 12 }}>{item.name}</span>
-								</Select.Option>
-							))}
-						</Select>
+						<Select
+							placeholder="请选择应用标识"
+							onChange={this.handleAppCodeChange}
+							showSearch
+							optionFilterProp="searchLabel"
+							options={appCodeList.map(item => ({
+								value: item.code,
+								searchLabel: `${item.code} ${item.name}`,
+								label: (
+									<>
+										<span style={{ fontWeight: 500 }}>{item.code}</span>
+										<span style={{ color: "#888", marginLeft: 8, fontSize: 12 }}>{item.name}</span>
+									</>
+								)
+							}))}
+						/>
 					</Form.Item>
 
 					{/* 语义化版本号：如 1.0.0 */}
@@ -174,20 +182,24 @@ export default class VersionAdd extends React.Component {
 
 					{/* 运行平台选择 */}
 					<Form.Item label="平台" name="platform" rules={[{ required: true, message: "请选择目标平台" }]}>
-						<Select placeholder="请选择目标平台" onChange={this.handlePlatformChange}>
-							<Select.Option value="win-x64">win-x64</Select.Option>
-							<Select.Option value="win-x86">win-x86</Select.Option>
-							<Select.Option value="linux-x64">linux-x64</Select.Option>
-							<Select.Option value="osx-x64">osx-x64</Select.Option>
-						</Select>
+						<Select
+							placeholder="请选择目标平台"
+							onChange={this.handlePlatformChange}
+							options={["win-x64", "win-x86", "linux-x64", "osx-x64"].map(platform => ({ value: platform, label: platform }))}
+						/>
 					</Form.Item>
 
 					{/* 更新包类型：全量/增量 */}
 					<Form.Item label="更新包类型" style={{ marginBottom: 8 }}>
-						<Select value={updateType} onChange={v => this.setState({ updateType: v })} style={{ width: "100%" }}>
-							<Select.Option value={0}>全量更新包 (zip包含所有文件)</Select.Option>
-							<Select.Option value={1}>增量更新包 (zip仅包含变更文件)</Select.Option>
-						</Select>
+						<Select
+							value={updateType}
+							onChange={v => this.setState({ updateType: v })}
+							style={{ width: "100%" }}
+							options={[
+								{ value: 0, label: "全量更新包 (zip包含所有文件)" },
+								{ value: 1, label: "增量更新包 (zip仅包含变更文件)" }
+							]}
+						/>
 					</Form.Item>
 
 					{/* 强制更新标志 */}

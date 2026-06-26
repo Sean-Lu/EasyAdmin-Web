@@ -127,7 +127,7 @@ const EntitySourcePanel: React.FC<EntitySourcePanelProps> = ({ templateIds, genP
 					<span>Entity源码</span>
 				</div>
 			}
-			bordered
+			variant="outlined"
 			style={{ borderRadius: 8 }}
 		>
 			<div style={{ marginBottom: 12, display: "flex", gap: 8, alignItems: "center" }}>

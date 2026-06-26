@@ -521,22 +521,14 @@ class StandardTable extends React.Component {
 				dataIndex: "createTime",
 				align: "center",
 				width: 160,
-				render: text => {
-					return {
-						children: text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : ""
-					};
-				}
+				render: text => (text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : "")
 			},
 			{
 				title: "更新时间",
 				dataIndex: "updateTime",
 				align: "center",
 				width: 160,
-				render: text => {
-					return {
-						children: text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : ""
-					};
-				}
+				render: text => (text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : "")
 			},
 			{
 				title: "操作",

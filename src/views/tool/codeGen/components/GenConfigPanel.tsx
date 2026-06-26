@@ -35,7 +35,7 @@ const GenConfigPanel: React.FC<GenConfigPanelProps> = ({ mode, genParams, onPara
 					<span>生成配置</span>
 				</div>
 			}
-			bordered
+			variant="outlined"
 			style={{ borderRadius: 8 }}
 		>
 			<Form layout="vertical">

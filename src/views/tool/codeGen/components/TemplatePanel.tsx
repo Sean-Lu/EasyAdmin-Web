@@ -11,7 +11,6 @@ import {
 	CodeGenCategoryDto
 } from "@/services/tool/codeGenService";
 
-const { Option } = Select;
 const { TextArea } = Input;
 
 interface TemplatePanelProps {
@@ -140,7 +139,7 @@ const TemplatePanel: React.FC<TemplatePanelProps> = ({
 						<span>代码模板</span>
 					</div>
 				}
-				bordered
+				variant="outlined"
 				style={{ marginBottom: 16, borderRadius: 8 }}
 			>
 				<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
@@ -188,13 +187,7 @@ const TemplatePanel: React.FC<TemplatePanelProps> = ({
 							<Input placeholder="请输入模板编码" />
 						</Form.Item>
 						<Form.Item label="所属分类" name="categoryId" rules={[{ required: true }]}>
-							<Select placeholder="请选择分类">
-								{categories?.map(cat => (
-									<Option key={cat.id} value={cat.id}>
-										{cat.name}
-									</Option>
-								))}
-							</Select>
+							<Select placeholder="请选择分类" options={categories?.map(cat => ({ value: cat.id, label: cat.name }))} />
 						</Form.Item>
 						<Form.Item label="文件路径" name="filePath" rules={[{ required: true }]}>
 							<Input placeholder="如：controller/{{ClassName}}Controller.java" />

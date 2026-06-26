@@ -112,11 +112,7 @@ export default class LoginLogList extends React.Component {
 				dataIndex: "loginTime",
 				align: tableColumnAlign,
 				width: 300,
-				render: text => {
-					return {
-						children: text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : ""
-					};
-				}
+				render: text => (text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : "")
 			},
 			{
 				title: "IP",

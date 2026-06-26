@@ -53,7 +53,7 @@ const HelpPanel: React.FC = () => {
 					<span style={{ fontSize: 12, color: "#999", marginLeft: "auto" }}>{expanded ? "点击收起" : "点击展开"}</span>
 				</div>
 			}
-			bordered
+			variant="outlined"
 			style={{ borderRadius: 8, marginTop: 16 }}
 		>
 			{expanded && (

@@ -136,6 +136,11 @@ export class NoteService {
 		return request.post<boolean>("/Note/MoveCategory", { id, categoryId });
 	}
 
+	/** 批量移动笔记到指定分类 */
+	static async batchMoveCategory(ids: BackendIdInput[], categoryId: BackendIdInput) {
+		return request.post<boolean>("/Note/MoveCategory", { ids, categoryId });
+	}
+
 	/** 导出笔记文件，返回 Blob 响应 */
 	static async export(id: BackendIdInput, exportType: "html" | "doc", unlockToken?: string) {
 		return request.download("/Note/Export", { id, exportType, unlockToken });

@@ -11,8 +11,6 @@ import {
 	testDbConnection
 } from "@/services/tool/codeGenService";
 
-const { Option } = Select;
-
 interface DbConfigPanelProps {
 	dbConfigs: DbConnectionConfigDto[];
 	selectedDbConfig: BackendId | null;
@@ -142,7 +140,7 @@ const DbConfigPanel: React.FC<DbConfigPanelProps> = ({ dbConfigs, selectedDbConf
 						<span>数据库配置</span>
 					</div>
 				}
-				bordered
+				variant="outlined"
 				style={{ marginBottom: 16, borderRadius: 8 }}
 				extra={
 					<Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => openModal()}>
@@ -173,11 +171,14 @@ const DbConfigPanel: React.FC<DbConfigPanelProps> = ({ dbConfigs, selectedDbConf
 						<Input placeholder="请输入配置名称" />
 					</Form.Item>
 					<Form.Item label="数据库类型" name="dbType" rules={[{ required: true }]}>
-						<Select placeholder="请选择数据库类型">
-							<Option value={CodeGenDbType.MySql}>MySQL</Option>
-							<Option value={CodeGenDbType.SqlServer}>SQL Server</Option>
-							<Option value={CodeGenDbType.PostgreSql}>PostgreSQL</Option>
-						</Select>
+						<Select
+							placeholder="请选择数据库类型"
+							options={[
+								{ value: CodeGenDbType.MySql, label: "MySQL" },
+								{ value: CodeGenDbType.SqlServer, label: "SQL Server" },
+								{ value: CodeGenDbType.PostgreSql, label: "PostgreSQL" }
+							]}
+						/>
 					</Form.Item>
 					<Form.Item label="主机" name="host" rules={[{ required: true }]}>
 						<Input placeholder="localhost" />

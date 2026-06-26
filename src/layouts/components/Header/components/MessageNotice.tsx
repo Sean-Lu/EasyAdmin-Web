@@ -79,7 +79,7 @@ const MessageNotice = () => {
 					dataSource={recentUnread}
 					renderItem={item => (
 						<List.Item className="message-popover-item" onClick={() => showMessageDetail(item.id)}>
-							<Space direction="vertical" size={2}>
+							<Space orientation="vertical" size={2}>
 								<Typography.Text strong ellipsis style={{ maxWidth: 260 }}>
 									{item.title}
 								</Typography.Text>

@@ -368,7 +368,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			width: 140,
 			fixed: "left",
 			render: (name: string, record) => (
-				<Space direction="vertical" size={0}>
+				<Space orientation="vertical" size={0}>
 					<span className="stock-name">{name}</span>
 					<span className="stock-code">{record.code}</span>
 				</Space>

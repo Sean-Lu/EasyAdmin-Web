@@ -70,7 +70,7 @@ const GenResultPanel: React.FC<GenResultPanelProps> = ({ result }) => {
 					<span style={{ fontSize: 12, color: "#999", marginLeft: 8 }}>({result.files.length} 个文件)</span>
 				</div>
 			}
-			bordered
+			variant="outlined"
 			style={{ marginTop: 16, borderRadius: 8 }}
 			extra={
 				<Space size="middle">

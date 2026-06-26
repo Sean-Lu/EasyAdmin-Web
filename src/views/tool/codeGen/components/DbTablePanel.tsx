@@ -63,7 +63,7 @@ const DbTablePanel: React.FC<DbTablePanelProps> = ({
 					<span>数据表</span>
 				</div>
 			}
-			bordered
+			variant="outlined"
 			style={{ borderRadius: 8 }}
 		>
 			<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>

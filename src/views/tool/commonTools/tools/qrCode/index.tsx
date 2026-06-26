@@ -333,7 +333,7 @@ const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
 			children: (
 				<Row gutter={[16, 16]}>
 					<Col xs={24} lg={14}>
-						<Space direction="vertical" size={12} className="qr-code-panel">
+						<Space orientation="vertical" size={12} className="qr-code-panel">
 							<Typography.Text type="secondary">输入文本、链接或其他内容，生成可下载的二维码图片。</Typography.Text>
 							<Input.TextArea
 								value={inputText}
@@ -346,18 +346,20 @@ const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
 								<Row gutter={[16, 12]}>
 									<Col xs={24} sm={12}>
 										<Form.Item label="尺寸" className="qr-option-item">
-											<InputNumber
-												min={160}
-												max={640}
-												step={20}
-												value={qrSize}
-												addonAfter="px"
-												onChange={value => {
-													setQrSize(value || defaultQrSize);
-													setQrDataUrl("");
-												}}
-												className="qr-option-control"
-											/>
+											<Space.Compact className="qr-option-control">
+												<InputNumber
+													min={160}
+													max={640}
+													step={20}
+													value={qrSize}
+													style={{ width: "100%" }}
+													onChange={value => {
+														setQrSize(value || defaultQrSize);
+														setQrDataUrl("");
+													}}
+												/>
+												<Space.Addon>px</Space.Addon>
+											</Space.Compact>
 										</Form.Item>
 									</Col>
 									<Col xs={24} sm={12}>
@@ -448,7 +450,7 @@ const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
 							{qrDataUrl ? (
 								<img src={qrDataUrl} alt="生成的二维码" />
 							) : (
-								<Space direction="vertical" align="center">
+								<Space orientation="vertical" align="center">
 									<SettingOutlined className="qr-preview-icon" />
 									<Typography.Text type="secondary">二维码预览</Typography.Text>
 								</Space>
@@ -464,7 +466,7 @@ const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
 			children: (
 				<Row ref={decodePanelRef} gutter={[16, 16]} className="qr-decode-panel" tabIndex={0} onPaste={handlePasteImage}>
 					<Col xs={24} lg={10}>
-						<Space direction="vertical" size={12} className="qr-code-panel">
+						<Space orientation="vertical" size={12} className="qr-code-panel">
 							<Typography.Text type="secondary">
 								上传、粘贴或从剪切板读取包含二维码的图片，自动解析其中的文本内容。
 							</Typography.Text>
@@ -485,7 +487,7 @@ const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
 								{uploadedImageUrl ? (
 									<img src={uploadedImageUrl} alt="上传的二维码" />
 								) : (
-									<Space direction="vertical" align="center">
+									<Space orientation="vertical" align="center">
 										<SnippetsOutlined className="qr-preview-icon" />
 										<Typography.Text type="secondary">图片预览，支持 Ctrl+V 粘贴</Typography.Text>
 									</Space>
@@ -494,7 +496,7 @@ const QrCode: React.FC<QrCodeProps> = ({ onBack }) => {
 						</Space>
 					</Col>
 					<Col xs={24} lg={14}>
-						<Space direction="vertical" size={12} className="qr-code-panel">
+						<Space orientation="vertical" size={12} className="qr-code-panel">
 							<Typography.Text strong>解析结果</Typography.Text>
 							<Input.TextArea
 								value={decodedText}

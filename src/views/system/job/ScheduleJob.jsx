@@ -317,10 +317,15 @@ export default class ScheduleJob extends React.Component {
 							<Input placeholder="请输入任务名称" style={{ width: 200 }} />
 						</Form.Item>
 						<Form.Item name="state" label="状态">
-							<Select placeholder="请选择状态" style={{ width: 120 }} allowClear>
-								<Select.Option value={0}>禁用</Select.Option>
-								<Select.Option value={1}>启用</Select.Option>
-							</Select>
+							<Select
+								placeholder="请选择状态"
+								style={{ width: 120 }}
+								allowClear
+								options={[
+									{ value: 0, label: "禁用" },
+									{ value: 1, label: "启用" }
+								]}
+							/>
 						</Form.Item>
 						<Form.Item>
 							<Space>

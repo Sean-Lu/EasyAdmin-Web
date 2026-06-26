@@ -52,6 +52,12 @@ const NoteList: React.FC = () => {
 	const [detailReadonly, setDetailReadonly] = useState(false);
 	const [pendingReadonly, setPendingReadonly] = useState(false);
 	const [cleaningUnusedTags, setCleaningUnusedTags] = useState(false);
+	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+	const [batchMoveModalOpen, setBatchMoveModalOpen] = useState(false);
+	const [batchMoveLoading, setBatchMoveLoading] = useState(false);
+	const [batchMoveForm] = Form.useForm();
+
+	const getSelectedNoteIds = () => selectedRowKeys.map(key => (typeof key === "number" ? key : String(key)));
 
 	useEffect(() => {
 		void fetchCategories();
@@ -72,6 +78,7 @@ const NoteList: React.FC = () => {
 
 	const selectCategory = (categoryId: string) => {
 		setSelectedCategoryId(categoryId);
+		setSelectedRowKeys([]);
 		setPagination(prev => ({ ...prev, current: 1 }));
 	};
 
@@ -118,6 +125,7 @@ const NoteList: React.FC = () => {
 			};
 			const result = await NoteService.page(params);
 			setNotes(result.list || []);
+			setSelectedRowKeys(prev => prev.filter(key => (result.list || []).some(note => String(note.id) === String(key))));
 			setPagination(prev => ({ ...prev, total: result.total || 0 }));
 		} finally {
 			setLoading(false);
@@ -190,11 +198,58 @@ const NoteList: React.FC = () => {
 			onOk: async () => {
 				await NoteService.delete(note.id);
 				message.success("笔记已删除");
+				setSelectedRowKeys(prev => prev.filter(key => String(key) !== String(note.id)));
 				await fetchNotes();
 				await fetchCategories();
 				await fetchTags();
 			}
 		});
+	};
+
+	const batchDeleteNotes = () => {
+		if (selectedRowKeys.length === 0) {
+			message.info("请选择笔记");
+			return;
+		}
+		confirm({
+			title: "确认批量删除笔记？",
+			content: `将删除选中的 ${selectedRowKeys.length} 条笔记。`,
+			okText: "删除",
+			okType: "danger",
+			cancelText: "取消",
+			onOk: async () => {
+				await NoteService.batchDelete(getSelectedNoteIds());
+				message.success("笔记已删除");
+				setSelectedRowKeys([]);
+				await fetchNotes();
+				await fetchCategories();
+				await fetchTags();
+			}
+		});
+	};
+
+	const openBatchMoveModal = () => {
+		if (selectedRowKeys.length === 0) {
+			message.info("请选择笔记");
+			return;
+		}
+		batchMoveForm.setFieldsValue({ categoryId: selectedCategoryId || undefined });
+		setBatchMoveModalOpen(true);
+	};
+
+	const batchMoveNotes = async () => {
+		const values = await batchMoveForm.validateFields();
+		try {
+			setBatchMoveLoading(true);
+			await NoteService.batchMoveCategory(getSelectedNoteIds(), values.categoryId);
+			message.success("笔记已移动");
+			setSelectedRowKeys([]);
+			setBatchMoveModalOpen(false);
+			await fetchNotes();
+			await fetchCategories();
+		} finally {
+			setBatchMoveLoading(false);
+		}
 	};
 
 	const deleteTag = (tag: NoteTagDto) => {
@@ -408,19 +463,25 @@ const NoteList: React.FC = () => {
 							<Input allowClear prefix={<SearchOutlined />} placeholder="搜索标题或正文" />
 						</Form.Item>
 						<Form.Item name="tagIds">
-							<Select mode="multiple" allowClear placeholder="标签" style={{ minWidth: 180 }}>
-								{tags.map(tag => (
-									<Select.Option key={tag.id} value={tag.id}>
-										{tag.name}
-									</Select.Option>
-								))}
-							</Select>
+							<Select
+								mode="multiple"
+								allowClear
+								placeholder="标签"
+								style={{ minWidth: 180 }}
+								options={tags.map(tag => ({ value: tag.id, label: tag.name }))}
+							/>
 						</Form.Item>
 						<Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
 							搜索
 						</Button>
 					</Form>
 					<Space>
+						<Button disabled={selectedRowKeys.length === 0} onClick={openBatchMoveModal}>
+							移动分类{selectedRowKeys.length > 0 ? `(${selectedRowKeys.length})` : ""}
+						</Button>
+						<Button danger disabled={selectedRowKeys.length === 0} icon={<DeleteOutlined />} onClick={batchDeleteNotes}>
+							批量删除{selectedRowKeys.length > 0 ? `(${selectedRowKeys.length})` : ""}
+						</Button>
 						<Button icon={<UnlockOutlined />} onClick={() => setActiveView("password")}>
 							笔记密码
 						</Button>
@@ -435,6 +496,10 @@ const NoteList: React.FC = () => {
 					loading={loading}
 					columns={columns}
 					dataSource={notes}
+					rowSelection={{
+						selectedRowKeys,
+						onChange: (keys: React.Key[]) => setSelectedRowKeys(keys)
+					}}
 					pagination={{
 						current: pagination.current,
 						pageSize: pagination.pageSize,
@@ -458,6 +523,27 @@ const NoteList: React.FC = () => {
 					</Form.Item>
 					<Form.Item name="sortOrder" label="排序">
 						<Input type="number" />
+					</Form.Item>
+				</Form>
+			</Modal>
+
+			<Modal
+				title="批量移动分类"
+				open={batchMoveModalOpen}
+				onOk={batchMoveNotes}
+				onCancel={() => setBatchMoveModalOpen(false)}
+				confirmLoading={batchMoveLoading}
+			>
+				<Form form={batchMoveForm} layout="vertical">
+					<Form.Item
+						name="categoryId"
+						label={`目标分类（已选 ${selectedRowKeys.length} 条）`}
+						rules={[{ required: true, message: "请选择目标分类" }]}
+					>
+						<Select
+							placeholder="请选择分类"
+							options={categories.map(category => ({ value: category.id, label: category.name }))}
+						/>
 					</Form.Item>
 				</Form>
 			</Modal>

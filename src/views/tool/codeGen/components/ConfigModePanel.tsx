@@ -239,7 +239,7 @@ const ConfigModePanel: React.FC<ConfigModePanelProps> = ({ templateIds, onCodeGe
 					</Tag>
 				</div>
 			}
-			bordered
+			variant="outlined"
 			style={{ borderRadius: 8 }}
 		>
 			<Form layout="vertical">

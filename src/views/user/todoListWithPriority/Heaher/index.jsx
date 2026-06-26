@@ -3,8 +3,6 @@ import { Input, Select } from "antd";
 import { nanoid } from "nanoid";
 import PropTypes from "prop-types";
 
-const { Option } = Select;
-
 // 待办事项顶部输入栏组件
 export default class TodoHeader extends Component {
 	// 使用 PropTypes 进行类型检查
@@ -56,17 +54,16 @@ export default class TodoHeader extends Component {
 					allowClear
 					style={{ flex: 1, marginRight: 8 }}
 				/>
-				<Select style={{ width: 80, marginRight: 8 }} value={this.state.priority} onChange={this.handlePriorityChange}>
-					<Option value={1} style={{ color: "#999" }}>
-						低
-					</Option>
-					<Option value={2} style={{ color: "#fa8c16", fontWeight: "bold" }}>
-						中
-					</Option>
-					<Option value={3} style={{ color: "#ff4d4f", fontWeight: "bold" }}>
-						高
-					</Option>
-				</Select>
+				<Select
+					style={{ width: 80, marginRight: 8 }}
+					value={this.state.priority}
+					onChange={this.handlePriorityChange}
+					options={[
+						{ value: 1, label: "低", style: { color: "#999" } },
+						{ value: 2, label: "中", style: { color: "#fa8c16", fontWeight: "bold" } },
+						{ value: 3, label: "高", style: { color: "#ff4d4f", fontWeight: "bold" } }
+					]}
+				/>
 			</div>
 		);
 	}

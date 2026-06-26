@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { Select, Button, Input, message } from "antd";
 import { TodoCategoryService } from "@/services/tool/todoCategoryService";
 
-const { Option } = Select;
-
 // 待办事项分类选择器组件
 export default class CategorySelector extends Component {
 	state = {
@@ -83,13 +81,8 @@ export default class CategorySelector extends Component {
 					value={selectedCategoryId}
 					onChange={this.handleCategoryChange}
 					placeholder="选择分类"
-				>
-					{categoryList.map(category => (
-						<Option key={category.id} value={category.id}>
-							{category.name}
-						</Option>
-					))}
-				</Select>
+					options={categoryList.map(category => ({ value: category.id, label: category.name }))}
+				/>
 				{editing ? (
 					<div style={{ display: "flex", alignItems: "center" }}>
 						<Input

@@ -110,11 +110,8 @@ export default class MonthWorkReportList extends React.Component {
 				dataIndex: "monthRange",
 				align: tableColumnAlign,
 				width: 200,
-				render: (text, record) => {
-					return {
-						children: `${dayjs(record.startTime).format("YYYY-MM-DD")} ~ ${dayjs(record.endTime).format("YYYY-MM-DD")}`
-					};
-				}
+				render: (text, record) =>
+					`${dayjs(record.startTime).format("YYYY-MM-DD")} ~ ${dayjs(record.endTime).format("YYYY-MM-DD")}`
 			},
 			{
 				title: "本月工作",

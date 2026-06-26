@@ -4,8 +4,6 @@ import { MoreOutlined } from "@ant-design/icons";
 
 import "./index.css";
 
-const { Option } = Select;
-
 class TodoItem extends Component {
 	constructor(props) {
 		super(props);
@@ -159,17 +157,17 @@ class TodoItem extends Component {
 							autoFocus
 						/>
 						<div className="todo-item-actions">
-							<Select className="todo-item-priority" value={priority} onChange={this.handlePriorityChange} disabled>
-								<Option value={1} style={{ color: "#999" }}>
-									低
-								</Option>
-								<Option value={2} style={{ color: "#fa8c16", fontWeight: "bold" }}>
-									中
-								</Option>
-								<Option value={3} style={{ color: "#ff4d4f", fontWeight: "bold" }}>
-									高
-								</Option>
-							</Select>
+							<Select
+								className="todo-item-priority"
+								value={priority}
+								onChange={this.handlePriorityChange}
+								disabled
+								options={[
+									{ value: 1, label: "低", style: { color: "#999" } },
+									{ value: 2, label: "中", style: { color: "#fa8c16", fontWeight: "bold" } },
+									{ value: 3, label: "高", style: { color: "#ff4d4f", fontWeight: "bold" } }
+								]}
+							/>
 							<div className="todo-item-buttons">
 								<Button type="primary" size="small" onClick={this.handleSaveEdit} style={{ padding: "4px 12px", marginRight: 4 }}>
 									保存
@@ -195,17 +193,17 @@ class TodoItem extends Component {
 							{name}
 						</span>
 						<div className="todo-item-actions">
-							<Select className="todo-item-priority" value={priority} onChange={this.handlePriorityChange} disabled={done}>
-								<Option value={1} style={{ color: "#999" }}>
-									低
-								</Option>
-								<Option value={2} style={{ color: "#fa8c16", fontWeight: "bold" }}>
-									中
-								</Option>
-								<Option value={3} style={{ color: "#ff4d4f", fontWeight: "bold" }}>
-									高
-								</Option>
-							</Select>
+							<Select
+								className="todo-item-priority"
+								value={priority}
+								onChange={this.handlePriorityChange}
+								disabled={done}
+								options={[
+									{ value: 1, label: "低", style: { color: "#999" } },
+									{ value: 2, label: "中", style: { color: "#fa8c16", fontWeight: "bold" } },
+									{ value: 3, label: "高", style: { color: "#ff4d4f", fontWeight: "bold" } }
+								]}
+							/>
 							<Dropdown menu={{ items: menuItems }} trigger={["click"]}>
 								<Button type="text" size="small">
 									<MoreOutlined />

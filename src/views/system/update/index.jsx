@@ -110,12 +110,11 @@ export default class UpdateList extends React.Component {
 				</Col>
 				<Col md={5} sm={24}>
 					<Form.Item label="平台" name="platform">
-						<Select placeholder="请选择平台" allowClear>
-							<Select.Option value="win-x64">win-x64</Select.Option>
-							<Select.Option value="win-x86">win-x86</Select.Option>
-							<Select.Option value="linux-x64">linux-x64</Select.Option>
-							<Select.Option value="osx-x64">osx-x64</Select.Option>
-						</Select>
+						<Select
+							placeholder="请选择平台"
+							allowClear
+							options={["win-x64", "win-x86", "linux-x64", "osx-x64"].map(platform => ({ value: platform, label: platform }))}
+						/>
 					</Form.Item>
 				</Col>
 				<Col>

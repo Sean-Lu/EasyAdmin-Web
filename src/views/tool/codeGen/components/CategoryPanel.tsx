@@ -129,7 +129,7 @@ const CategoryPanel: React.FC<CategoryPanelProps> = ({
 						<span>代码模板分类</span>
 					</div>
 				}
-				bordered
+				variant="outlined"
 				style={{ marginBottom: 16, borderRadius: 8 }}
 				extra={
 					<Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => openModal()} title="新增分类">

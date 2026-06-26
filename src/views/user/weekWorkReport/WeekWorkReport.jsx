@@ -110,11 +110,8 @@ export default class WeekWorkReportList extends React.Component {
 				dataIndex: "weekRange",
 				align: tableColumnAlign,
 				width: 200,
-				render: (text, record) => {
-					return {
-						children: `${dayjs(record.startTime).format("YYYY-MM-DD")} ~ ${dayjs(record.endTime).format("YYYY-MM-DD")}`
-					};
-				}
+				render: (text, record) =>
+					`${dayjs(record.startTime).format("YYYY-MM-DD")} ~ ${dayjs(record.endTime).format("YYYY-MM-DD")}`
 			},
 			{
 				title: "本周工作",

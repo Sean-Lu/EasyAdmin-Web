@@ -639,13 +639,11 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 				</Form.Item>
 				<Space style={{ width: "100%" }} align="start">
 					<Form.Item name="categoryId" label="分类" rules={[{ required: true, message: "请选择分类" }]}>
-						<Select disabled={readonly} style={{ width: 180 }}>
-							{categories.map(category => (
-								<Select.Option key={category.id} value={String(category.id)}>
-									{category.name}
-								</Select.Option>
-							))}
-						</Select>
+						<Select
+							disabled={readonly}
+							style={{ width: 180 }}
+							options={categories.map(category => ({ value: String(category.id), label: category.name }))}
+						/>
 					</Form.Item>
 					<Form.Item name="tags" label="标签">
 						<Select

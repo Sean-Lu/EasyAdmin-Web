@@ -306,7 +306,7 @@ const RandomDecision: React.FC<RandomDecisionProps> = ({ onBack }) => {
 						<div className="draw-results">
 							<Typography.Title level={5}>{config.resultTitle}</Typography.Title>
 							{drawResults.length > 0 ? (
-								<Space direction="vertical" size={10} className="result-stack">
+								<Space orientation="vertical" size={10} className="result-stack">
 									{drawResults.map((item, index) => (
 										<div className="result-item" key={`${item.id}-${index}`}>
 											<Tag color="green">#{index + 1}</Tag>

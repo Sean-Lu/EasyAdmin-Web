@@ -51,6 +51,7 @@ const NoteList: React.FC = () => {
 	const [editingUnlockToken, setEditingUnlockToken] = useState<string>("");
 	const [detailReadonly, setDetailReadonly] = useState(false);
 	const [pendingReadonly, setPendingReadonly] = useState(false);
+	const [cleaningUnusedTags, setCleaningUnusedTags] = useState(false);
 
 	useEffect(() => {
 		void fetchCategories();
@@ -98,7 +99,9 @@ const NoteList: React.FC = () => {
 	};
 
 	const fetchTags = async () => {
-		setTags(await NoteTagService.list());
+		const list = await NoteTagService.list();
+		setTags(list);
+		return list;
 	};
 
 	const fetchNotes = async (extra?: Partial<NotePageReqDto>) => {
@@ -210,6 +213,38 @@ const NoteList: React.FC = () => {
 				message.success("标签已删除");
 				await fetchTags();
 				await fetchNotes();
+			}
+		});
+	};
+
+	const deleteUnusedTags = () => {
+		confirm({
+			title: "确认清理未使用标签？",
+			content: "将删除当前没有被任何笔记使用的标签，已使用的标签不会受影响。",
+			okText: "清理",
+			okType: "danger",
+			cancelText: "取消",
+			onOk: async () => {
+				try {
+					setCleaningUnusedTags(true);
+					const result = await NoteTagService.deleteUnused();
+					if (!result.data) {
+						message.error("清理失败");
+						return;
+					}
+					const nextTags = await fetchTags();
+					const validTagIds = new Set(nextTags.map(tag => String(tag.id)));
+					const selectedTagIds = (searchForm.getFieldValue("tagIds") || []).filter((id: string | number) =>
+						validTagIds.has(String(id))
+					);
+					searchForm.setFieldsValue({ tagIds: selectedTagIds });
+					setPagination(prev => ({ ...prev, current: 1 }));
+					await fetchCategories();
+					await fetchNotes({ pageNumber: 1, tagIds: selectedTagIds });
+					message.success("未使用标签已清理");
+				} finally {
+					setCleaningUnusedTags(false);
+				}
 			}
 		});
 	};
@@ -351,6 +386,9 @@ const NoteList: React.FC = () => {
 				<div className="note-tag-section">
 					<div className="note-tag-header">
 						<strong>标签管理</strong>
+						<Button size="small" type="text" danger loading={cleaningUnusedTags} onClick={deleteUnusedTags}>
+							清理未使用
+						</Button>
 					</div>
 					<div className="note-tag-list">
 						{tags.map(tag => (

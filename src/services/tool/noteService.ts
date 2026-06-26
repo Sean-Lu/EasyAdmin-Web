@@ -184,6 +184,11 @@ export class NoteTagService {
 	static async delete(id: BackendIdInput) {
 		return request.post<boolean>("/NoteTag/Delete", { id });
 	}
+
+	/** 清理未使用标签 */
+	static async deleteUnused() {
+		return request.post<boolean>("/NoteTag/DeleteUnused");
+	}
 }
 
 /** 笔记密码接口，密码用于打开受保护笔记，不加密正文内容 */

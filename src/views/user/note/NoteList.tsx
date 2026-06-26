@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, message } from "antd";
+import { Button, Dropdown, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, message } from "antd";
 import {
 	DeleteOutlined,
+	DownloadOutlined,
 	EditOutlined,
 	EyeOutlined,
+	FolderOpenOutlined,
 	LockOutlined,
 	PlusOutlined,
 	SearchOutlined,
@@ -13,10 +15,12 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
+import { BackendIdInput } from "@/api/interface";
 import {
 	NoteCategoryDto,
 	NoteCategoryService,
 	NoteDto,
+	NoteExportType,
 	NotePageReqDto,
 	NotePasswordService,
 	NoteService,
@@ -25,6 +29,7 @@ import {
 } from "@/services/tool/noteService";
 import NoteDetail from "./NoteDetail";
 import NotePassword from "./NotePassword";
+import { downloadBatchNoteExport, downloadNoteExport } from "./noteExport";
 import "./note.less";
 
 const { confirm } = Modal;
@@ -46,6 +51,11 @@ const NoteList: React.FC = () => {
 	const [passwordModalOpen, setPasswordModalOpen] = useState(false);
 	const [passwordForm] = Form.useForm();
 	const [pendingNote, setPendingNote] = useState<NoteDto | null>(null);
+	const [pendingExportType, setPendingExportType] = useState<NoteExportType | null>(null);
+	const [pendingBatchExport, setPendingBatchExport] = useState<{ ids: BackendIdInput[]; exportType: NoteExportType } | null>(
+		null
+	);
+	const [verifyingPassword, setVerifyingPassword] = useState(false);
 	const [activeView, setActiveView] = useState<NoteView>("list");
 	const [editingNoteId, setEditingNoteId] = useState<string>("");
 	const [editingUnlockToken, setEditingUnlockToken] = useState<string>("");
@@ -55,9 +65,12 @@ const NoteList: React.FC = () => {
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [batchMoveModalOpen, setBatchMoveModalOpen] = useState(false);
 	const [batchMoveLoading, setBatchMoveLoading] = useState(false);
+	const [batchExportLoading, setBatchExportLoading] = useState(false);
 	const [batchMoveForm] = Form.useForm();
 
 	const getSelectedNoteIds = () => selectedRowKeys.map(key => (typeof key === "number" ? key : String(key)));
+
+	const getSelectedNotes = () => notes.filter(note => selectedRowKeys.some(key => String(key) === String(note.id)));
 
 	useEffect(() => {
 		void fetchCategories();
@@ -95,6 +108,8 @@ const NoteList: React.FC = () => {
 		setDetailReadonly(false);
 		setPendingReadonly(false);
 		setPendingNote(null);
+		setPendingExportType(null);
+		setPendingBatchExport(null);
 		setActiveView("list");
 	};
 
@@ -182,10 +197,22 @@ const NoteList: React.FC = () => {
 
 	const verifyPassword = async () => {
 		const values = await passwordForm.validateFields();
-		const result = await NotePasswordService.verify(values.password);
-		setPasswordModalOpen(false);
-		if (pendingNote) {
-			openDetail(String(pendingNote.id), result.unlockToken, pendingReadonly);
+		try {
+			setVerifyingPassword(true);
+			const result = await NotePasswordService.verify(values.password);
+			setPasswordModalOpen(false);
+			if (pendingBatchExport) {
+				await downloadBatchNoteExport(pendingBatchExport.ids, pendingBatchExport.exportType, result.unlockToken);
+			} else if (pendingNote && pendingExportType) {
+				await downloadNoteExport(pendingNote.id, pendingExportType, pendingNote.title, result.unlockToken);
+			} else if (pendingNote) {
+				openDetail(String(pendingNote.id), result.unlockToken, pendingReadonly);
+			}
+			setPendingExportType(null);
+			setPendingBatchExport(null);
+			setPendingNote(null);
+		} finally {
+			setVerifyingPassword(false);
 		}
 	};
 
@@ -252,6 +279,28 @@ const NoteList: React.FC = () => {
 		}
 	};
 
+	const batchExportNotes = async (exportType: NoteExportType) => {
+		const ids = getSelectedNoteIds();
+		if (ids.length === 0) {
+			message.info("请选择笔记");
+			return;
+		}
+		if (getSelectedNotes().some(note => note.isProtected)) {
+			setPendingBatchExport({ ids, exportType });
+			setPendingNote(null);
+			setPendingExportType(null);
+			passwordForm.resetFields();
+			setPasswordModalOpen(true);
+			return;
+		}
+		try {
+			setBatchExportLoading(true);
+			await downloadBatchNoteExport(ids, exportType);
+		} finally {
+			setBatchExportLoading(false);
+		}
+	};
+
 	const deleteTag = (tag: NoteTagDto) => {
 		confirm({
 			title: "确认删除标签？",
@@ -304,6 +353,18 @@ const NoteList: React.FC = () => {
 		});
 	};
 
+	const exportNoteFromList = async (note: NoteDto, exportType: NoteExportType) => {
+		if (note.isProtected) {
+			setPendingNote(note);
+			setPendingReadonly(true);
+			setPendingExportType(exportType);
+			passwordForm.resetFields();
+			setPasswordModalOpen(true);
+			return;
+		}
+		await downloadNoteExport(note.id, exportType, note.title);
+	};
+
 	const columns = [
 		{
 			title: "标题",
@@ -347,7 +408,7 @@ const NoteList: React.FC = () => {
 		},
 		{
 			title: "操作",
-			width: 220,
+			width: 270,
 			render: (_: any, record: NoteDto) => (
 				<Space>
 					<Tooltip title="查看">
@@ -365,6 +426,21 @@ const NoteList: React.FC = () => {
 							}}
 						/>
 					</Tooltip>
+					<Dropdown
+						menu={{
+							items: [
+								{ key: "html", label: "HTML" },
+								{ key: "doc", label: "Word" },
+								{ key: "pdf", label: "PDF" }
+							],
+							onClick: ({ key }) => void exportNoteFromList(record, key as NoteExportType)
+						}}
+						trigger={["click"]}
+					>
+						<Tooltip title="导出">
+							<Button icon={<DownloadOutlined />} onClick={event => event.preventDefault()} />
+						</Tooltip>
+					</Dropdown>
 					<Tooltip title="删除">
 						<Button danger icon={<DeleteOutlined />} onClick={() => deleteNote(record)} />
 					</Tooltip>
@@ -476,9 +552,29 @@ const NoteList: React.FC = () => {
 						</Button>
 					</Form>
 					<Space>
-						<Button disabled={selectedRowKeys.length === 0} onClick={openBatchMoveModal}>
+						<Button disabled={selectedRowKeys.length === 0} icon={<FolderOpenOutlined />} onClick={openBatchMoveModal}>
 							移动分类{selectedRowKeys.length > 0 ? `(${selectedRowKeys.length})` : ""}
 						</Button>
+						<Dropdown
+							menu={{
+								items: [
+									{ key: "html", label: "HTML" },
+									{ key: "doc", label: "Word" },
+									{ key: "pdf", label: "PDF" }
+								],
+								onClick: ({ key }) => void batchExportNotes(key as NoteExportType)
+							}}
+							trigger={["click"]}
+						>
+							<Button
+								disabled={selectedRowKeys.length === 0}
+								icon={<DownloadOutlined />}
+								loading={batchExportLoading}
+								onClick={event => event.preventDefault()}
+							>
+								批量导出{selectedRowKeys.length > 0 ? `(${selectedRowKeys.length})` : ""}
+							</Button>
+						</Dropdown>
 						<Button danger disabled={selectedRowKeys.length === 0} icon={<DeleteOutlined />} onClick={batchDeleteNotes}>
 							批量删除{selectedRowKeys.length > 0 ? `(${selectedRowKeys.length})` : ""}
 						</Button>
@@ -548,7 +644,17 @@ const NoteList: React.FC = () => {
 				</Form>
 			</Modal>
 
-			<Modal title="打开受保护笔记" open={passwordModalOpen} onOk={verifyPassword} onCancel={() => setPasswordModalOpen(false)}>
+			<Modal
+				title={pendingBatchExport || pendingExportType ? "导出受保护笔记" : "打开受保护笔记"}
+				open={passwordModalOpen}
+				onOk={verifyPassword}
+				onCancel={() => {
+					setPasswordModalOpen(false);
+					setPendingExportType(null);
+					setPendingBatchExport(null);
+				}}
+				confirmLoading={verifyingPassword}
+			>
 				<Form form={passwordForm} layout="vertical">
 					<Form.Item name="password" label="笔记密码" rules={[{ required: true, message: "请输入笔记密码" }]}>
 						<Input.Password onPressEnter={() => void verifyPassword()} />

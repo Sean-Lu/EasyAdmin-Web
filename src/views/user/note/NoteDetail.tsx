@@ -24,7 +24,15 @@ import {
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { FileBizType, FileStoreType, getFileObjectUrl, uploadFile } from "@/services/system/fileService";
-import { NoteCategoryDto, NoteCategoryService, NoteDto, NoteService, NoteUpdateDto } from "@/services/tool/noteService";
+import {
+	NoteCategoryDto,
+	NoteCategoryService,
+	NoteDto,
+	NoteExportType,
+	NoteService,
+	NoteUpdateDto
+} from "@/services/tool/noteService";
+import { downloadNoteExport } from "./noteExport";
 import "./note.less";
 
 interface NoteDetailProps {
@@ -583,25 +591,12 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 		}
 	};
 
-	const exportNote = async (exportType: "html" | "doc") => {
+	const exportNote = async (exportType: NoteExportType) => {
 		if (!noteId) {
 			message.warning("请先保存笔记再导出");
 			return;
 		}
-		const response = await NoteService.export(noteId, exportType, unlockToken);
-		const disposition = response.headers["content-disposition"] || "";
-		const match = disposition.match(/filename\*=UTF-8''([^;]+)/i) || disposition.match(/filename="?(.+?)"?(;|$)/i);
-		const fileName = match?.[1]
-			? decodeURIComponent(match[1].replace(/"/g, ""))
-			: `${note?.title || "我的笔记"}.${exportType === "doc" ? "doc" : "html"}`;
-		const url = window.URL.createObjectURL(new Blob([response.data]));
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = fileName;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-		window.URL.revokeObjectURL(url);
+		await downloadNoteExport(noteId, exportType, note?.title, unlockToken);
 	};
 
 	return (
@@ -619,6 +614,9 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 					</Button>
 					<Button icon={<DownloadOutlined />} onClick={() => exportNote("doc")}>
 						Word
+					</Button>
+					<Button icon={<DownloadOutlined />} onClick={() => exportNote("pdf")}>
+						PDF
 					</Button>
 					{readonly && onEdit && (
 						<Button icon={<EditOutlined />} onClick={onEdit}>

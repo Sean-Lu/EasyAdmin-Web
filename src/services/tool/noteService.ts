@@ -87,6 +87,9 @@ export interface NoteUpdateDto {
 	tags: string[];
 }
 
+/** 笔记导出类型 */
+export type NoteExportType = "html" | "doc" | "pdf";
+
 /** 笔记主体接口 */
 export class NoteService {
 	/** 分页查询笔记，列表接口不会返回完整富文本内容 */
@@ -142,8 +145,13 @@ export class NoteService {
 	}
 
 	/** 导出笔记文件，返回 Blob 响应 */
-	static async export(id: BackendIdInput, exportType: "html" | "doc", unlockToken?: string) {
+	static async export(id: BackendIdInput, exportType: NoteExportType, unlockToken?: string) {
 		return request.download("/Note/Export", { id, exportType, unlockToken });
+	}
+
+	/** 批量导出笔记文件，返回 Blob 响应 */
+	static async batchExport(ids: BackendIdInput[], exportType: NoteExportType, unlockToken?: string) {
+		return request.download("/Note/BatchExport", { ids, exportType, unlockToken });
 	}
 }
 

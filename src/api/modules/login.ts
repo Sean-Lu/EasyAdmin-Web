@@ -15,6 +15,11 @@ export const loginApi = (params: Login.LoginReq) => {
 	return http.post<Login.LoginRes>(PORT1 + `/auth/login`, params, { headers: { noLoading: true } }); // 控制当前请求不显示 loading
 };
 
+// * 获取登录验证码
+export const getCaptchaApi = () => {
+	return http.get<Login.CaptchaRes>(PORT1 + `/auth/captcha`, undefined, { headers: { noLoading: true } });
+};
+
 // * 刷新token接口
 export const refreshTokenApi = (refreshToken: string) => {
 	return http.post<Login.LoginRes>(PORT1 + `/auth/refreshToken`, { refreshToken }, { headers: { noLoading: true } });

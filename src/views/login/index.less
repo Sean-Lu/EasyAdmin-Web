@@ -100,6 +100,40 @@
 					}
 				}
 			}
+			.captcha-row {
+				display: flex;
+				gap: 12px;
+				height: 75px;
+				.ant-form-item {
+					flex: 1;
+				}
+				.captcha-image-button {
+					width: 120px;
+					height: 40px;
+					padding: 0;
+					overflow: hidden;
+					cursor: pointer;
+					background: #f2f6fc;
+					border: 1px solid #d9d9d9;
+					border-radius: 6px;
+					img {
+						display: block;
+						width: 100%;
+						height: 100%;
+					}
+					&:disabled {
+						cursor: wait;
+						opacity: 0.65;
+					}
+				}
+			}
+			.captcha-error {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				height: 45px;
+				color: #ff4d4f;
+			}
 		}
 	}
 
@@ -210,6 +244,18 @@
 							height: 44px !important;
 							border-radius: 6px !important;
 						}
+					}
+				}
+				.captcha-row {
+					box-sizing: border-box;
+					width: 100%;
+					height: auto;
+					margin-bottom: 12px;
+					.ant-form-item {
+						margin-bottom: 0 !important;
+					}
+					.captcha-image-button {
+						height: 44px;
 					}
 				}
 			}

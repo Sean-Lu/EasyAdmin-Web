@@ -41,6 +41,13 @@ export namespace Login {
 	export interface LoginReq {
 		username: string;
 		password: string;
+		captchaKey?: string;
+		captchaCode?: string;
+	}
+	export interface CaptchaRes {
+		enabled: boolean;
+		captchaKey: string | null;
+		image: string | null;
 	}
 	/**登录响应参数 */
 	export interface LoginRes {

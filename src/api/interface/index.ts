@@ -37,10 +37,24 @@ export interface DtoBase {
 
 /**登录 */
 export namespace Login {
+	/**登录方式 */
+	export enum LoginType {
+		/**账号密码登录（用户名 / 手机号 / 邮箱 + 密码） */
+		Password = 1,
+		/**手机短信验证码登录 */
+		PhoneCode = 2,
+		/**邮箱验证码登录 */
+		EmailCode = 3
+	}
+
 	/**登录请求参数 */
 	export interface LoginReq {
-		username: string;
+		/**账号（用户名 / 手机号 / 邮箱） */
+		account: string;
+		/**密码（LoginType=Password 时必填） */
 		password: string;
+		/**登录方式，默认 Password */
+		loginType?: LoginType;
 		captchaKey?: string;
 		captchaCode?: string;
 	}

@@ -9,7 +9,19 @@ import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
 import { useTranslation } from "react-i18next";
 import { setTabsList } from "@/redux/modules/tabs/action";
-import { CloseCircleOutlined, LockOutlined, ReloadOutlined, SafetyCertificateOutlined, UserOutlined } from "@ant-design/icons";
+import {
+	CloseCircleOutlined,
+	LockOutlined,
+	MailOutlined,
+	PhoneOutlined,
+	ReloadOutlined,
+	SafetyCertificateOutlined,
+	UserOutlined
+} from "@ant-design/icons";
+
+// 简单账号格式判断：用于前端决定 LoginType 与输入框前缀图标
+const isPhoneNumber = (value: string | undefined): boolean => !!value && /^1\d{10}$/.test(value.trim());
+const isEmail = (value: string | undefined): boolean => !!value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 const LoginForm = (props: any) => {
 	const { t } = useTranslation();
@@ -20,6 +32,7 @@ const LoginForm = (props: any) => {
 	const [captcha, setCaptcha] = useState<Login.CaptchaRes | null>(null);
 	const [captchaLoading, setCaptchaLoading] = useState<boolean>(true);
 	const [captchaError, setCaptchaError] = useState<boolean>(false);
+	const account = Form.useWatch("account", form);
 	const captchaRequestId = useRef<number>(0);
 
 	const loadCaptcha = useCallback(async () => {
@@ -54,6 +67,7 @@ const LoginForm = (props: any) => {
 			setLoading(true);
 			const { data } = await loginApi({
 				...loginForm,
+				loginType: Login.LoginType.Password,
 				password: md5(loginForm.password),
 				captchaKey: captcha?.enabled ? captcha.captchaKey || undefined : undefined
 			});
@@ -89,6 +103,9 @@ const LoginForm = (props: any) => {
 		console.log("Login failed:", errorInfo);
 	};
 
+	const accountPrefix = isEmail(account) ? <MailOutlined /> : isPhoneNumber(account) ? <PhoneOutlined /> : <UserOutlined />;
+	const accountPlaceholder = "用户名 / 手机号 / 邮箱";
+
 	return (
 		<Form
 			form={form}
@@ -101,8 +118,8 @@ const LoginForm = (props: any) => {
 			size="large"
 			autoComplete="off"
 		>
-			<Form.Item name="username" rules={[{ required: true, message: "请输入用户名" }]}>
-				<Input placeholder="用户名" prefix={<UserOutlined />} />
+			<Form.Item name="account" rules={[{ required: true, message: "请输入用户名 / 手机号 / 邮箱" }]}>
+				<Input placeholder={accountPlaceholder} prefix={accountPrefix} maxLength={50} />
 			</Form.Item>
 			<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
 				<Input.Password autoComplete="new-password" placeholder="密码" prefix={<LockOutlined />} />

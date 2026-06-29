@@ -80,8 +80,11 @@ export const getAvatarObjectUrl = async (avatarFileId?: BackendIdInput) => {
 
 // * 更新用户信息请求参数
 export interface UserProfileUpdateReq {
-	nickName?: string;
-	avatarFileId?: BackendIdInput;
+	nickName?: string; // 昵称
+	avatarFileId?: BackendIdInput; // 头像文件ID
+	phoneNumber?: string; // 手机号
+	email?: string; // 邮箱
+	currentPassword?: string; // 当前登录密码（MD5）
 }
 
 // * 用户信息

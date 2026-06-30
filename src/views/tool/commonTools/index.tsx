@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import {
 	ArrowRightOutlined,
 	BarChartOutlined,
+	ClockCircleOutlined,
 	CodeOutlined,
 	CompassOutlined,
 	FileTextOutlined,
@@ -20,6 +21,7 @@ import QrCode from "./tools/qrCode";
 import RandomDecision from "./tools/randomDecision";
 import SqlToTable from "./tools/sqlToTable";
 import StockPortfolio from "./tools/stockPortfolio";
+import Timestamp from "./tools/timestamp";
 import UrlCodec from "./tools/urlCodec";
 import "./index.less";
 
@@ -31,7 +33,8 @@ type ToolKey =
 	| "qrCode"
 	| "randomDecision"
 	| "lottery"
-	| "stockPortfolio";
+	| "stockPortfolio"
+	| "timestamp";
 
 interface ToolItem {
 	key: ToolKey;
@@ -97,6 +100,13 @@ const tools: ToolItem[] = [
 		description: "记录持仓并统计盈亏",
 		tag: "finance_tools",
 		icon: <FundProjectionScreenOutlined />
+	},
+	{
+		key: "timestamp",
+		title: "时间戳转换",
+		description: "秒/毫秒时间戳与时间互转",
+		tag: "developer_tools",
+		icon: <ClockCircleOutlined />
 	}
 ];
 
@@ -147,6 +157,10 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "stockPortfolio") {
 		return <StockPortfolio onBack={() => setSearchParams({})} />;
+	}
+
+	if (activeTool === "timestamp") {
+		return <Timestamp onBack={() => setSearchParams({})} />;
 	}
 
 	return (

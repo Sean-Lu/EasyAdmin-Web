@@ -1,0 +1,66 @@
+.timestamp-page {
+	padding: 16px;
+	.ts-result-card {
+		padding: 16px 20px;
+		background: #f8fafc;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
+		.ts-result-row {
+			display: flex;
+			gap: 16px;
+			align-items: center;
+			padding: 8px 0;
+			border-bottom: 1px solid #f0f0f0;
+			&:last-child {
+				border-bottom: none;
+			}
+			> .ant-typography:first-child {
+				flex-shrink: 0;
+				min-width: 84px;
+			}
+			.ts-result-value {
+				display: flex;
+				flex: 1;
+				gap: 8px;
+				align-items: center;
+				justify-content: flex-end;
+			}
+		}
+	}
+	.realtime-section {
+		margin-top: 8px;
+		.realtime-card {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			padding: 16px;
+			background: #f8fafc;
+			border: 1px solid #e5e7eb;
+			border-radius: 8px;
+			.realtime-value {
+				display: flex;
+				gap: 8px;
+				align-items: center;
+				.ant-typography {
+					font-size: 16px;
+				}
+			}
+		}
+	}
+	input {
+		font-family: Consolas, "Courier New", monospace;
+	}
+	&.timestamp-dark {
+		.ts-result-card {
+			background: #1f1f1f;
+			border-color: #414243;
+			.ts-result-row {
+				border-bottom-color: #303030;
+			}
+		}
+		.realtime-card {
+			background: #1f1f1f;
+			border-color: #414243;
+		}
+	}
+}

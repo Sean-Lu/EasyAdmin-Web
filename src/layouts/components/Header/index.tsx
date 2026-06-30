@@ -60,7 +60,7 @@ const LayoutHeader = (props: any) => {
 				<Theme />
 				<Fullscreen />
 				<MessageNotice />
-				<span className="username">{userInfo ? userInfo?.nickName : "加载中..."}</span>
+				<span className="username">{userInfo ? userInfo.nickName : "加载中..."}</span>
 				<AvatarIcon userInfo={userInfo} onUserInfoChange={setUserInfo} />
 			</div>
 		</Header>

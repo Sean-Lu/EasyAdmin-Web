@@ -15,6 +15,11 @@ export const loginApi = (params: Login.LoginReq) => {
 	return http.post<Login.LoginRes>(PORT1 + `/auth/login`, params, { headers: { noLoading: true } }); // 控制当前请求不显示 loading
 };
 
+// * 获取登录配置
+export const getLoginConfigApi = () => {
+	return http.get<Login.LoginConfigRes>(PORT1 + `/auth/loginConfig`, undefined, { headers: { noLoading: true } });
+};
+
 // * 获取登录验证码
 export const getCaptchaApi = () => {
 	return http.get<Login.CaptchaRes>(PORT1 + `/auth/captcha`, undefined, { headers: { noLoading: true } });
@@ -89,6 +94,9 @@ export interface UserProfileUpdateReq {
 
 // * 用户信息
 export interface UserInfo {
+	tenantId: BackendId;
+	tenantCode: string;
+	tenantName: string;
 	userName: string; // 用户名称
 	nickName: string; // 昵称
 	avatarFileId?: BackendId; // 头像文件ID

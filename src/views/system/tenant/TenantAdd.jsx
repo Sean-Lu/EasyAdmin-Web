@@ -17,6 +17,16 @@ export default class TenantAdd extends React.Component {
 					}}
 				>
 					<Form.Item
+						name="code"
+						label="租户编码"
+						rules={[
+							{ required: true, whitespace: true, message: "请输入租户编码" },
+							{ max: 50, message: "租户编码不能超过50个字符" }
+						]}
+					>
+						<Input placeholder="请输入租户编码" maxLength={50} />
+					</Form.Item>
+					<Form.Item
 						name="name"
 						label="租户名称"
 						rules={[

@@ -9,6 +9,9 @@ export default class TenantDetail extends React.Component {
 		return (
 			<Modal open={modalVisible} title="查看租户信息" footer={null} destroyOnHidden={true} onCancel={onCancel}>
 				<Form labelCol={{ span: 6 }} wrapperCol={{ span: 17 }} layout="horizontal">
+					<Form.Item label="租户编码">
+						<span>{record.code}</span>
+					</Form.Item>
 					<Form.Item label="租户名称">
 						<span>{record.name}</span>
 					</Form.Item>

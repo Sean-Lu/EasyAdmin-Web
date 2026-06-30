@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Form, Input, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
-import { getCaptchaApi, loginApi } from "@/api/modules/login";
+import { getCaptchaApi, getLoginConfigApi, loginApi } from "@/api/modules/login";
 import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
@@ -16,6 +16,7 @@ import {
 	PhoneOutlined,
 	ReloadOutlined,
 	SafetyCertificateOutlined,
+	ShopOutlined,
 	UserOutlined
 } from "@ant-design/icons";
 
@@ -32,6 +33,9 @@ const LoginForm = (props: any) => {
 	const [captcha, setCaptcha] = useState<Login.CaptchaRes | null>(null);
 	const [captchaLoading, setCaptchaLoading] = useState<boolean>(true);
 	const [captchaError, setCaptchaError] = useState<boolean>(false);
+	const [loginConfig, setLoginConfig] = useState<Login.LoginConfigRes | null>(null);
+	const [configLoading, setConfigLoading] = useState<boolean>(true);
+	const [configError, setConfigError] = useState<boolean>(false);
 	const account = Form.useWatch("account", form);
 	const captchaRequestId = useRef<number>(0);
 
@@ -57,9 +61,44 @@ const LoginForm = (props: any) => {
 		}
 	}, [form]);
 
+	const loadLoginConfig = useCallback(async () => {
+		setConfigLoading(true);
+		setConfigError(false);
+		try {
+			const { data } = await getLoginConfigApi();
+			setLoginConfig(data);
+		} catch {
+			setLoginConfig(null);
+			setConfigError(true);
+		} finally {
+			setConfigLoading(false);
+		}
+	}, []);
+
 	useEffect(() => {
 		void loadCaptcha();
-	}, [loadCaptcha]);
+		void loadLoginConfig();
+	}, [loadCaptcha, loadLoginConfig]);
+
+	// 获取本地存储的租户编码
+	const getSavedTenantCode = () => localStorage.getItem("tenantCode") || "";
+
+	// 登录成功后将租户编码保存到本地
+	const saveTenantCode = (tenantCode: string) => {
+		if (tenantCode) {
+			localStorage.setItem("tenantCode", tenantCode);
+		}
+	};
+
+	// 当登录配置加载完成后，如果启用多租户则设置保存的租户编码
+	useEffect(() => {
+		if (loginConfig && !configLoading && loginConfig.tenantEnabled) {
+			const savedTenantCode = getSavedTenantCode();
+			if (savedTenantCode) {
+				form.setFieldsValue({ tenantCode: savedTenantCode });
+			}
+		}
+	}, [loginConfig, configLoading, form]);
 
 	// 登录
 	const onFinish = async (loginForm: Login.LoginReq) => {
@@ -81,6 +120,9 @@ const LoginForm = (props: any) => {
 
 			setTabsList([]);
 			message.success("登录成功！");
+
+			// 保存租户编码到本地
+			saveTenantCode(loginForm.tenantCode || "");
 
 			// 登录成功后，判断是否有重定向地址，如果有则跳转，没有则跳转到首页
 			const redirectUrl = localStorage.getItem("redirectUrl");
@@ -118,6 +160,17 @@ const LoginForm = (props: any) => {
 			size="large"
 			autoComplete="off"
 		>
+			{loginConfig?.tenantEnabled && (
+				<Form.Item
+					name="tenantCode"
+					rules={[
+						{ required: true, whitespace: true, message: "请输入租户编码" },
+						{ max: 50, message: "租户编码不能超过50个字符" }
+					]}
+				>
+					<Input placeholder="租户编码" prefix={<ShopOutlined />} maxLength={50} />
+				</Form.Item>
+			)}
 			<Form.Item name="account" rules={[{ required: true, message: "请输入用户名 / 手机号 / 邮箱" }]}>
 				<Input placeholder={accountPlaceholder} prefix={accountPrefix} maxLength={50} />
 			</Form.Item>
@@ -148,12 +201,26 @@ const LoginForm = (props: any) => {
 					</Button>
 				</div>
 			)}
+			{configError && (
+				<div className="captcha-error">
+					<span>登录配置加载失败</span>
+					<Button
+						type="link"
+						size="small"
+						icon={<ReloadOutlined />}
+						onClick={() => void loadLoginConfig()}
+						loading={configLoading}
+					>
+						重新加载
+					</Button>
+				</div>
+			)}
 			<Form.Item className="login-btn">
 				<Button
 					type="primary"
 					htmlType="submit"
 					loading={loading}
-					disabled={captchaLoading || captchaError || captcha === null}
+					disabled={captchaLoading || captchaError || captcha === null || configLoading || configError || loginConfig === null}
 					icon={<UserOutlined />}
 				>
 					{t("login.confirm")}

@@ -16,6 +16,9 @@ export default class TenantEdit extends React.Component {
 						...record
 					}}
 				>
+					<Form.Item name="code" label="租户编码">
+						<Input disabled />
+					</Form.Item>
 					<Form.Item
 						name="name"
 						label="租户名称"

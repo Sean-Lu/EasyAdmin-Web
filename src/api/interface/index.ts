@@ -49,6 +49,8 @@ export namespace Login {
 
 	/**登录请求参数 */
 	export interface LoginReq {
+		/** 租户编码 */
+		tenantCode?: string;
 		/**账号（用户名 / 手机号 / 邮箱） */
 		account: string;
 		/**密码（LoginType=Password 时必填） */
@@ -62,6 +64,9 @@ export namespace Login {
 		enabled: boolean;
 		captchaKey: string | null;
 		image: string | null;
+	}
+	export interface LoginConfigRes {
+		tenantEnabled: boolean;
 	}
 	/**登录响应参数 */
 	export interface LoginRes {

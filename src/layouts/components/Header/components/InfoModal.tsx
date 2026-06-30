@@ -73,7 +73,8 @@ const InfoModal = (props: Props) => {
 			)
 		},
 		{ label: "部门", value: userInfo?.departmentName || "-" },
-		{ label: "岗位", value: userInfo?.positionName || "-" }
+		{ label: "岗位", value: userInfo?.positionName || "-" },
+		{ label: "所属租户", value: userInfo?.tenantName || "-" }
 	];
 
 	useImperativeHandle(props.innerRef, () => ({

@@ -5,13 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
+import { setTabsList } from "@/redux/modules/tabs/action";
 import PasswordModal from "./PasswordModal";
 import InfoModal from "./InfoModal";
 import avatar from "@/assets/images/avatar.png";
 import { getAvatarObjectUrl, logoutApi } from "@/api/modules/login";
 
 const AvatarIcon = (props: any) => {
-	const { setToken, userInfo, onUserInfoChange } = props;
+	const { setToken, setTabsList, userInfo, onUserInfoChange } = props;
 	const navigate = useNavigate();
 	const [avatarSrc, setAvatarSrc] = useState("");
 
@@ -61,6 +62,8 @@ const AvatarIcon = (props: any) => {
 					// 即使服务端登出失败，也清除本地状态
 				}
 				setToken("");
+				setTabsList([]);
+				onUserInfoChange(undefined);
 				localStorage.removeItem("refreshToken");
 				message.success("退出登录成功！");
 				navigate("/login");
@@ -107,5 +110,5 @@ const AvatarIcon = (props: any) => {
 	);
 };
 
-const mapDispatchToProps = { setToken };
+const mapDispatchToProps = { setToken, setTabsList };
 export default connect(null, mapDispatchToProps)(AvatarIcon);

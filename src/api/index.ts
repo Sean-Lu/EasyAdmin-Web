@@ -6,6 +6,7 @@ import { ResultEnum } from "@/enums/httpEnum";
 import { checkStatus } from "./helper/checkStatus";
 import { AxiosCanceler } from "./helper/axiosCancel";
 import { setToken } from "@/redux/modules/global/action";
+import { setTabsList } from "@/redux/modules/tabs/action";
 import { message } from "antd";
 import { store } from "@/redux";
 import { refreshTokenApi } from "./modules/login";
@@ -226,6 +227,7 @@ class RequestHttp {
 function handleTokenExpired() {
 	message.info("登录已过期，请您重新登录！");
 	store.dispatch(setToken(""));
+	store.dispatch(setTabsList([]));
 	localStorage.removeItem("refreshToken");
 	localStorage.setItem("redirectUrl", window.location.hash.slice(1));
 	window.location.hash = "/login";

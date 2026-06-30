@@ -58,6 +58,12 @@ export default class TenantList extends React.Component {
 		const tableColumnAlign = "center";
 		const columns = [
 			{
+				title: "租户编码",
+				dataIndex: "code",
+				align: tableColumnAlign,
+				width: 150
+			},
+			{
 				title: "租户名称",
 				dataIndex: "name",
 				align: tableColumnAlign,

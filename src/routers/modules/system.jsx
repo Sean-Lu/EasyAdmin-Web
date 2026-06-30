@@ -83,15 +83,6 @@ const systemRouter = [
 				}
 			},
 			{
-				path: "/system/task",
-				element: lazyLoad(React.lazy(() => import("@/views/system/task/Task"))),
-				meta: {
-					requiresAuth: true,
-					title: "任务管理",
-					key: "system-task"
-				}
-			},
-			{
 				path: "/system/file",
 				element: lazyLoad(React.lazy(() => import("@/views/system/file/FileList"))),
 				meta: {

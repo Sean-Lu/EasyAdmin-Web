@@ -91,15 +91,6 @@
 		page: "/param/page",
 		detail: "/param/detail"
 	},
-	// 任务管理
-	task: {
-		add: "/task/add",
-		delete: "/task/delete",
-		update: "/task/update",
-		updateState: "/task/updateState",
-		page: "/task/page",
-		detail: "/task/detail"
-	},
 	// 定时任务
 	scheduleJob: {
 		add: "/scheduleJob/add",

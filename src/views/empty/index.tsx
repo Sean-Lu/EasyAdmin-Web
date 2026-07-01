@@ -1,4 +1,4 @@
-import { HomeFilled, FileOutlined, SettingOutlined } from "@ant-design/icons";
+import { HomeFilled, HomeOutlined, BellOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { HOME_URL } from "@/config/config";
@@ -19,12 +19,12 @@ const EmptyPage = (props: any) => {
 				<p className="empty-desc">暂无打开的页面</p>
 				<div className="empty-actions">
 					<button className="action-btn" onClick={() => navigate(HOME_URL)}>
-						<FileOutlined />
+						<HomeOutlined />
 						<span>打开首页</span>
 					</button>
-					<button className="action-btn" onClick={() => navigate("/system/user")}>
-						<SettingOutlined />
-						<span>用户管理</span>
+					<button className="action-btn" onClick={() => navigate("/user/message")}>
+						<BellOutlined />
+						<span>我的消息</span>
 					</button>
 				</div>
 			</div>

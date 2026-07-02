@@ -1,0 +1,130 @@
+.websocket-tester-page {
+	padding: 16px;
+	.websocket-section {
+		padding: 16px;
+		background: #f8fafc;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
+		> .ant-typography:first-child {
+			margin-top: 0;
+		}
+	}
+	> .ant-card:first-child .ant-card-body > .websocket-section {
+		margin-bottom: 20px;
+	}
+	.section-header {
+		display: flex;
+		gap: 12px;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 12px;
+		.ant-typography {
+			margin: 0;
+		}
+	}
+	.send-section {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		height: 100%;
+		textarea {
+			font-family: Consolas, "Courier New", monospace;
+			font-size: 13px;
+			line-height: 1.6;
+		}
+	}
+	.auto-send-controls {
+		display: flex;
+		gap: 12px;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.history-section {
+		height: 100%;
+	}
+	.message-history {
+		height: 465px;
+		padding: 10px;
+		overflow-y: auto;
+		background: #ffffff;
+		border: 1px solid #e5e7eb;
+		border-radius: 6px;
+	}
+	.history-empty {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		color: #8c8c8c;
+	}
+	.history-item {
+		padding: 10px 12px;
+		margin-bottom: 10px;
+		background: #f8fafc;
+		border-left: 3px solid #1677ff;
+		border-radius: 6px;
+		&.history-sent {
+			border-left-color: #52c41a;
+		}
+		&.history-received {
+			border-left-color: #13c2c2;
+		}
+		&.history-error {
+			border-left-color: #ff4d4f;
+		}
+		&.history-closed {
+			border-left-color: #fa8c16;
+		}
+		&.history-binary {
+			border-left-color: #722ed1;
+		}
+		pre {
+			margin: 8px 0 0;
+			font-family: Consolas, "Courier New", monospace;
+			font-size: 13px;
+			line-height: 1.55;
+			overflow-wrap: anywhere;
+			white-space: pre-wrap;
+		}
+	}
+	.history-item-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.websocket-guide {
+		margin-top: 20px;
+		ol {
+			padding-left: 20px;
+			line-height: 1.9;
+		}
+		.ant-row {
+			margin-bottom: 14px;
+		}
+	}
+	&.websocket-tester-dark {
+		.websocket-section,
+		.history-item {
+			background: #1f1f1f;
+			border-color: #414243;
+		}
+		.message-history {
+			background: #141414;
+			border-color: #414243;
+		}
+	}
+}
+
+@media (width <= 576px) {
+	.websocket-tester-page {
+		padding: 8px;
+		.section-header,
+		.auto-send-controls {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.message-history {
+			height: 400px;
+		}
+	}
+}

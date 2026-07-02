@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import {
+	ApiOutlined,
 	ArrowRightOutlined,
 	BarChartOutlined,
 	ClockCircleOutlined,
@@ -27,6 +28,7 @@ import SqlToTable from "./tools/sqlToTable";
 import StockPortfolio from "./tools/stockPortfolio";
 import Timestamp from "./tools/timestamp";
 import UrlCodec from "./tools/urlCodec";
+import WebSocketTester from "./tools/webSocketTester";
 import "./index.less";
 
 type ToolKey =
@@ -38,6 +40,7 @@ type ToolKey =
 	| "randomDecision"
 	| "randomPassword"
 	| "jwtParser"
+	| "webSocketTester"
 	| "lottery"
 	| "stockPortfolio"
 	| "timestamp";
@@ -106,6 +109,13 @@ const tools: ToolItem[] = [
 		description: "解析并格式化 JWT 内容",
 		tag: "developer_tools",
 		icon: <SafetyCertificateOutlined />
+	},
+	{
+		key: "webSocketTester",
+		title: "WebSocket 测试",
+		description: "在线调试 WebSocket 消息",
+		tag: "developer_tools",
+		icon: <ApiOutlined />
 	},
 	{
 		key: "lottery",
@@ -177,6 +187,10 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "jwtParser") {
 		return <JwtParser onBack={() => setSearchParams({})} />;
+	}
+
+	if (activeTool === "webSocketTester") {
+		return <WebSocketTester onBack={() => setSearchParams({})} />;
 	}
 
 	if (activeTool === "lottery") {

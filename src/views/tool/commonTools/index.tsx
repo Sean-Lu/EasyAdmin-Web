@@ -11,12 +11,14 @@ import {
 	LinkOutlined,
 	LockOutlined,
 	QrcodeOutlined,
+	SafetyCertificateOutlined,
 	SearchOutlined
 } from "@ant-design/icons";
 import { Card, Col, Empty, Input, Row, Tag, Typography } from "antd";
 import { useSearchParams } from "react-router-dom";
 import JsonParser from "./tools/jsonParser";
 import JsonToTable from "./tools/jsonToTable";
+import JwtParser from "./tools/jwtParser";
 import Lottery from "./tools/lottery";
 import QrCode from "./tools/qrCode";
 import RandomDecision from "./tools/randomDecision";
@@ -35,6 +37,7 @@ type ToolKey =
 	| "qrCode"
 	| "randomDecision"
 	| "randomPassword"
+	| "jwtParser"
 	| "lottery"
 	| "stockPortfolio"
 	| "timestamp";
@@ -96,6 +99,13 @@ const tools: ToolItem[] = [
 		description: "安全生成可配置的随机密码",
 		tag: "developer_tools",
 		icon: <LockOutlined />
+	},
+	{
+		key: "jwtParser",
+		title: "JWT 解析",
+		description: "解析并格式化 JWT 内容",
+		tag: "developer_tools",
+		icon: <SafetyCertificateOutlined />
 	},
 	{
 		key: "lottery",
@@ -163,6 +173,10 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "randomPassword") {
 		return <RandomPassword onBack={() => setSearchParams({})} />;
+	}
+
+	if (activeTool === "jwtParser") {
+		return <JwtParser onBack={() => setSearchParams({})} />;
 	}
 
 	if (activeTool === "lottery") {

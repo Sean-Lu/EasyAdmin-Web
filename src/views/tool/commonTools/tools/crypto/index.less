@@ -1,0 +1,25 @@
+.crypto-page {
+	padding: 16px;
+	textarea {
+		font-family: Consolas, "Courier New", monospace;
+	}
+	.crypto-result {
+		.crypto-result-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 4px;
+		}
+		textarea {
+			background: #f8fafc;
+			border: 1px solid #e5e7eb;
+			border-radius: 8px;
+		}
+	}
+	&.crypto-dark {
+		.crypto-result textarea {
+			background: #1f1f1f;
+			border-color: #414243;
+		}
+	}
+}

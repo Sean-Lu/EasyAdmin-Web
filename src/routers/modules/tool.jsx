@@ -11,15 +11,6 @@ const toolRouter = [
 		},
 		children: [
 			{
-				path: "/tool/crypto",
-				element: lazyLoad(React.lazy(() => import("@/views/tool/crypto/index"))),
-				meta: {
-					requiresAuth: true,
-					title: "加解密",
-					key: "tool-crypto"
-				}
-			},
-			{
 				path: "/tool/codeGen",
 				element: lazyLoad(React.lazy(() => import("@/views/tool/codeGen/CodeGen"))),
 				meta: {

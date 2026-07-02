@@ -17,6 +17,7 @@ import {
 } from "@ant-design/icons";
 import { Card, Col, Empty, Input, Row, Tag, Typography } from "antd";
 import { useSearchParams } from "react-router-dom";
+import Crypto from "./tools/crypto";
 import JsonParser from "./tools/jsonParser";
 import JsonToTable from "./tools/jsonToTable";
 import JwtParser from "./tools/jwtParser";
@@ -43,7 +44,8 @@ type ToolKey =
 	| "webSocketTester"
 	| "lottery"
 	| "stockPortfolio"
-	| "timestamp";
+	| "timestamp"
+	| "crypto";
 
 interface ToolItem {
 	key: ToolKey;
@@ -137,6 +139,13 @@ const tools: ToolItem[] = [
 		description: "秒/毫秒时间戳与时间互转",
 		tag: "developer_tools",
 		icon: <ClockCircleOutlined />
+	},
+	{
+		key: "crypto",
+		title: "加解密工具",
+		description: "MD5/Base64/AES/DES/RSA 等",
+		tag: "developer_tools",
+		icon: <LockOutlined />
 	}
 ];
 
@@ -203,6 +212,10 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "timestamp") {
 		return <Timestamp onBack={() => setSearchParams({})} />;
+	}
+
+	if (activeTool === "crypto") {
+		return <Crypto onBack={() => setSearchParams({})} />;
 	}
 
 	return (

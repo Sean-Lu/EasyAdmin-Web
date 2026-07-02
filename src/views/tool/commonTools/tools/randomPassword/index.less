@@ -1,0 +1,53 @@
+.random-password-page {
+	padding: 16px;
+	.password-result {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 20px;
+		margin-bottom: 24px;
+		background: #f8fafc;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
+		.ant-input {
+			font-family: Consolas, "Courier New", monospace;
+			font-size: 18px;
+			letter-spacing: 1px;
+		}
+	}
+	.password-setting {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		.setting-title {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+		.ant-checkbox-group {
+			width: 100%;
+		}
+	}
+	.ant-alert {
+		margin: 20px 0;
+	}
+	> .ant-card > .ant-card-body > .ant-btn:last-child {
+		margin-top: 24px;
+	}
+	&.random-password-dark .password-result {
+		background: #1f1f1f;
+		border-color: #414243;
+	}
+}
+
+@media (width <= 576px) {
+	.random-password-page {
+		padding: 8px;
+		.password-result {
+			padding: 12px;
+			.ant-input {
+				font-size: 15px;
+			}
+		}
+	}
+}

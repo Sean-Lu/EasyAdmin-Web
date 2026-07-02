@@ -9,6 +9,7 @@ import {
 	FundProjectionScreenOutlined,
 	GiftOutlined,
 	LinkOutlined,
+	LockOutlined,
 	QrcodeOutlined,
 	SearchOutlined
 } from "@ant-design/icons";
@@ -19,6 +20,7 @@ import JsonToTable from "./tools/jsonToTable";
 import Lottery from "./tools/lottery";
 import QrCode from "./tools/qrCode";
 import RandomDecision from "./tools/randomDecision";
+import RandomPassword from "./tools/randomPassword";
 import SqlToTable from "./tools/sqlToTable";
 import StockPortfolio from "./tools/stockPortfolio";
 import Timestamp from "./tools/timestamp";
@@ -32,6 +34,7 @@ type ToolKey =
 	| "jsonParser"
 	| "qrCode"
 	| "randomDecision"
+	| "randomPassword"
 	| "lottery"
 	| "stockPortfolio"
 	| "timestamp";
@@ -86,6 +89,13 @@ const tools: ToolItem[] = [
 		description: "吃什么/去哪玩",
 		tag: "life_tools",
 		icon: <CompassOutlined />
+	},
+	{
+		key: "randomPassword",
+		title: "随机密码",
+		description: "安全生成可配置的随机密码",
+		tag: "developer_tools",
+		icon: <LockOutlined />
 	},
 	{
 		key: "lottery",
@@ -149,6 +159,10 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "randomDecision") {
 		return <RandomDecision onBack={() => setSearchParams({})} />;
+	}
+
+	if (activeTool === "randomPassword") {
+		return <RandomPassword onBack={() => setSearchParams({})} />;
 	}
 
 	if (activeTool === "lottery") {

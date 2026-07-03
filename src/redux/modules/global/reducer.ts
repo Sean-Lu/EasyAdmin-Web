@@ -2,6 +2,7 @@ import { AnyAction } from "redux";
 import { GlobalState } from "@/redux/interface";
 import produce from "immer";
 import * as types from "@/redux/mutation-types";
+import { DEFAULT_WATERMARK_MODE, DEFAULT_WATERMARK_TEXT } from "@/config/watermark";
 
 const globalState: GlobalState = {
 	token: "",
@@ -21,7 +22,10 @@ const globalState: GlobalState = {
 		// 标签页
 		tabs: true,
 		// 页脚
-		footer: true
+		footer: true,
+		watermark: false,
+		watermarkMode: DEFAULT_WATERMARK_MODE,
+		watermarkText: DEFAULT_WATERMARK_TEXT
 	}
 };
 

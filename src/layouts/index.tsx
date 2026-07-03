@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Button, Layout, Tooltip } from "antd";
+import { Button, Layout, Tooltip, Watermark } from "antd";
 import { FullscreenExitOutlined } from "@ant-design/icons";
 import { setAuthButtons } from "@/redux/modules/auth/action";
 import { updateCollapse } from "@/redux/modules/menu/action";
-import { getAuthorButtons } from "@/api/modules/login";
+import { getAuthorButtons, getUserInfo } from "@/api/modules/login";
+import type { UserInfo } from "@/api/modules/login";
 import { connect } from "react-redux";
 import LayoutMenu from "./components/Menu";
 import LayoutHeader from "./components/Header";
 import LayoutTabs from "./components/Tabs";
 import LayoutFooter from "./components/Footer";
+import { getWatermarkContent } from "./watermark";
 import "./index.less";
 
 const LayoutIndex = (props: any) => {
@@ -22,11 +24,21 @@ const LayoutIndex = (props: any) => {
 	const [showFullscreenTip, setShowFullscreenTip] = useState(false);
 	const [showFullscreenExit, setShowFullscreenExit] = useState(false);
 	const [contentRefreshKey, setContentRefreshKey] = useState(0);
+	const [userInfo, setUserInfo] = useState<UserInfo>();
+	const [isUserInfoLoaded, setIsUserInfoLoaded] = useState(false);
+	const userInfoRequestGeneration = useRef(0);
+	const watermarkContent = getWatermarkContent(props.global?.themeConfig ?? {}, userInfo ?? {});
 
 	// 获取按钮权限列表
 	const getAuthButtonsList = async () => {
 		const { data } = await getAuthorButtons();
 		setAuthButtons(data);
+	};
+
+	const handleUserInfoChange = (nextUserInfo?: UserInfo) => {
+		userInfoRequestGeneration.current += 1;
+		setUserInfo(nextUserInfo);
+		setIsUserInfoLoaded(true);
 	};
 
 	// 监听窗口大小变化
@@ -47,7 +59,25 @@ const LayoutIndex = (props: any) => {
 	};
 
 	useEffect(() => {
+		let isActive = true;
+		const requestGeneration = ++userInfoRequestGeneration.current;
+
 		getAuthButtonsList();
+		getUserInfo()
+			.then(({ data }) => {
+				if (isActive && userInfoRequestGeneration.current === requestGeneration) setUserInfo(data);
+			})
+			.catch(() => {
+				// 获取用户信息失败时不影响页面使用
+			})
+			.finally(() => {
+				if (isActive && userInfoRequestGeneration.current === requestGeneration) setIsUserInfoLoaded(true);
+			});
+
+		return () => {
+			isActive = false;
+			if (userInfoRequestGeneration.current === requestGeneration) userInfoRequestGeneration.current += 1;
+		};
 	}, []);
 
 	useEffect(() => {
@@ -84,7 +114,7 @@ const LayoutIndex = (props: any) => {
 		return () => window.clearTimeout(timer);
 	}, [menuFullscreen]);
 
-	return (
+	const layoutContent = (
 		// 这里不用 Layout 组件原因是切换页面时样式会先错乱然后在正常显示，造成页面闪屏效果
 		<section className={`container layout-${layoutMode} ${menuFullscreen ? "menu-fullscreen" : ""}`}>
 			{!menuFullscreen && !isTopLayout && (
@@ -93,7 +123,14 @@ const LayoutIndex = (props: any) => {
 				</Sider>
 			)}
 			<Layout>
-				{!menuFullscreen && <LayoutHeader layoutMode={layoutMode}></LayoutHeader>}
+				{!menuFullscreen && (
+					<LayoutHeader
+						layoutMode={layoutMode}
+						userInfo={userInfo}
+						isUserInfoLoaded={isUserInfoLoaded}
+						onUserInfoChange={handleUserInfoChange}
+					></LayoutHeader>
+				)}
 				{!menuFullscreen && (
 					<LayoutTabs
 						menuFullscreen={menuFullscreen}
@@ -129,6 +166,15 @@ const LayoutIndex = (props: any) => {
 				{!menuFullscreen && <LayoutFooter></LayoutFooter>}
 			</Layout>
 		</section>
+	);
+
+	return (
+		<div style={{ position: "relative", height: "100%" }}>
+			{layoutContent}
+			{watermarkContent && (
+				<Watermark content={watermarkContent} style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
+			)}
+		</div>
 	);
 };
 

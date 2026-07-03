@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Layout } from "antd";
 import AvatarIcon from "./components/AvatarIcon";
 import CollapseIcon from "./components/CollapseIcon";
@@ -10,29 +9,23 @@ import Language from "./components/Language";
 import Theme from "./components/Theme";
 import Fullscreen from "./components/Fullscreen";
 import MessageNotice from "./components/MessageNotice";
-import { getUserInfo, UserInfo } from "@/api/modules/login";
+import type { UserInfo } from "@/api/modules/login";
+import type { GlobalState } from "@/redux/interface";
 import { connect } from "react-redux";
 import "./index.less";
 
-const LayoutHeader = (props: any) => {
+interface LayoutHeaderProps {
+	layoutMode?: "side" | "top";
+	userInfo?: UserInfo;
+	isUserInfoLoaded: boolean;
+	onUserInfoChange: (userInfo?: UserInfo) => void;
+	global: GlobalState;
+}
+
+const LayoutHeader = (props: LayoutHeaderProps) => {
 	const { Header } = Layout;
-	const { layoutMode = "side" } = props;
+	const { layoutMode = "side", userInfo, isUserInfoLoaded, onUserInfoChange } = props;
 	const isTopLayout = layoutMode === "top";
-
-	const [userInfo, setUserInfo] = useState<UserInfo>();
-
-	const fetchUserInfo = async () => {
-		try {
-			const userInfo = await getUserInfo();
-			setUserInfo(userInfo.data);
-		} catch (error) {
-			// console.error("获取用户信息异常", error);
-		}
-	};
-
-	useEffect(() => {
-		fetchUserInfo();
-	}, []); // 空数组确保副作用仅运行一次
 
 	return (
 		<Header className={isTopLayout ? "layout-header-top" : ""}>
@@ -60,8 +53,8 @@ const LayoutHeader = (props: any) => {
 				<Theme />
 				<Fullscreen />
 				<MessageNotice />
-				<span className="username">{userInfo ? userInfo.nickName : "加载中..."}</span>
-				<AvatarIcon userInfo={userInfo} onUserInfoChange={setUserInfo} />
+				<span className="username">{userInfo ? userInfo.nickName : isUserInfoLoaded ? "-" : "加载中..."}</span>
+				<AvatarIcon userInfo={userInfo} onUserInfoChange={onUserInfoChange} />
 			</div>
 		</Header>
 	);

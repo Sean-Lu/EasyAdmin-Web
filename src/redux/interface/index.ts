@@ -1,4 +1,5 @@
 import type { SizeType } from "antd/lib/config-provider/SizeContext";
+import type { WatermarkMode } from "@/config/watermark";
 
 /* themeConfigProp */
 export interface ThemeConfigProp {
@@ -9,6 +10,9 @@ export interface ThemeConfigProp {
 	breadcrumb: boolean;
 	tabs: boolean;
 	footer: boolean;
+	watermark: boolean;
+	watermarkMode: WatermarkMode;
+	watermarkText: string;
 }
 
 /* GlobalState */

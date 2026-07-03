@@ -131,6 +131,7 @@ export default class OperateLogList extends React.Component {
 					apiDelete={api.operateLog.delete}
 					apiPage={api.operateLog.page}
 					apiDetail={api.operateLog.detail}
+					hideUpdateTime={true}
 				/>
 			</>
 		);

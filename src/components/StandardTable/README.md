@@ -293,6 +293,7 @@ const columns = [
 | `apiDetail`               | `String`          | 详情 API 地址       | 否                   |
 | `apiUpdateState`          | `String`          | 状态更新 API 地址   | 否                   |
 | `disablePageSearch`       | `Boolean`         | 是否禁用分页        | 否                   |
+| `hideUpdateTime`          | `Boolean`         | 是否隐藏更新时间列  | 否                   |
 | `recordOperateColWidth`   | `Number`          | 操作列宽度          | 否                   |
 | `renderRecordOperate`     | `Function`        | 自定义行操作按钮    | 否                   |
 | `renderCustomTableButton` | `Function`        | 自定义表格顶部按钮  | 否                   |

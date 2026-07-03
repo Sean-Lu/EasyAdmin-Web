@@ -45,6 +45,7 @@ import "./index.less";
  *    - apiDetail: 详情接口地址
  *    - apiUpdateState: 状态更新接口地址
  *    - disablePageSearch: 是否禁用分页查询，默认为 false
+ *    - hideUpdateTime: 是否隐藏更新时间列，默认为 false
  *    - searchFormRef: 搜索表单引用
  *    - renderSearchForm: 渲染搜索表单的函数
  *    - renderModal: 渲染模态框的函数
@@ -493,7 +494,8 @@ class StandardTable extends React.Component {
 			apiUpdate,
 			apiDetail,
 			apiUpdateState,
-			disablePageSearch
+			disablePageSearch,
+			hideUpdateTime
 		} = this.props;
 		let { columns } = this.props;
 		let extColums = [];
@@ -522,52 +524,55 @@ class StandardTable extends React.Component {
 				align: "center",
 				width: 160,
 				render: text => (text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : "")
-			},
-			{
+			}
+		]);
+		// 是否隐藏更新时间列
+		if (hideUpdateTime !== true) {
+			extColums.push({
 				title: "更新时间",
 				dataIndex: "updateTime",
 				align: "center",
 				width: 160,
 				render: text => (text !== null ? dayjs(text).format("YYYY-MM-DD HH:mm:ss") : "")
-			},
-			{
-				title: "操作",
-				key: "operation",
-				fixed: "right",
-				align: "center",
-				width: recordOperateColWidth ?? 135,
-				render: (text, record, index) => (
-					<Space
-						style={{
-							cursor: "pointer",
-							color: "#2378f7"
-							// fontSize: "15px"
-						}}
-						// split={<Divider orientation="vertical" />}
-					>
-						{apiUpdate !== undefined && (
-							<span onClick={() => this.showUpdateModal(text, record, index)}>
-								编辑
-								{/* <EditOutlined /> */}
-							</span>
-						)}
-						{apiDelete !== undefined && (
-							<span onClick={() => this.deleteItem(text, record, index)}>
-								删除
-								{/* <DeleteOutlined /> */}
-							</span>
-						)}
-						{apiDetail !== undefined && (
-							<span onClick={() => this.showDetailModal(text, record, index)}>
-								查看
-								{/* <UnorderedListOutlined /> */}
-							</span>
-						)}
-						{renderRecordOperate !== undefined && renderRecordOperate(record)}
-					</Space>
-				)
-			}
-		]);
+			});
+		}
+		extColums.push({
+			title: "操作",
+			key: "operation",
+			fixed: "right",
+			align: "center",
+			width: recordOperateColWidth ?? 135,
+			render: (text, record, index) => (
+				<Space
+					style={{
+						cursor: "pointer",
+						color: "#2378f7"
+						// fontSize: "15px"
+					}}
+					// split={<Divider orientation="vertical" />}
+				>
+					{apiUpdate !== undefined && (
+						<span onClick={() => this.showUpdateModal(text, record, index)}>
+							编辑
+							{/* <EditOutlined /> */}
+						</span>
+					)}
+					{apiDelete !== undefined && (
+						<span onClick={() => this.deleteItem(text, record, index)}>
+							删除
+							{/* <DeleteOutlined /> */}
+						</span>
+					)}
+					{apiDetail !== undefined && (
+						<span onClick={() => this.showDetailModal(text, record, index)}>
+							查看
+							{/* <UnorderedListOutlined /> */}
+						</span>
+					)}
+					{renderRecordOperate !== undefined && renderRecordOperate(record)}
+				</Space>
+			)
+		});
 		columns = [...columns, ...extColums];
 
 		const { selectedRowKeys } = this.state;

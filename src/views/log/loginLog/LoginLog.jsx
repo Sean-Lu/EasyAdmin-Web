@@ -133,6 +133,7 @@ export default class LoginLogList extends React.Component {
 					apiDelete={api.loginLog.delete}
 					apiPage={api.loginLog.page}
 					apiDetail={api.loginLog.detail}
+					hideUpdateTime={true}
 				/>
 			</>
 		);

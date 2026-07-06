@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Button, Layout, Tooltip, Watermark } from "antd";
+import { Button, Layout, Tooltip } from "antd";
 import { FullscreenExitOutlined } from "@ant-design/icons";
 import { setAuthButtons } from "@/redux/modules/auth/action";
 import { updateCollapse } from "@/redux/modules/menu/action";
@@ -11,6 +11,7 @@ import LayoutMenu from "./components/Menu";
 import LayoutHeader from "./components/Header";
 import LayoutTabs from "./components/Tabs";
 import LayoutFooter from "./components/Footer";
+import GlobalWatermark from "./GlobalWatermark";
 import { getWatermarkContent } from "./watermark";
 import "./index.less";
 
@@ -169,11 +170,9 @@ const LayoutIndex = (props: any) => {
 	);
 
 	return (
-		<div style={{ position: "relative", height: "100%" }}>
+		<div style={{ height: "100%" }}>
 			{layoutContent}
-			{watermarkContent && (
-				<Watermark content={watermarkContent} style={{ position: "absolute", inset: 0, pointerEvents: "none" }} />
-			)}
+			<GlobalWatermark content={watermarkContent} />
 		</div>
 	);
 };

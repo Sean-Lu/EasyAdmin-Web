@@ -1,6 +1,12 @@
 import request from "@/api/index";
 import { BackendId, BackendIdInput, PageReqBase, PageRes } from "@/api/interface";
 
+/** 笔记正文格式 */
+export enum NoteContentType {
+	RichText = 0,
+	Markdown = 1
+}
+
 /** 笔记标签，列表和详情都会返回 */
 export interface NoteTagDto {
 	/** 标签ID */
@@ -31,6 +37,10 @@ export interface NoteDto {
 	categoryId: BackendIdInput;
 	/** 标题 */
 	title: string;
+	/** 正文格式 */
+	contentType: NoteContentType;
+	/** Markdown 正文，列表接口不返回 */
+	contentMarkdown?: string;
 	/** 富文本内容，列表接口不返回 */
 	contentHtml?: string;
 	/** 纯文本内容，主要用于搜索和摘要 */
@@ -77,6 +87,10 @@ export interface NoteUpdateDto {
 	categoryId?: BackendIdInput;
 	/** 标题 */
 	title: string;
+	/** 正文格式 */
+	contentType: NoteContentType;
+	/** Markdown 正文 */
+	contentMarkdown?: string;
 	/** 富文本 HTML 内容 */
 	contentHtml?: string;
 	/** 是否置顶 */
@@ -87,8 +101,17 @@ export interface NoteUpdateDto {
 	tags: string[];
 }
 
+export interface NoteMarkdownImportDto {
+	title: string;
+	contentMarkdown: string;
+	uploadedImageIds: BackendIdInput[];
+}
+
 /** 笔记导出类型 */
 export type NoteExportType = "html" | "doc" | "pdf";
+
+/** 笔记批量导出类型 */
+export type NoteBatchExportType = NoteExportType | "markdown" | "markdownPackage";
 
 /** 笔记主体接口 */
 export class NoteService {
@@ -150,8 +173,28 @@ export class NoteService {
 	}
 
 	/** 批量导出笔记文件，返回 Blob 响应 */
-	static async batchExport(ids: BackendIdInput[], exportType: NoteExportType, unlockToken?: string) {
+	static async batchExport(ids: BackendIdInput[], exportType: NoteBatchExportType, unlockToken?: string) {
 		return request.download("/Note/BatchExport", { ids, exportType, unlockToken });
+	}
+
+	/** 导出笔记 Markdown 文件，返回 Blob 响应 */
+	static async exportMarkdown(id: BackendIdInput, unlockToken?: string) {
+		return request.download("/Note/ExportMarkdown", { id, unlockToken });
+	}
+
+	/** 导出笔记 Markdown 文件包，返回 Blob 响应 */
+	static async exportMarkdownPackage(id: BackendIdInput, unlockToken?: string) {
+		return request.download("/Note/ExportMarkdownPackage", { id, unlockToken });
+	}
+
+	/** 导入笔记 Markdown 文件包 */
+	static async importMarkdownPackage(file: File) {
+		const formData = new FormData();
+		formData.append("file", file);
+		const response = await request.post<NoteMarkdownImportDto>("/Note/ImportMarkdownPackage", formData, {
+			headers: { "Content-Type": "multipart/form-data" }
+		});
+		return response.data;
 	}
 }
 

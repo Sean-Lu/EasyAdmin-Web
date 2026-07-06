@@ -1,6 +1,6 @@
 import { message } from "antd";
 import { BackendIdInput } from "@/api/interface";
-import { NoteExportType, NoteService } from "@/services/tool/noteService";
+import { NoteBatchExportType, NoteExportType, NoteService } from "@/services/tool/noteService";
 
 export const getNoteExportExtension = (exportType: NoteExportType) => (exportType === "doc" ? "doc" : exportType);
 
@@ -67,7 +67,28 @@ export const downloadNoteExport = async (
 	);
 };
 
-export const downloadBatchNoteExport = async (noteIds: BackendIdInput[], exportType: NoteExportType, unlockToken?: string) => {
+export const downloadBatchNoteExport = async (
+	noteIds: BackendIdInput[],
+	exportType: NoteBatchExportType,
+	unlockToken?: string
+) => {
 	const response = await NoteService.batchExport(noteIds, exportType, unlockToken);
 	await saveDownload(response, "我的笔记.zip", isZipBlob, "批量导出失败：服务端未返回有效的压缩包");
+};
+
+export const downloadMarkdownExport = async (
+	noteId: BackendIdInput,
+	title: string,
+	includeImages: boolean,
+	unlockToken?: string
+) => {
+	const response = includeImages
+		? await NoteService.exportMarkdownPackage(noteId, unlockToken)
+		: await NoteService.exportMarkdown(noteId, unlockToken);
+	await saveDownload(
+		response,
+		`${title || "我的笔记"}.${includeImages ? "zip" : "md"}`,
+		includeImages ? isZipBlob : undefined,
+		"Markdown资源包导出失败"
+	);
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Dropdown, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, message } from "antd";
 import {
 	DeleteOutlined,
@@ -11,14 +11,17 @@ import {
 	SearchOutlined,
 	StarFilled,
 	StarOutlined,
-	UnlockOutlined
+	UnlockOutlined,
+	UploadOutlined
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { BackendIdInput } from "@/api/interface";
 import {
 	NoteCategoryDto,
+	NoteBatchExportType,
 	NoteCategoryService,
+	NoteContentType,
 	NoteDto,
 	NoteExportType,
 	NotePageReqDto,
@@ -27,9 +30,17 @@ import {
 	NoteTagDto,
 	NoteTagService
 } from "@/services/tool/noteService";
-import NoteDetail from "./NoteDetail";
+import NoteDetail, { NoteDraft } from "./NoteDetail";
 import NotePassword from "./NotePassword";
 import { downloadBatchNoteExport, downloadNoteExport } from "./noteExport";
+import { downloadMarkdownExport } from "./noteExport";
+import {
+	getBatchNoteExportMenuItems,
+	getNoteExportMenuItems,
+	isMarkdownExportType,
+	NoteListExportType
+} from "./noteExportOptions";
+import { readMarkdownFile } from "./markdownUtils";
 import "./note.less";
 
 const { confirm } = Modal;
@@ -51,10 +62,11 @@ const NoteList: React.FC = () => {
 	const [passwordModalOpen, setPasswordModalOpen] = useState(false);
 	const [passwordForm] = Form.useForm();
 	const [pendingNote, setPendingNote] = useState<NoteDto | null>(null);
-	const [pendingExportType, setPendingExportType] = useState<NoteExportType | null>(null);
-	const [pendingBatchExport, setPendingBatchExport] = useState<{ ids: BackendIdInput[]; exportType: NoteExportType } | null>(
-		null
-	);
+	const [pendingExportType, setPendingExportType] = useState<NoteListExportType | null>(null);
+	const [pendingBatchExport, setPendingBatchExport] = useState<{
+		ids: BackendIdInput[];
+		exportType: NoteBatchExportType;
+	} | null>(null);
 	const [verifyingPassword, setVerifyingPassword] = useState(false);
 	const [activeView, setActiveView] = useState<NoteView>("list");
 	const [editingNoteId, setEditingNoteId] = useState<string>("");
@@ -67,6 +79,8 @@ const NoteList: React.FC = () => {
 	const [batchMoveLoading, setBatchMoveLoading] = useState(false);
 	const [batchExportLoading, setBatchExportLoading] = useState(false);
 	const [batchMoveForm] = Form.useForm();
+	const importInputRef = useRef<HTMLInputElement>(null);
+	const [noteDraft, setNoteDraft] = useState<NoteDraft | null>(null);
 
 	const getSelectedNoteIds = () => selectedRowKeys.map(key => (typeof key === "number" ? key : String(key)));
 
@@ -95,10 +109,11 @@ const NoteList: React.FC = () => {
 		setPagination(prev => ({ ...prev, current: 1 }));
 	};
 
-	const openDetail = (noteId = "", unlockToken = "", readonly = false) => {
+	const openDetail = (noteId = "", unlockToken = "", readonly = false, draft: NoteDraft | null = null) => {
 		setEditingNoteId(noteId);
 		setEditingUnlockToken(unlockToken);
 		setDetailReadonly(readonly);
+		setNoteDraft(draft);
 		setActiveView("detail");
 	};
 
@@ -110,7 +125,27 @@ const NoteList: React.FC = () => {
 		setPendingNote(null);
 		setPendingExportType(null);
 		setPendingBatchExport(null);
+		setNoteDraft(null);
 		setActiveView("list");
+	};
+
+	const importMarkdown = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		if (!file) return;
+		try {
+			const imported = file.name.toLowerCase().endsWith(".zip")
+				? await NoteService.importMarkdownPackage(file)
+				: await readMarkdownFile(file);
+			openDetail("", "", false, {
+				title: imported.title,
+				contentMarkdown: imported.contentMarkdown,
+				uploadedImageIds: Array.isArray((imported as any).uploadedImageIds) ? (imported as any).uploadedImageIds.map(String) : []
+			});
+		} catch (error: any) {
+			message.error(error?.message || "Markdown导入失败");
+		} finally {
+			event.target.value = "";
+		}
 	};
 
 	const refreshList = async () => {
@@ -195,6 +230,14 @@ const NoteList: React.FC = () => {
 		setPasswordModalOpen(true);
 	};
 
+	const downloadNoteByType = async (note: NoteDto, exportType: NoteListExportType, unlockToken?: string) => {
+		if (isMarkdownExportType(exportType)) {
+			await downloadMarkdownExport(note.id, note.title, exportType === "markdownPackage", unlockToken);
+			return;
+		}
+		await downloadNoteExport(note.id, exportType, note.title, unlockToken);
+	};
+
 	const verifyPassword = async () => {
 		const values = await passwordForm.validateFields();
 		try {
@@ -204,7 +247,7 @@ const NoteList: React.FC = () => {
 			if (pendingBatchExport) {
 				await downloadBatchNoteExport(pendingBatchExport.ids, pendingBatchExport.exportType, result.unlockToken);
 			} else if (pendingNote && pendingExportType) {
-				await downloadNoteExport(pendingNote.id, pendingExportType, pendingNote.title, result.unlockToken);
+				await downloadNoteByType(pendingNote, pendingExportType, result.unlockToken);
 			} else if (pendingNote) {
 				openDetail(String(pendingNote.id), result.unlockToken, pendingReadonly);
 			}
@@ -279,7 +322,7 @@ const NoteList: React.FC = () => {
 		}
 	};
 
-	const batchExportNotes = async (exportType: NoteExportType) => {
+	const batchExportNotes = async (exportType: NoteBatchExportType) => {
 		const ids = getSelectedNoteIds();
 		if (ids.length === 0) {
 			message.info("请选择笔记");
@@ -353,7 +396,7 @@ const NoteList: React.FC = () => {
 		});
 	};
 
-	const exportNoteFromList = async (note: NoteDto, exportType: NoteExportType) => {
+	const exportNoteFromList = async (note: NoteDto, exportType: NoteListExportType) => {
 		if (note.isProtected) {
 			setPendingNote(note);
 			setPendingReadonly(true);
@@ -362,7 +405,7 @@ const NoteList: React.FC = () => {
 			setPasswordModalOpen(true);
 			return;
 		}
-		await downloadNoteExport(note.id, exportType, note.title);
+		await downloadNoteByType(note, exportType);
 	};
 
 	const columns = [
@@ -428,12 +471,8 @@ const NoteList: React.FC = () => {
 					</Tooltip>
 					<Dropdown
 						menu={{
-							items: [
-								{ key: "html", label: "HTML" },
-								{ key: "doc", label: "Word" },
-								{ key: "pdf", label: "PDF" }
-							],
-							onClick: ({ key }) => void exportNoteFromList(record, key as NoteExportType)
+							items: getNoteExportMenuItems(record.contentType),
+							onClick: ({ key }) => void exportNoteFromList(record, key as NoteListExportType)
 						}}
 						trigger={["click"]}
 					>
@@ -456,6 +495,7 @@ const NoteList: React.FC = () => {
 				unlockToken={editingUnlockToken}
 				readonly={detailReadonly}
 				defaultCategoryId={selectedCategoryId}
+				initialDraft={noteDraft}
 				onBack={backToList}
 				onEdit={editingNoteId ? () => setDetailReadonly(false) : undefined}
 				onSaved={() => void refreshList()}
@@ -551,18 +591,21 @@ const NoteList: React.FC = () => {
 							搜索
 						</Button>
 					</Form>
-					<Space>
-						<Button disabled={selectedRowKeys.length === 0} icon={<FolderOpenOutlined />} onClick={openBatchMoveModal}>
-							移动分类{selectedRowKeys.length > 0 ? `(${selectedRowKeys.length})` : ""}
+					<div className="note-actions">
+						<input ref={importInputRef} hidden type="file" accept=".md,.zip" onChange={importMarkdown} />
+						<Button type="primary" icon={<PlusOutlined />} onClick={() => openDetail()}>
+							新建笔记
+						</Button>
+						<Button icon={<UnlockOutlined />} onClick={() => setActiveView("password")}>
+							笔记密码
+						</Button>
+						<Button icon={<UploadOutlined />} onClick={() => importInputRef.current?.click()}>
+							导入Markdown
 						</Button>
 						<Dropdown
 							menu={{
-								items: [
-									{ key: "html", label: "HTML" },
-									{ key: "doc", label: "Word" },
-									{ key: "pdf", label: "PDF" }
-								],
-								onClick: ({ key }) => void batchExportNotes(key as NoteExportType)
+								items: getBatchNoteExportMenuItems(getSelectedNotes().map(note => note.contentType)),
+								onClick: ({ key }) => void batchExportNotes(key as NoteBatchExportType)
 							}}
 							trigger={["click"]}
 						>
@@ -578,13 +621,10 @@ const NoteList: React.FC = () => {
 						<Button danger disabled={selectedRowKeys.length === 0} icon={<DeleteOutlined />} onClick={batchDeleteNotes}>
 							批量删除{selectedRowKeys.length > 0 ? `(${selectedRowKeys.length})` : ""}
 						</Button>
-						<Button icon={<UnlockOutlined />} onClick={() => setActiveView("password")}>
-							笔记密码
+						<Button disabled={selectedRowKeys.length === 0} icon={<FolderOpenOutlined />} onClick={openBatchMoveModal}>
+							移动分类{selectedRowKeys.length > 0 ? `(${selectedRowKeys.length})` : ""}
 						</Button>
-						<Button type="primary" icon={<PlusOutlined />} onClick={() => openDetail()}>
-							新建笔记
-						</Button>
-					</Space>
+					</div>
 				</div>
 
 				<Table

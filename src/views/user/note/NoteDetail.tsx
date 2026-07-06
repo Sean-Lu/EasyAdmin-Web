@@ -27,12 +27,15 @@ import { FileBizType, FileStoreType, getFileObjectUrl, uploadFile } from "@/serv
 import {
 	NoteCategoryDto,
 	NoteCategoryService,
+	NoteContentType,
 	NoteDto,
 	NoteExportType,
 	NoteService,
 	NoteUpdateDto
 } from "@/services/tool/noteService";
-import { downloadNoteExport } from "./noteExport";
+import { downloadMarkdownExport, downloadNoteExport } from "./noteExport";
+import MarkdownEditor from "./MarkdownEditor";
+import { extractNoteImageIds } from "./markdownUtils";
 import "./note.less";
 
 interface NoteDetailProps {
@@ -43,6 +46,13 @@ interface NoteDetailProps {
 	onBack: () => void;
 	onEdit?: () => void;
 	onSaved?: () => void;
+	initialDraft?: NoteDraft | null;
+}
+
+export interface NoteDraft {
+	title: string;
+	contentMarkdown: string;
+	uploadedImageIds?: string[];
 }
 
 const fontSizeOptions = [
@@ -77,7 +87,8 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 	readonly = false,
 	onBack,
 	onEdit,
-	onSaved
+	onSaved,
+	initialDraft
 }) => {
 	const isDark = useSelector((state: any) => state.global.themeConfig.isDark);
 	const editorRef = useRef<HTMLDivElement>(null);
@@ -98,6 +109,8 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 	const [loading, setLoading] = useState(false);
 	const [saving, setSaving] = useState(false);
 	const [selectedImageRect, setSelectedImageRect] = useState<ImageRect | null>(null);
+	const [contentType, setContentType] = useState<NoteContentType>(NoteContentType.Markdown);
+	const [contentMarkdown, setContentMarkdown] = useState("");
 
 	useEffect(() => {
 		void init();
@@ -118,7 +131,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 			void hydratePreviewImages();
 			return;
 		}
-		if (editorRef.current) {
+		if (note.contentType === NoteContentType.RichText && editorRef.current) {
 			editorRef.current.innerHTML = note.contentHtml || "";
 			void hydrateEditorImages();
 		}
@@ -153,6 +166,8 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 			try {
 				const detail = await NoteService.detail(noteId, unlockToken);
 				setNote(detail);
+				setContentType(detail.contentType ?? NoteContentType.RichText);
+				setContentMarkdown(detail.contentMarkdown || "");
 				form.setFieldsValue({
 					title: detail.title,
 					categoryId: String(detail.categoryId),
@@ -160,7 +175,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 					isTop: detail.isTop,
 					isProtected: detail.isProtected
 				});
-				if (!readonly && editorRef.current) {
+				if (!readonly && detail.contentType !== NoteContentType.Markdown && editorRef.current) {
 					editorRef.current.innerHTML = detail.contentHtml || "";
 					await hydrateEditorImages();
 				}
@@ -168,8 +183,11 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 				setLoading(false);
 			}
 		} else {
+			setContentType(NoteContentType.Markdown);
+			setContentMarkdown(initialDraft?.contentMarkdown || "");
+			(initialDraft?.uploadedImageIds || []).forEach(id => uploadedImageIdsRef.current.add(id));
 			form.setFieldsValue({
-				title: "",
+				title: initialDraft?.title || "",
 				categoryId: defaultCategoryId || (categoryList[0]?.id ? String(categoryList[0].id) : ""),
 				tags: [],
 				isTop: false,
@@ -559,15 +577,28 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 		}
 	};
 
+	const uploadMarkdownImage = async (file: File) => {
+		const result = await uploadFile(file, FileStoreType.LocalFile, "笔记图片", FileBizType.NoteImage);
+		const fileId = result.data?.id;
+		if (!fileId) throw new Error("图片上传成功但未返回文件ID");
+		uploadedImageIdsRef.current.add(String(fileId));
+		return { fileId: String(fileId), alt: file.name };
+	};
+
 	const save = async () => {
 		if (readonly) return;
 		const values = await form.validateFields();
-		const contentHtml = getContentHtmlForSave();
-		const savedImageIds = getImageFileIdsFromHtml(contentHtml);
+		const contentHtml = contentType === NoteContentType.RichText ? getContentHtmlForSave() : undefined;
+		const savedImageIds =
+			contentType === NoteContentType.Markdown
+				? new Set(extractNoteImageIds(contentMarkdown))
+				: getImageFileIdsFromHtml(contentHtml || "");
 		const data: NoteUpdateDto = {
 			id: noteId || undefined,
 			title: values.title,
 			categoryId: values.categoryId,
+			contentType,
+			contentMarkdown: contentType === NoteContentType.Markdown ? contentMarkdown : undefined,
 			contentHtml,
 			isTop: !!values.isTop,
 			isProtected: !!values.isProtected,
@@ -599,6 +630,21 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 		await downloadNoteExport(noteId, exportType, note?.title, unlockToken);
 	};
 
+	const exportMarkdown = (includeImages: boolean) => {
+		if (!noteId) return;
+		const download = () => downloadMarkdownExport(noteId, note?.title || "我的笔记", includeImages, unlockToken);
+		if (!includeImages && extractNoteImageIds(contentMarkdown).length > 0) {
+			Modal.confirm({
+				title: "导出Markdown",
+				content: "正文包含EasyAdmin内部图片引用，单独导出后图片不可用。建议导出Markdown资源包。",
+				okText: "仍然导出",
+				onOk: download
+			});
+			return;
+		}
+		void download();
+	};
+
 	return (
 		<div className={`note-page note-detail-panel${isDark ? " note-dark" : ""}`}>
 			<div className="note-detail-header">
@@ -609,6 +655,16 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 					<strong>{readonly ? "查看笔记" : noteId ? "编辑笔记" : "新建笔记"}</strong>
 				</Space>
 				<Space>
+					{noteId && contentType === NoteContentType.Markdown && (
+						<>
+							<Button icon={<DownloadOutlined />} onClick={() => exportMarkdown(false)}>
+								Markdown
+							</Button>
+							<Button icon={<DownloadOutlined />} onClick={() => exportMarkdown(true)}>
+								Markdown资源包
+							</Button>
+						</>
+					)}
 					<Button icon={<DownloadOutlined />} onClick={() => exportNote("html")}>
 						HTML
 					</Button>
@@ -636,6 +692,18 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 					<Input maxLength={200} disabled={readonly} placeholder="例如：今日复盘、健康记录、生活日记" />
 				</Form.Item>
 				<Space style={{ width: "100%" }} align="start">
+					<Form.Item label="正文格式">
+						<Select
+							value={contentType}
+							disabled={readonly || !!noteId}
+							style={{ width: 130 }}
+							options={[
+								{ value: NoteContentType.Markdown, label: "Markdown" },
+								{ value: NoteContentType.RichText, label: "富文本" }
+							]}
+							onChange={setContentType}
+						/>
+					</Form.Item>
 					<Form.Item name="categoryId" label="分类" rules={[{ required: true, message: "请选择分类" }]}>
 						<Select
 							disabled={readonly}
@@ -661,7 +729,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 				</Space>
 			</Form>
 
-			{!readonly && (
+			{!readonly && contentType === NoteContentType.RichText && (
 				<>
 					<div className="note-editor-toolbar" onMouseDown={event => event.preventDefault()}>
 						<Tooltip title="撤销">
@@ -778,6 +846,16 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 						)}
 					</div>
 				</>
+			)}
+			{!readonly && contentType === NoteContentType.Markdown && (
+				<MarkdownEditor
+					value={contentMarkdown}
+					readonly={readonly}
+					isDark={isDark}
+					onChange={setContentMarkdown}
+					onUploadImage={uploadMarkdownImage}
+					resolveImageUrl={getFileObjectUrl}
+				/>
 			)}
 			{readonly && (
 				<div ref={previewRef} className="note-preview" dangerouslySetInnerHTML={{ __html: note?.contentHtml || "" }} />

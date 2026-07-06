@@ -120,6 +120,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 				{view !== "preview" && (
 					<CodeMirror
 						ref={editorRef}
+						className="note-markdown-codemirror"
 						value={value}
 						height="100%"
 						theme={isDark ? "dark" : "light"}

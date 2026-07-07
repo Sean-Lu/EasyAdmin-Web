@@ -271,19 +271,24 @@
 	line-height: 1.7;
 	word-break: break-word;
 }
+.note-preview img,
 .note-markdown-preview img {
 	max-width: 100%;
 	height: auto;
 }
+.note-preview table,
 .note-markdown-preview table {
 	width: 100%;
 	border-collapse: collapse;
 }
+.note-preview th,
+.note-preview td,
 .note-markdown-preview th,
 .note-markdown-preview td {
 	padding: 6px 10px;
 	border: 1px solid #d9d9d9;
 }
+.note-preview pre,
 .note-markdown-preview pre {
 	padding: 12px;
 	overflow: auto;
@@ -398,22 +403,32 @@
 	.note-markdown-editor,
 	.note-markdown-toolbar,
 	.note-markdown-split > .note-markdown-codemirror,
+	.note-preview th,
+	.note-preview td,
 	.note-markdown-preview th,
 	.note-markdown-preview td {
 		border-color: #303030;
 	}
 	.note-markdown-toolbar,
-	.note-markdown-preview,
-	.note-markdown-preview pre {
+	.note-markdown-preview {
 		color: #d9d9d9;
 		background: #141414;
 	}
+	.note-preview pre,
+	.note-markdown-preview pre {
+		color: #d9d9d9;
+		background: #1f1f1f;
+		border: 1px solid #303030;
+	}
+	.note-preview code,
 	.note-markdown-preview code {
 		background: #262626;
 	}
+	.note-preview pre code,
 	.note-markdown-preview pre code {
 		background: transparent;
 	}
+	.note-preview blockquote,
 	.note-markdown-preview blockquote {
 		color: #8c8c8c;
 		border-left-color: #434343;

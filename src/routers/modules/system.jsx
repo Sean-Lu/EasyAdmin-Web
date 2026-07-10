@@ -56,6 +56,15 @@ const systemRouter = [
 				}
 			},
 			{
+				path: "/system/region",
+				element: lazyLoad(React.lazy(() => import("@/views/system/region/Region"))),
+				meta: {
+					requiresAuth: true,
+					title: "行政区划",
+					key: "system-region"
+				}
+			},
+			{
 				path: "/system/menu",
 				element: lazyLoad(React.lazy(() => import("@/views/system/menu/Menu"))),
 				meta: {

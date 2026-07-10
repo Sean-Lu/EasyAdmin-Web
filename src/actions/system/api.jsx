@@ -34,15 +34,6 @@
 		getRoleMenuIds: "/role/getRoleMenuIds", // 查询角色已分配的菜单ID列表
 		getRoleMenus: "/role/getRoleMenus" // 查询角色已分配的菜单列表
 	},
-	// 菜单管理
-	menu: {
-		add: "/menu/add",
-		delete: "/menu/delete",
-		update: "/menu/update",
-		updateState: "/menu/updateState",
-		listTree: "/menu/listTree",
-		detail: "/menu/detail"
-	},
 	// 部门管理
 	department: {
 		add: "/department/add",
@@ -61,6 +52,24 @@
 		page: "/position/page",
 		list: "/position/list",
 		detail: "/position/detail"
+	},
+	// 行政区划
+	region: {
+		add: "/region/add",
+		delete: "/region/delete",
+		update: "/region/update",
+		updateState: "/region/updateState",
+		listTree: "/region/listTree",
+		detail: "/region/detail"
+	},
+	// 菜单管理
+	menu: {
+		add: "/menu/add",
+		delete: "/menu/delete",
+		update: "/menu/update",
+		updateState: "/menu/updateState",
+		listTree: "/menu/listTree",
+		detail: "/menu/detail"
 	},
 	// 字典类型管理
 	dictType: {

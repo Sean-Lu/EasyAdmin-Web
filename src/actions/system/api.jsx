@@ -1,4 +1,4 @@
-﻿export const api = {
+export const api = {
 	// 租户管理
 	tenant: {
 		add: "/tenant/add",
@@ -99,6 +99,15 @@
 		updateState: "/param/updateState",
 		page: "/param/page",
 		detail: "/param/detail"
+	},
+	// Redis缓存管理
+	redisCache: {
+		serverInfo: "/redisCache/serverInfo",
+		page: "/redisCache/page",
+		detail: "/redisCache/detail",
+		delete: "/redisCache/delete",
+		deleteByPattern: "/redisCache/deleteByPattern",
+		clearDatabase: "/redisCache/clearDatabase"
 	},
 	// 定时任务
 	scheduleJob: {

@@ -92,6 +92,15 @@ const systemRouter = [
 				}
 			},
 			{
+				path: "/system/cache",
+				element: lazyLoad(React.lazy(() => import("@/views/system/cache/RedisCache"))),
+				meta: {
+					requiresAuth: true,
+					title: "缓存管理",
+					key: "system-cache"
+				}
+			},
+			{
 				path: "/system/file",
 				element: lazyLoad(React.lazy(() => import("@/views/system/file/FileList"))),
 				meta: {

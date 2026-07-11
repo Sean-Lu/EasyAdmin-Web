@@ -1,5 +1,5 @@
 import { useEffect, useState, useImperativeHandle, Ref } from "react";
-import { Avatar, Button, Form, Input, Modal, Spin, Upload, message } from "antd";
+import { Button, Form, Input, Modal, Spin, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { RcFile } from "antd/lib/upload/interface";
 import md5 from "js-md5";
@@ -13,8 +13,10 @@ import {
 } from "@/api/modules/login";
 import { BackendId } from "@/api/interface";
 import { ThemeConfigProp } from "@/redux/interface";
+import { publishUserProfileUpdate } from "@/utils/userProfileSync";
 import { connect } from "react-redux";
 import "./InfoModal.less";
+import UserAvatar from "@/components/UserAvatar";
 
 interface Props {
 	innerRef: Ref<{ showModal: (params: any) => void } | undefined>;
@@ -191,7 +193,7 @@ const InfoModal = (props: Props) => {
 				currentPassword
 			});
 			if (res.data) {
-				const userInfoRes = await getUserInfo();
+				const userInfoRes = await getUserInfo(true);
 				setModalUserInfo(userInfoRes.data);
 				setAvatarFileId(userInfoRes.data?.avatarFileId);
 				setOriginalAvatarFileId(userInfoRes.data?.avatarFileId);
@@ -203,6 +205,13 @@ const InfoModal = (props: Props) => {
 					email: userInfoRes.data?.email
 				});
 				props.onUserInfoChange?.(userInfoRes.data);
+				let lockAvatarSrc = "";
+				try {
+					lockAvatarSrc = await getAvatarObjectUrl(userInfoRes.data?.avatarFileId);
+				} catch {
+					// The lock screen falls back to the default avatar if the new file cannot be read.
+				}
+				publishUserProfileUpdate({ userInfo: userInfoRes.data, avatarSrc: lockAvatarSrc });
 				message.success("个人信息保存成功");
 				setModalVisible(false);
 			}
@@ -263,9 +272,9 @@ const InfoModal = (props: Props) => {
 				<Spin spinning={loading}>
 					<Form form={form}>
 						<div className="user-info-profile">
-							<Avatar className="user-info-avatar" size={72} src={avatarSrc}>
+							<UserAvatar className="user-info-avatar" size={72} src={avatarSrc}>
 								{avatarText}
-							</Avatar>
+							</UserAvatar>
 							<div className="user-info-main">
 								<div className="user-info-name">{userInfo?.nickName || userInfo?.userName || "-"}</div>
 								<div className="user-info-subtitle">

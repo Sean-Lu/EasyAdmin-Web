@@ -16,6 +16,17 @@ export default {
 		menuFullscreen: "当前菜单全屏",
 		exitMenuFullscreen: "退出菜单全屏"
 	},
+	lockScreen: {
+		lock: "锁定屏幕",
+		unlock: "解锁",
+		passwordPlaceholder: "请输入密码",
+		automaticLock: "自动锁定",
+		timeout: "无操作后锁定",
+		lockedTime: "锁定时间",
+		wrongPassword: "密码错误",
+		networkFailure: "密码验证失败，请检查网络后重试",
+		switchAccount: "切换账号"
+	},
 	header: {
 		componentSize: "组件大小",
 		language: "语言",

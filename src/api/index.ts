@@ -10,6 +10,7 @@ import { setTabsList } from "@/redux/modules/tabs/action";
 import { message } from "antd";
 import { store } from "@/redux";
 import { refreshTokenApi } from "./modules/login";
+import { assertRequestAllowedWhenLocked, shouldSkipGlobalRequestErrorHandling } from "./lockGate";
 
 const axiosCanceler = new AxiosCanceler();
 
@@ -38,6 +39,8 @@ class RequestHttp {
 		 */
 		this.service.interceptors.request.use(
 			(config: AxiosRequestConfig) => {
+				const allowLockedAvatarPreload = config.headers?.["x-easyadmin-lock-avatar-preload"] === "true";
+				assertRequestAllowedWhenLocked(store.getState().lock.locked, config.url, allowLockedAvatarPreload);
 				NProgress.start();
 				// * 将当前请求添加到 pending 中
 				axiosCanceler.addPending(config);
@@ -89,6 +92,7 @@ class RequestHttp {
 				}
 			},
 			async (error: AxiosError) => {
+				if (shouldSkipGlobalRequestErrorHandling(error)) return Promise.reject(error);
 				const { response, config: requestConfig } = error;
 				NProgress.done();
 				tryHideFullScreenLoading();

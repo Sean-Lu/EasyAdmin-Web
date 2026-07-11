@@ -12,6 +12,7 @@ import * as Icons from "@ant-design/icons";
 import { MoreOutlined } from "@ant-design/icons";
 import Logo from "./components/Logo";
 import "./index.less";
+import { createProtectedLoader } from "../../lockLoadGuard";
 
 const LayoutMenu = (props: any) => {
 	const { pathname } = useLocation();
@@ -76,6 +77,7 @@ const LayoutMenu = (props: any) => {
 	// 获取菜单列表并处理成 antd menu 需要的格式
 	const [menuList, setMenuList] = useState<MenuItem[]>([]);
 	const [loading, setLoading] = useState(false);
+	const menuLoader = React.useRef(createProtectedLoader()).current;
 	const getMenuData = async () => {
 		setLoading(true);
 		try {
@@ -93,8 +95,8 @@ const LayoutMenu = (props: any) => {
 		}
 	};
 	useEffect(() => {
-		getMenuData();
-	}, []);
+		menuLoader.run(Boolean(props.lock?.locked), getMenuData);
+	}, [props.lock?.locked, menuLoader]);
 
 	// 点击当前菜单跳转页面
 	const navigate = useNavigate();
@@ -138,6 +140,6 @@ const LayoutMenu = (props: any) => {
 	);
 };
 
-const mapStateToProps = (state: any) => state.menu;
+const mapStateToProps = (state: any) => ({ ...state.menu, lock: state.lock });
 const mapDispatchToProps = { setMenuList, setBreadcrumbList, setAuthRouter };
 export default connect<any, any, any>(mapStateToProps, mapDispatchToProps)(LayoutMenu);

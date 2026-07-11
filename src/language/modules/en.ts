@@ -16,6 +16,17 @@ export default {
 		menuFullscreen: "Current Menu Full Screen",
 		exitMenuFullscreen: "Exit Menu Full Screen"
 	},
+	lockScreen: {
+		lock: "Lock screen",
+		unlock: "Unlock",
+		passwordPlaceholder: "Enter your password",
+		automaticLock: "Automatic lock",
+		timeout: "Lock after inactivity",
+		lockedTime: "Locked at",
+		wrongPassword: "Incorrect password",
+		networkFailure: "Unable to verify password. Check your connection and try again",
+		switchAccount: "Switch account"
+	},
 	header: {
 		componentSize: "Component Size",
 		language: "Language",

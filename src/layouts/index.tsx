@@ -28,6 +28,10 @@ const LayoutIndex = (props: any) => {
 	const [userInfo, setUserInfo] = useState<UserInfo>();
 	const [isUserInfoLoaded, setIsUserInfoLoaded] = useState(false);
 	const userInfoRequestGeneration = useRef(0);
+	const mountedRef = useRef(true);
+	const authButtonsLoaded = useRef(false);
+	const authButtonsLoading = useRef(false);
+	const userInfoLoading = useRef(false);
 	const watermarkContent = getWatermarkContent(props.global?.themeConfig ?? {}, userInfo ?? {});
 
 	// 获取按钮权限列表
@@ -59,27 +63,45 @@ const LayoutIndex = (props: any) => {
 		setContentRefreshKey(Date.now());
 	};
 
+	useEffect(
+		() => () => {
+			mountedRef.current = false;
+		},
+		[]
+	);
+
 	useEffect(() => {
-		let isActive = true;
-		const requestGeneration = ++userInfoRequestGeneration.current;
+		if (props.lock?.locked) return;
 
-		getAuthButtonsList();
-		getUserInfo()
-			.then(({ data }) => {
-				if (isActive && userInfoRequestGeneration.current === requestGeneration) setUserInfo(data);
-			})
-			.catch(() => {
-				// 获取用户信息失败时不影响页面使用
-			})
-			.finally(() => {
-				if (isActive && userInfoRequestGeneration.current === requestGeneration) setIsUserInfoLoaded(true);
-			});
-
-		return () => {
-			isActive = false;
-			if (userInfoRequestGeneration.current === requestGeneration) userInfoRequestGeneration.current += 1;
-		};
-	}, []);
+		if (!authButtonsLoaded.current && !authButtonsLoading.current) {
+			authButtonsLoading.current = true;
+			getAuthButtonsList()
+				.then(() => {
+					authButtonsLoaded.current = true;
+				})
+				.catch(() => undefined)
+				.finally(() => {
+					authButtonsLoading.current = false;
+				});
+		}
+		if (!isUserInfoLoaded && !userInfoLoading.current) {
+			const requestGeneration = ++userInfoRequestGeneration.current;
+			userInfoLoading.current = true;
+			getUserInfo(true)
+				.then(({ data }) => {
+					if (mountedRef.current && userInfoRequestGeneration.current === requestGeneration) {
+						setUserInfo(data);
+						setIsUserInfoLoaded(true);
+					}
+				})
+				.catch(() => {
+					// 获取用户信息失败时不影响页面使用
+				})
+				.finally(() => {
+					userInfoLoading.current = false;
+				});
+		}
+	}, [props.lock?.locked, isUserInfoLoaded]);
 
 	useEffect(() => {
 		listeningWindow();
@@ -177,6 +199,6 @@ const LayoutIndex = (props: any) => {
 	);
 };
 
-const mapStateToProps = (state: any) => ({ ...state.menu, global: state.global });
+const mapStateToProps = (state: any) => ({ ...state.menu, global: state.global, lock: state.lock });
 const mapDispatchToProps = { setAuthButtons, updateCollapse };
 export default connect(mapStateToProps, mapDispatchToProps)(LayoutIndex);

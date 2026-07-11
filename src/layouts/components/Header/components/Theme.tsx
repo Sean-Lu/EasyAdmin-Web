@@ -1,13 +1,19 @@
 import { Drawer, Divider, Input, Segmented, Switch } from "antd";
 import { useState } from "react";
 import { connect } from "react-redux";
-import { FireOutlined, SettingOutlined } from "@ant-design/icons";
+import { FireOutlined, LockOutlined, SettingOutlined } from "@ant-design/icons";
 import { setThemeConfig } from "@/redux/modules/global/action";
 import { updateCollapse } from "@/redux/modules/menu/action";
 import SwitchDark from "@/components/SwitchDark";
 import { DEFAULT_WATERMARK_MODE, DEFAULT_WATERMARK_TEXT, WatermarkMode } from "@/config/watermark";
+import LockSettings from "@/components/LockSettings";
+import { setLockPreference } from "@/redux/modules/lock/action";
+import type { UserInfo } from "@/api/modules/login";
+import { useTranslation } from "react-i18next";
+import type { ComponentType } from "react";
 
-const Theme = (props: any) => {
+const Theme = (props: any & { userInfo?: UserInfo }) => {
+	const { t } = useTranslation();
 	const [open, setOpen] = useState<boolean>(false);
 	const { setThemeConfig, updateCollapse } = props;
 	const { isCollapse } = props.menu;
@@ -70,6 +76,16 @@ const Theme = (props: any) => {
 						}}
 					/>
 				</div>
+				<Divider className="divider">
+					<LockOutlined />
+					{t("lockScreen.lock")}
+				</Divider>
+				<LockSettings
+					userId={props.userInfo?.id}
+					autoLockEnabled={props.lock.autoLockEnabled}
+					idleTimeoutMinutes={props.lock.idleTimeoutMinutes}
+					setLockPreference={props.setLockPreference}
+				/>
 				<br />
 				{/* 界面设置 */}
 				<Divider className="divider">
@@ -179,5 +195,5 @@ const Theme = (props: any) => {
 };
 
 const mapStateToProps = (state: any) => state;
-const mapDispatchToProps = { setThemeConfig, updateCollapse };
-export default connect(mapStateToProps, mapDispatchToProps)(Theme);
+const mapDispatchToProps = { setThemeConfig, updateCollapse, setLockPreference };
+export default connect(mapStateToProps, mapDispatchToProps)(Theme) as ComponentType<{ userInfo?: UserInfo }>;

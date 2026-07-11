@@ -1,0 +1,42 @@
+.lock-screen {
+	position: fixed;
+	inset: 0;
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	background: var(--hooks-color-bg-base, #f5f7fa);
+	.lock-screen-card {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		align-items: center;
+		width: 100%;
+		max-width: 420px;
+		padding: 40px;
+		color: var(--hooks-color-text, rgb(0 0 0 / 88%));
+		background: var(--hooks-color-bg-container, #ffffff);
+		border-radius: 12px;
+		box-shadow: 0 16px 48px rgb(0 0 0 / 18%);
+		.ant-form {
+			width: 100%;
+		}
+	}
+}
+html.dark .lock-screen,
+body.dark .lock-screen {
+	background: #141414;
+	.lock-screen-card {
+		background: #1f1f1f;
+	}
+}
+
+@media screen and (width < 576px) {
+	.lock-screen {
+		padding: 16px;
+	}
+	.lock-screen .lock-screen-card {
+		padding: 28px 20px;
+	}
+}

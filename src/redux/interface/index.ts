@@ -50,3 +50,21 @@ export interface AuthState {
 	};
 	authRouter: string[];
 }
+
+export type IdleTimeoutMinutes = 5 | 10 | 15 | 30 | 60;
+
+export interface LockPreference {
+	autoLockEnabled: boolean;
+	idleTimeoutMinutes: IdleTimeoutMinutes;
+}
+
+export interface LockRuntime {
+	locked: boolean;
+	lockedAt: number | null;
+	lastActiveAt: number;
+	version: number;
+}
+
+export interface LockState extends LockPreference, LockRuntime {
+	hydrated: boolean;
+}

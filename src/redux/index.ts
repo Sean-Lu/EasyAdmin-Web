@@ -9,6 +9,7 @@ import menu from "./modules/menu/reducer";
 import tabs from "./modules/tabs/reducer";
 import auth from "./modules/auth/reducer";
 import breadcrumb from "./modules/breadcrumb/reducer";
+import lock from "./modules/lock/reducer";
 
 // 创建reducer(拆分reducer)
 const reducer = combineReducers({
@@ -16,13 +17,15 @@ const reducer = combineReducers({
 	menu,
 	tabs,
 	auth,
-	breadcrumb
+	breadcrumb,
+	lock
 });
 
 // redux 持久化配置
 const persistConfig = {
 	key: "redux-state",
-	storage: storage
+	storage: storage,
+	blacklist: ["lock"]
 };
 const persistReducerConfig = persistReducer(persistConfig, reducer);
 

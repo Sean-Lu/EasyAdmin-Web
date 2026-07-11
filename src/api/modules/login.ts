@@ -3,6 +3,7 @@ import { PORT1 } from "@/api/config/servicePort";
 import qs from "qs";
 
 import http from "@/api";
+import { createFreshUserInfoParams } from "./userInfoRequest";
 
 /**
  * @name 登录模块
@@ -35,6 +36,11 @@ export const logoutApi = () => {
 	return http.post(PORT1 + `/auth/logout`);
 };
 
+// * 验证当前用户密码
+export const verifyPasswordApi = (password: string) => {
+	return http.post<boolean>(PORT1 + `/auth/verifyPassword`, { password }, { headers: { noLoading: true } });
+};
+
 // * 获取按钮权限
 export const getAuthorButtons = () => {
 	return http.get<Login.AuthButtonsRes>(PORT1 + `/auth/buttons`);
@@ -46,8 +52,8 @@ export const getMenuList = () => {
 };
 
 // * 获取用户信息
-export const getUserInfo = () => {
-	return http.get<UserInfo>(PORT1 + `/user/getUserInfo`);
+export const getUserInfo = (forceRefresh = false) => {
+	return http.get<UserInfo>(PORT1 + `/user/getUserInfo`, forceRefresh ? createFreshUserInfoParams() : undefined);
 };
 
 // * 更新用户信息
@@ -76,10 +82,16 @@ export const deleteUserAvatarFile = (avatarFileId?: BackendIdInput) => {
 };
 
 // * 获取用户头像文件的 Object URL
-export const getAvatarObjectUrl = async (avatarFileId?: BackendIdInput) => {
+export const getAvatarObjectUrl = async (avatarFileId?: BackendIdInput, allowWhenLocked = false) => {
 	if (!avatarFileId) return "";
 
-	const response = await http.downloadGet(PORT1 + `/file/downloadfile`, { id: avatarFileId });
+	const response = await http.downloadGet(
+		PORT1 + `/file/downloadfile`,
+		{ id: avatarFileId },
+		{
+			headers: allowWhenLocked ? { "x-easyadmin-lock-avatar-preload": "true" } : undefined
+		}
+	);
 	return URL.createObjectURL(response.data);
 };
 
@@ -94,6 +106,7 @@ export interface UserProfileUpdateReq {
 
 // * 用户信息
 export interface UserInfo {
+	id: BackendId;
 	tenantId: BackendId;
 	tenantCode: string;
 	tenantName: string;

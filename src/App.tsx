@@ -10,6 +10,7 @@ import useTheme from "@/hooks/useTheme";
 import zhCN from "antd/es/locale/zh_CN.js";
 import enUS from "antd/es/locale/en_US.js";
 import i18n from "i18next";
+import LockCoordinator from "@/components/LockCoordinator";
 
 const App = (props: any) => {
 	const { language, assemblySize, themeConfig, setLanguage } = props;
@@ -46,9 +47,11 @@ const App = (props: any) => {
 					algorithm: themeConfig.isDark ? theme.darkAlgorithm : theme.defaultAlgorithm // antd 从 5.x 开始正式内置了主题切换功能（基于 CSS-in-JS 提供预设算法）
 				}}
 			>
-				<AuthRouter>
-					<Router />
-				</AuthRouter>
+				<LockCoordinator>
+					<AuthRouter>
+						<Router />
+					</AuthRouter>
+				</LockCoordinator>
 			</ConfigProvider>
 		</HashRouter>
 	);

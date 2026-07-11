@@ -50,7 +50,7 @@ const LayoutHeader = (props: LayoutHeaderProps) => {
 				{isTopLayout && <MenuSearch />}
 				<AssemblySize />
 				<Language />
-				<Theme />
+				<Theme userInfo={userInfo} />
 				<Fullscreen />
 				<MessageNotice />
 				<span className="username">{userInfo ? userInfo.nickName : isUserInfoLoaded ? "-" : "加载中..."}</span>

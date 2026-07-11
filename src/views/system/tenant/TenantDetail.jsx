@@ -1,5 +1,14 @@
 import React from "react";
 import { Form, Modal } from "antd";
+import dayjs from "dayjs";
+
+const getValidityStatus = record => {
+	if (record.state !== 1) return "人工禁用";
+	const now = dayjs();
+	if (record.startTime && now.isBefore(dayjs(record.startTime))) return "未生效";
+	if (record.expireTime && !now.isBefore(dayjs(record.expireTime))) return "已到期";
+	return "有效";
+};
 
 // 租户详情弹窗
 export default class TenantDetail extends React.Component {
@@ -17,6 +26,15 @@ export default class TenantDetail extends React.Component {
 					</Form.Item>
 					<Form.Item label="租管账号">
 						<span>{record.adminUserName}</span>
+					</Form.Item>
+					<Form.Item label="生效时间">
+						<span>{record.startTime ? dayjs(record.startTime).format("YYYY-MM-DD HH:mm:ss") : "立即生效"}</span>
+					</Form.Item>
+					<Form.Item label="到期时间">
+						<span>{record.expireTime ? dayjs(record.expireTime).format("YYYY-MM-DD HH:mm:ss") : "永久"}</span>
+					</Form.Item>
+					<Form.Item label="时间状态">
+						<span>{getValidityStatus(record)}</span>
 					</Form.Item>
 					<Form.Item label="备注">
 						<span>{record.remark}</span>

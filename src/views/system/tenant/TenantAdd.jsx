@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Input, Modal, Switch } from "antd";
+import { Button, DatePicker, Form, Input, Modal, Switch } from "antd";
 
 // 租户新增弹窗
 export default class TenantAdd extends React.Component {
@@ -47,6 +47,27 @@ export default class TenantAdd extends React.Component {
 						]}
 					>
 						<Input placeholder="请输入租管账号" />
+					</Form.Item>
+					<Form.Item name="startTime" label="生效时间" dependencies={["expireTime"]}>
+						<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ width: "100%" }} />
+					</Form.Item>
+					<Form.Item
+						name="expireTime"
+						label="到期时间"
+						dependencies={["startTime"]}
+						rules={[
+							({ getFieldValue }) => ({
+								validator(_, value) {
+									const startTime = getFieldValue("startTime");
+									if (!value || !startTime || value.isAfter(startTime)) {
+										return Promise.resolve();
+									}
+									return Promise.reject(new Error("到期时间必须晚于生效时间"));
+								}
+							})
+						]}
+					>
+						<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ width: "100%" }} />
 					</Form.Item>
 					<Form.Item
 						name="remark"

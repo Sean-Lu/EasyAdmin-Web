@@ -5,6 +5,17 @@ import TenantAdd from "./TenantAdd";
 import TenantEdit from "./TenantEdit";
 import TenantDetail from "./TenantDetail";
 import { api } from "../../../actions/system/api";
+import dayjs from "dayjs";
+
+const formatTenantDate = value => (value ? value.format("YYYY-MM-DD HH:mm:ss") : null);
+
+const getValidityStatus = record => {
+	if (record.state !== 1) return "人工禁用";
+	const now = dayjs();
+	if (record.startTime && now.isBefore(dayjs(record.startTime))) return "未生效";
+	if (record.expireTime && !now.isBefore(dayjs(record.expireTime))) return "已到期";
+	return "有效";
+};
 
 // 租户列表
 export default class TenantList extends React.Component {
@@ -61,25 +72,40 @@ export default class TenantList extends React.Component {
 				title: "租户编码",
 				dataIndex: "code",
 				align: tableColumnAlign,
-				width: 150
+				width: 120
 			},
 			{
 				title: "租户名称",
 				dataIndex: "name",
 				align: tableColumnAlign,
-				width: 150
+				width: 120
 			},
 			{
 				title: "租管账号",
 				dataIndex: "adminUserName",
 				align: tableColumnAlign,
-				width: 150
+				width: 100
+			},
+			{
+				title: "有效期",
+				align: tableColumnAlign,
+				width: 305,
+				render: (_, record) =>
+					`${record.startTime ? dayjs(record.startTime).format("YYYY-MM-DD HH:mm:ss") : "立即"} ~ ${
+						record.expireTime ? dayjs(record.expireTime).format("YYYY-MM-DD HH:mm:ss") : "永久"
+					}`
+			},
+			{
+				title: "时间状态",
+				align: tableColumnAlign,
+				width: 90,
+				render: (_, record) => getValidityStatus(record)
 			},
 			{
 				title: "备注",
 				dataIndex: "remark",
 				align: tableColumnAlign,
-				width: 300
+				width: 250
 			}
 		];
 
@@ -97,6 +123,16 @@ export default class TenantList extends React.Component {
 					apiUpdateState={api.tenant.updateState}
 					apiPage={api.tenant.page}
 					apiDetail={api.tenant.detail}
+					handleAddValues={values => ({
+						...values,
+						startTime: formatTenantDate(values.startTime),
+						expireTime: formatTenantDate(values.expireTime)
+					})}
+					handleUpdateValues={values => ({
+						...values,
+						startTime: formatTenantDate(values.startTime),
+						expireTime: formatTenantDate(values.expireTime)
+					})}
 				/>
 			</>
 		);

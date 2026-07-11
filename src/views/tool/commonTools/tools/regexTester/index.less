@@ -1,0 +1,33 @@
+.regex-tester-card {
+	.regex-flags-col {
+		display: flex;
+		gap: 12px;
+		align-items: center;
+		min-height: 40px;
+		padding: 10px 14px;
+		background: var(--ant-color-fill-quaternary, #fafafa);
+		border: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+		border-radius: 8px;
+	}
+	.regex-flags-col > .ant-typography {
+		flex: 0 0 auto;
+	}
+	.regex-flags-col .ant-checkbox-group {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 14px;
+	}
+	.regex-flags-col .ant-checkbox-wrapper {
+		margin-inline-start: 0;
+		white-space: nowrap;
+	}
+}
+
+@media (width <= 768px) {
+	.regex-tester-card {
+		.regex-flags-col {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+}

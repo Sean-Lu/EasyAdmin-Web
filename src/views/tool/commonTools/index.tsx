@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useLayoutEffect, useMemo } from "react";
 import {
 	ApiOutlined,
 	ArrowRightOutlined,
@@ -18,6 +18,7 @@ import {
 import { Card, Col, Empty, Input, Row, Tag, Typography } from "antd";
 import { useSearchParams } from "react-router-dom";
 import Crypto from "./tools/crypto";
+import CronTester from "./tools/cronTester";
 import JsonParser from "./tools/jsonParser";
 import JsonToTable from "./tools/jsonToTable";
 import JwtParser from "./tools/jwtParser";
@@ -25,6 +26,7 @@ import Lottery from "./tools/lottery";
 import QrCode from "./tools/qrCode";
 import RandomDecision from "./tools/randomDecision";
 import RandomPassword from "./tools/randomPassword";
+import RegexTester from "./tools/regexTester";
 import SqlToTable from "./tools/sqlToTable";
 import StockPortfolio from "./tools/stockPortfolio";
 import Timestamp from "./tools/timestamp";
@@ -45,7 +47,9 @@ type ToolKey =
 	| "lottery"
 	| "stockPortfolio"
 	| "timestamp"
-	| "crypto";
+	| "crypto"
+	| "regexTester"
+	| "cronTester";
 
 interface ToolItem {
 	key: ToolKey;
@@ -146,6 +150,20 @@ const tools: ToolItem[] = [
 		description: "MD5/Base64/AES/DES/RSA 等",
 		tag: "developer_tools",
 		icon: <LockOutlined />
+	},
+	{
+		key: "regexTester",
+		title: "正则表达式测试",
+		description: "测试匹配结果与捕获组",
+		tag: "developer_tools",
+		icon: <CodeOutlined />
+	},
+	{
+		key: "cronTester",
+		title: "Cron 表达式测试",
+		description: "校验 Quartz 表达式并预览执行时间",
+		tag: "developer_tools",
+		icon: <ClockCircleOutlined />
 	}
 ];
 
@@ -156,6 +174,17 @@ const CommonTools: React.FC = () => {
 
 	const toolParam = searchParams.get("tool");
 	const activeTool: ToolKey | null = toolParam && VALID_TOOL_KEYS.has(toolParam) ? (toolParam as ToolKey) : null;
+
+	useLayoutEffect(() => {
+		if (!activeTool) return;
+
+		window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+		document.documentElement.scrollTop = 0;
+		document.body.scrollTop = 0;
+		document.querySelectorAll<HTMLElement>(".ant-layout-content").forEach(container => {
+			container.scrollTop = 0;
+		});
+	}, [activeTool]);
 
 	const keyword = searchParams.get("q") ?? "";
 
@@ -216,6 +245,14 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "crypto") {
 		return <Crypto onBack={() => setSearchParams({})} />;
+	}
+
+	if (activeTool === "regexTester") {
+		return <RegexTester onBack={() => setSearchParams({})} />;
+	}
+
+	if (activeTool === "cronTester") {
+		return <CronTester onBack={() => setSearchParams({})} />;
 	}
 
 	return (

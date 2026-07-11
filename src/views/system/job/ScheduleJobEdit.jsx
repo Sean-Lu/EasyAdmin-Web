@@ -1,5 +1,7 @@
 import React from "react";
 import { Button, Form, Input, Modal, Select, Switch, Row, Col, InputNumber } from "antd";
+import CronExpressionPreview from "./CronExpressionPreview";
+import { validateQuartzCron } from "../../tool/commonTools/tools/cronTester/utils";
 
 const { TextArea } = Input;
 
@@ -10,7 +12,8 @@ export default class ScheduleJobEdit extends React.Component {
 		this.state = {
 			scheduleType: 1,
 			simpleInterval: 1,
-			simpleIntervalUnit: 1
+			simpleIntervalUnit: 1,
+			cronExpression: ""
 		};
 		this.formRef = React.createRef();
 	}
@@ -21,7 +24,8 @@ export default class ScheduleJobEdit extends React.Component {
 			this.setState({
 				scheduleType: scheduleType ?? 1,
 				simpleInterval: simpleInterval ?? 1,
-				simpleIntervalUnit: simpleIntervalUnit ?? 1
+				simpleIntervalUnit: simpleIntervalUnit ?? 1,
+				cronExpression: this.props.record?.cronExpression ?? ""
 			});
 		}
 		// 当弹窗从关闭变为打开时，重置状态
@@ -29,7 +33,8 @@ export default class ScheduleJobEdit extends React.Component {
 			this.setState({
 				scheduleType: this.props.record?.scheduleType ?? 1,
 				simpleInterval: this.props.record?.simpleInterval ?? 1,
-				simpleIntervalUnit: this.props.record?.simpleIntervalUnit ?? 1
+				simpleIntervalUnit: this.props.record?.simpleIntervalUnit ?? 1,
+				cronExpression: this.props.record?.cronExpression ?? ""
 			});
 			if (this.formRef.current) {
 				this.formRef.current.resetFields();
@@ -39,6 +44,16 @@ export default class ScheduleJobEdit extends React.Component {
 
 	handleScheduleTypeChange = value => {
 		this.setState({ scheduleType: value });
+	};
+
+	handleCronExpressionChange = event => {
+		this.setState({ cronExpression: event.target.value });
+	};
+
+	handleValuesChange = changedValues => {
+		if (changedValues.cronExpression !== undefined) {
+			this.setState({ cronExpression: changedValues.cronExpression });
+		}
 	};
 
 	handleSimpleIntervalChange = value => {
@@ -51,15 +66,16 @@ export default class ScheduleJobEdit extends React.Component {
 
 	render() {
 		const { modalVisible, onCancel, onSubmit, record } = this.props;
-		const { scheduleType, simpleInterval, simpleIntervalUnit } = this.state;
+		const { scheduleType, simpleInterval, simpleIntervalUnit, cronExpression } = this.state;
 		return (
-			<Modal open={modalVisible} title="修改定时任务" footer={null} destroyOnHidden={true} onCancel={onCancel} width={600}>
+			<Modal open={modalVisible} title="修改定时任务" footer={null} destroyOnHidden={true} onCancel={onCancel} width={720}>
 				<Form
 					ref={this.formRef}
-					labelCol={{ span: 6 }}
-					wrapperCol={{ span: 17 }}
+					labelCol={{ span: 5 }}
+					wrapperCol={{ span: 18 }}
 					layout="horizontal"
 					onFinish={onSubmit}
+					onValuesChange={this.handleValuesChange}
 					initialValues={{
 						...record
 					}}
@@ -81,9 +97,31 @@ export default class ScheduleJobEdit extends React.Component {
 						/>
 					</Form.Item>
 					{scheduleType === 1 && (
-						<Form.Item name="cronExpression" label="Cron表达式" rules={[{ required: true, message: "请输入Cron表达式" }]}>
-							<Input placeholder="请输入Cron表达式，例如：0 0/5 * * * ?" />
-						</Form.Item>
+						<>
+							<Form.Item
+								name="cronExpression"
+								label="Cron表达式"
+								rules={[
+									{ required: true, message: "请输入Cron表达式" },
+									{
+										validator: (_, value) => {
+											if (!value?.trim()) return Promise.resolve();
+											const result = validateQuartzCron(value || "");
+											return result.valid ? Promise.resolve() : Promise.reject(new Error(result.error));
+										}
+									}
+								]}
+							>
+								<Input
+									value={cronExpression}
+									onChange={this.handleCronExpressionChange}
+									placeholder="请输入Cron表达式，例如：0 0/5 * * * ?"
+								/>
+							</Form.Item>
+							<Form.Item label=" " colon={false} style={{ marginBottom: 8 }}>
+								<CronExpressionPreview expression={cronExpression} showValidation={false} showValidTag />
+							</Form.Item>
+						</>
 					)}
 					{scheduleType === 0 && (
 						<Form.Item label="执行间隔" required>
@@ -130,7 +168,7 @@ export default class ScheduleJobEdit extends React.Component {
 					<Form.Item name="state" label="状态" valuePropName="checked">
 						<Switch checkedChildren="启用" unCheckedChildren="禁用" />
 					</Form.Item>
-					<Form.Item style={{ margin: "20px 0 0 120px" }}>
+					<Form.Item wrapperCol={{ offset: 5 }} style={{ margin: "20px 0 0" }}>
 						<Button key="cancel" onClick={onCancel}>
 							取消
 						</Button>

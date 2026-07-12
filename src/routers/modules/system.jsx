@@ -2,7 +2,7 @@ import { LayoutIndex } from "@/routers/constant";
 import lazyLoad from "@/routers/utils/lazyLoad";
 import React from "react";
 
-// 系统管理模块
+// 系统管理模块路由
 const systemRouter = [
 	{
 		element: <LayoutIndex />,

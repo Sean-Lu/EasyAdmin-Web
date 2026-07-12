@@ -2,7 +2,7 @@ import { LayoutIndex } from "@/routers/constant";
 import lazyLoad from "@/routers/utils/lazyLoad";
 import React from "react";
 
-// 工具模块
+// 工具模块路由
 const toolRouter = [
 	{
 		element: <LayoutIndex />,

@@ -135,6 +135,11 @@ export const api = {
 		page: "/operateLog/page",
 		detail: "/operateLog/detail"
 	},
+	// 在线用户
+	onlineUser: {
+		page: "/onlineUser/page",
+		kick: "/onlineUser/kick"
+	},
 	// 更新管理
 	update: {
 		register: "/update/register",

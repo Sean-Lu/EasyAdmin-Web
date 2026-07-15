@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Space, Modal, message, Card, Tag, Form, Input, Select, Tooltip } from "antd";
-import { DeleteOutlined, DownloadOutlined, ExclamationCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, DownloadOutlined, ExclamationCircleOutlined, SearchOutlined, ShareAltOutlined } from "@ant-design/icons";
 import {
 	FileDto,
 	getFiles,
@@ -13,6 +13,8 @@ import {
 import FileUpload from "./FileUpload";
 import FileDetail from "./FileDetail";
 import dayjs from "dayjs";
+import ShareDialog from "@/components/ShareDialog";
+import { ShareTargetType } from "@/services/share/shareService";
 
 const { confirm } = Modal;
 
@@ -28,6 +30,7 @@ const FileList: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [selectedFile, setSelectedFile] = useState<FileDto | null>(null);
 	const [detailVisible, setDetailVisible] = useState<boolean>(false);
+	const [shareFileId, setShareFileId] = useState<string>();
 	const [pagination, setPagination] = useState({
 		current: 1,
 		pageSize: 10,
@@ -194,6 +197,11 @@ const FileList: React.FC = () => {
 						<Button type="primary" size="small" icon={<DownloadOutlined />} onClick={() => handleDownload(record.id)}>
 							下载
 						</Button>
+						{record.bizType === FileBizType.Normal && (
+							<Button size="small" icon={<ShareAltOutlined />} onClick={() => setShareFileId(record.id)}>
+								分享
+							</Button>
+						)}
 						<Tooltip title={canDelete ? "" : "该文件被业务引用，不能在文件管理中删除"}>
 							<Button danger size="small" icon={<DeleteOutlined />} disabled={!canDelete} onClick={() => handleDelete(record.id)}>
 								删除
@@ -260,6 +268,9 @@ const FileList: React.FC = () => {
 				onClose={() => setDetailVisible(false)}
 				onDownload={handleDownload}
 			/>
+			{shareFileId && (
+				<ShareDialog open targetType={ShareTargetType.File} targetId={shareFileId} onClose={() => setShareFileId(undefined)} />
+			)}
 		</Card>
 	);
 };

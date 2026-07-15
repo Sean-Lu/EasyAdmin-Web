@@ -9,6 +9,7 @@ import {
 	LockOutlined,
 	PlusOutlined,
 	SearchOutlined,
+	ShareAltOutlined,
 	StarFilled,
 	StarOutlined,
 	UnlockOutlined,
@@ -34,6 +35,8 @@ import NoteDetail, { NoteDraft } from "./NoteDetail";
 import NotePassword from "./NotePassword";
 import { downloadBatchNoteExport, downloadNoteExport } from "./noteExport";
 import { downloadMarkdownExport } from "./noteExport";
+import ShareDialog from "@/components/ShareDialog";
+import { ShareTargetType } from "@/services/share/shareService";
 import {
 	getBatchNoteExportMenuItems,
 	getNoteExportMenuItems,
@@ -81,6 +84,7 @@ const NoteList: React.FC = () => {
 	const [batchMoveForm] = Form.useForm();
 	const importInputRef = useRef<HTMLInputElement>(null);
 	const [noteDraft, setNoteDraft] = useState<NoteDraft | null>(null);
+	const [shareNoteId, setShareNoteId] = useState<BackendIdInput>();
 
 	const getSelectedNoteIds = () => selectedRowKeys.map(key => (typeof key === "number" ? key : String(key)));
 
@@ -460,6 +464,9 @@ const NoteList: React.FC = () => {
 					<Tooltip title="编辑">
 						<Button icon={<EditOutlined />} onClick={() => openNote(record)} />
 					</Tooltip>
+					<Tooltip title="分享">
+						<Button icon={<ShareAltOutlined />} onClick={() => setShareNoteId(record.id)} />
+					</Tooltip>
 					<Tooltip title={record.isTop ? "取消置顶" : "置顶"}>
 						<Button
 							icon={record.isTop ? <StarFilled /> : <StarOutlined />}
@@ -701,6 +708,9 @@ const NoteList: React.FC = () => {
 					</Form.Item>
 				</Form>
 			</Modal>
+			{shareNoteId !== undefined && (
+				<ShareDialog open targetType={ShareTargetType.Note} targetId={shareNoteId} onClose={() => setShareNoteId(undefined)} />
+			)}
 		</div>
 	);
 };

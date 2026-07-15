@@ -2,6 +2,7 @@ import { Navigate, useRoutes, RouteObject as ReactRouterRouteObject } from "reac
 import { RouteObject } from "@/routers/interface";
 import Login from "@/views/login/index";
 import CheckIn from "@/views/user/checkIn/Calendar";
+import SharePage from "@/views/share";
 
 // * 导入所有router
 // const metaRouters = import.meta.globEager("./modules/*.tsx"); // 支持：*.tsx
@@ -37,6 +38,11 @@ export const rootRouter: RouteObject[] = [
 			title: "签到",
 			key: "checkin"
 		}
+	},
+	{
+		path: "/share/:shareCode",
+		element: <SharePage />,
+		meta: { requiresAuth: false, title: "分享", key: "share" }
 	},
 	...routerArray,
 	{

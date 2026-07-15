@@ -17,6 +17,7 @@ import {
 	OrderedListOutlined,
 	RedoOutlined,
 	SaveOutlined,
+	ShareAltOutlined,
 	StrikethroughOutlined,
 	UnderlineOutlined,
 	UndoOutlined,
@@ -36,6 +37,8 @@ import {
 import { downloadMarkdownExport, downloadNoteExport } from "./noteExport";
 import MarkdownEditor from "./MarkdownEditor";
 import { extractNoteImageIds } from "./markdownUtils";
+import ShareDialog from "@/components/ShareDialog";
+import { ShareTargetType } from "@/services/share/shareService";
 import "./note.less";
 
 interface NoteDetailProps {
@@ -107,6 +110,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 	const [note, setNote] = useState<NoteDto | null>(null);
 	const [linkModalOpen, setLinkModalOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const [shareOpen, setShareOpen] = useState(false);
 	const [saving, setSaving] = useState(false);
 	const [selectedImageRect, setSelectedImageRect] = useState<ImageRect | null>(null);
 	const [contentType, setContentType] = useState<NoteContentType>(NoteContentType.Markdown);
@@ -674,6 +678,11 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 					<Button icon={<DownloadOutlined />} onClick={() => exportNote("pdf")}>
 						PDF
 					</Button>
+					{noteId && (
+						<Button icon={<ShareAltOutlined />} onClick={() => setShareOpen(true)}>
+							分享
+						</Button>
+					)}
 					{readonly && onEdit && (
 						<Button icon={<EditOutlined />} onClick={onEdit}>
 							编辑
@@ -859,6 +868,9 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 			)}
 			{readonly && (
 				<div ref={previewRef} className="note-preview" dangerouslySetInnerHTML={{ __html: note?.contentHtml || "" }} />
+			)}
+			{noteId && (
+				<ShareDialog open={shareOpen} targetType={ShareTargetType.Note} targetId={noteId} onClose={() => setShareOpen(false)} />
 			)}
 			<Modal
 				title="插入链接"

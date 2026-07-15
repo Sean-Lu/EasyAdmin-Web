@@ -4,6 +4,7 @@ import { searchRoute } from "@/utils/util";
 import { rootRouter } from "@/routers/index";
 import { HOME_URL } from "@/config/config";
 import { store } from "@/redux/index";
+import { captureLoginRedirect } from "@/utils/authRedirect";
 
 const axiosCanceler = new AxiosCanceler();
 
@@ -22,7 +23,7 @@ const AuthRouter = (props: { children: JSX.Element }) => {
 	// * 判断是否有Token
 	const token = store.getState().global.token;
 	if (!token) {
-		localStorage.setItem("redirectUrl", pathname); // 保存当前页面地址，用于登录成功后跳转
+		captureLoginRedirect(pathname); // 保存当前页面地址，用于登录成功后跳转
 		return <Navigate to="/login" replace />;
 	}
 

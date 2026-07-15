@@ -6,6 +6,9 @@ import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
 import { setTabsList } from "@/redux/modules/tabs/action";
+import { setMenuList } from "@/redux/modules/menu/action";
+import { setAuthButtons, setAuthRouter } from "@/redux/modules/auth/action";
+import { setBreadcrumbList } from "@/redux/modules/breadcrumb/action";
 import PasswordModal from "./PasswordModal";
 import InfoModal from "./InfoModal";
 import { logoutApi } from "@/api/modules/login";
@@ -17,9 +20,21 @@ import useUserAvatar from "@/hooks/useUserAvatar";
 import { buildAvatarMenuItems } from "./avatarMenuItems";
 import UserAvatar from "@/components/UserAvatar";
 import { setLockAvatar } from "@/utils/lockAvatar";
+import { beginExplicitLogout } from "@/utils/authRedirect";
 
 const AvatarIcon = (props: any) => {
-	const { setToken, setTabsList, userInfo, onUserInfoChange, lockScreen, resetLockRuntime } = props;
+	const {
+		setToken,
+		setTabsList,
+		setMenuList,
+		setAuthButtons,
+		setAuthRouter,
+		setBreadcrumbList,
+		userInfo,
+		onUserInfoChange,
+		lockScreen,
+		resetLockRuntime
+	} = props;
 	const navigate = useNavigate();
 	const avatarSrc = useUserAvatar(userInfo?.avatarFileId);
 	const { t } = useTranslation();
@@ -44,8 +59,13 @@ const AvatarIcon = (props: any) => {
 				} catch {
 					// 即使服务端登出失败，也清除本地状态
 				}
+				beginExplicitLogout();
 				setToken("");
 				setTabsList([]);
+				setMenuList([]);
+				setAuthButtons({});
+				setAuthRouter([]);
+				setBreadcrumbList({});
 				resetLockRuntime();
 				onUserInfoChange(undefined);
 				localStorage.removeItem("Token");
@@ -84,5 +104,14 @@ const AvatarIcon = (props: any) => {
 	);
 };
 
-const mapDispatchToProps = { setToken, setTabsList, lockScreen, resetLockRuntime };
+const mapDispatchToProps = {
+	setToken,
+	setTabsList,
+	setMenuList,
+	setAuthButtons,
+	setAuthRouter,
+	setBreadcrumbList,
+	lockScreen,
+	resetLockRuntime
+};
 export default connect(null, mapDispatchToProps)(AvatarIcon);

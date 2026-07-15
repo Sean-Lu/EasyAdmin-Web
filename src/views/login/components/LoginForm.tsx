@@ -3,12 +3,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Form, Input, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
-import { getCaptchaApi, getLoginConfigApi, loginApi } from "@/api/modules/login";
+import { getCaptchaApi, getLoginConfigApi, getMenuList, loginApi } from "@/api/modules/login";
 import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
 import { useTranslation } from "react-i18next";
 import { setTabsList } from "@/redux/modules/tabs/action";
+import { setMenuList } from "@/redux/modules/menu/action";
+import { setAuthButtons, setAuthRouter } from "@/redux/modules/auth/action";
+import { setBreadcrumbList } from "@/redux/modules/breadcrumb/action";
+import { findAllBreadcrumb, handleRouter } from "@/utils/util";
+import { consumeAuthorizedLoginRedirect, finishExplicitLogout } from "@/utils/authRedirect";
 import {
 	CloseCircleOutlined,
 	LockOutlined,
@@ -26,7 +31,7 @@ const isEmail = (value: string | undefined): boolean => !!value && /^[^\s@]+@[^\
 
 const LoginForm = (props: any) => {
 	const { t } = useTranslation();
-	const { setToken, setTabsList } = props;
+	const { setToken, setTabsList, setMenuList, setAuthButtons, setAuthRouter, setBreadcrumbList } = props;
 	const navigate = useNavigate();
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState<boolean>(false);
@@ -76,6 +81,7 @@ const LoginForm = (props: any) => {
 	}, []);
 
 	useEffect(() => {
+		finishExplicitLogout();
 		void loadCaptcha();
 		void loadLoginConfig();
 	}, [loadCaptcha, loadLoginConfig]);
@@ -119,19 +125,29 @@ const LoginForm = (props: any) => {
 			}
 
 			setTabsList([]);
+			setAuthButtons({});
+
+			let authorizedPaths: string[] = [];
+			let permissionsLoaded = false;
+			try {
+				const { data: menuList = [] } = await getMenuList();
+				authorizedPaths = handleRouter(menuList, []);
+				permissionsLoaded = true;
+				setMenuList(menuList);
+				setAuthRouter(authorizedPaths);
+				setBreadcrumbList(findAllBreadcrumb(menuList));
+			} catch {
+				setMenuList([]);
+				setAuthRouter([]);
+				setBreadcrumbList({});
+			}
 			message.success("登录成功！");
 
 			// 保存租户编码到本地
 			saveTenantCode(loginForm.tenantCode || "");
 
-			// 登录成功后，判断是否有重定向地址，如果有则跳转，没有则跳转到首页
-			const redirectUrl = localStorage.getItem("redirectUrl");
-			if (redirectUrl && redirectUrl !== "/login") {
-				localStorage.removeItem("redirectUrl");
-				navigate(redirectUrl);
-			} else {
-				navigate(HOME_URL);
-			}
+			// 登录成功后，仅恢复当前账号有权限访问的重定向地址
+			navigate(consumeAuthorizedLoginRedirect(authorizedPaths, HOME_URL, permissionsLoaded ? "/403" : HOME_URL));
 		} catch {
 			if (captcha?.enabled) {
 				await loadCaptcha();
@@ -241,5 +257,5 @@ const LoginForm = (props: any) => {
 	);
 };
 
-const mapDispatchToProps = { setToken, setTabsList };
+const mapDispatchToProps = { setToken, setTabsList, setMenuList, setAuthButtons, setAuthRouter, setBreadcrumbList };
 export default connect(null, mapDispatchToProps)(LoginForm);

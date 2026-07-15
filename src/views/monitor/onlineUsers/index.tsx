@@ -1,5 +1,5 @@
 import { ReloadOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Input, Popconfirm, Space, Table, message } from "antd";
+import { Button, Card, Col, Input, Popconfirm, Row, Space, Table, message } from "antd";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -10,7 +10,13 @@ import { api } from "@/actions/system/api";
 import { setToken } from "@/redux/modules/global/action";
 import { setTabsList } from "@/redux/modules/tabs/action";
 import { store } from "@/redux";
-import { getOnlineUserDisplayName, shouldLogoutAfterKick } from "./onlineUsersUtils";
+import {
+	buildOnlineUserQuery,
+	getOnlineUserDisplayName,
+	resetOnlineUserQuery,
+	shouldLogoutAfterKick,
+	type OnlineUserQuery
+} from "./onlineUsersUtils";
 
 /** 在线用户 */
 interface OnlineUser {
@@ -44,17 +50,18 @@ const OnlineUsers = () => {
 	const [loading, setLoading] = useState(false);
 	const [keyword, setKeyword] = useState("");
 	const [ipAddress, setIpAddress] = useState("");
+	const [appliedQuery, setAppliedQuery] = useState<OnlineUserQuery>(resetOnlineUserQuery);
 	const [page, setPage] = useState({ current: 1, pageSize: 10, total: 0 });
 
 	const loadUsers = useCallback(
-		async (current = page.current, pageSize = page.pageSize) => {
+		async (current = page.current, pageSize = page.pageSize, query = appliedQuery) => {
 			setLoading(true);
 			try {
 				const response = await request.get<PageRes<OnlineUser>>(api.onlineUser.page, {
 					pageNumber: current,
 					pageSize,
-					userName: keyword.trim() || undefined,
-					ipAddress: ipAddress.trim() || undefined
+					userName: query.userName,
+					ipAddress: query.ipAddress
 				});
 				if (response.success) {
 					setData(response.data?.list || []);
@@ -70,12 +77,14 @@ const OnlineUsers = () => {
 				setLoading(false);
 			}
 		},
-		[ipAddress, keyword, page.current, page.pageSize]
+		[appliedQuery, page.current, page.pageSize]
 	);
 
 	useEffect(() => {
 		void loadUsers();
-	}, [loadUsers]);
+		// 页面首次进入时加载一次；输入框变化不会触发请求
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	/** 强制注销指定用户的全部在线会话 */
 	const kickUser = async (user: OnlineUser) => {
@@ -125,51 +134,67 @@ const OnlineUsers = () => {
 		[dispatch, kickUser, loadUsers, navigate]
 	);
 
+	const submitQuery = () => {
+		const query = buildOnlineUserQuery(keyword, ipAddress);
+		setAppliedQuery(query);
+		setPage(page => ({ ...page, current: 1 }));
+		void loadUsers(1, page.pageSize, query);
+	};
+
+	const resetQuery = () => {
+		const query = resetOnlineUserQuery();
+		setKeyword("");
+		setIpAddress("");
+		setAppliedQuery(query);
+		setPage(page => ({ ...page, current: 1 }));
+		void loadUsers(1, page.pageSize, query);
+	};
+
 	return (
-		<Card
-			title="在线用户"
-			extra={
-				<Space>
+		<Card title="在线用户">
+			<Row gutter={[12, 12]} justify="start" style={{ marginBottom: 16 }}>
+				<Col xs={24} sm={10} md={7} lg={5}>
 					<Input
-						placeholder="用户名"
+						placeholder="用户名/昵称"
 						value={keyword}
 						onChange={event => setKeyword(event.target.value)}
 						onPressEnter={() => {
-							setPage(page => ({ ...page, current: 1 }));
-							void loadUsers(1);
+							submitQuery();
 						}}
 					/>
+				</Col>
+				<Col xs={24} sm={10} md={7} lg={5}>
 					<Input
 						placeholder="IP"
 						value={ipAddress}
 						onChange={event => setIpAddress(event.target.value)}
 						onPressEnter={() => {
-							setPage(page => ({ ...page, current: 1 }));
-							void loadUsers(1);
+							submitQuery();
 						}}
 					/>
-					<Button
-						type="primary"
-						icon={<SearchOutlined />}
-						onClick={() => {
-							setPage(page => ({ ...page, current: 1 }));
-							void loadUsers(1);
-						}}
-					>
-						查询
-					</Button>
-					<Button icon={<ReloadOutlined />} onClick={() => void loadUsers()}>
-						刷新
-					</Button>
-				</Space>
-			}
-		>
+				</Col>
+				<Col>
+					<Space>
+						<Button type="primary" icon={<SearchOutlined />} onClick={submitQuery}>
+							查询
+						</Button>
+						<Button icon={<ReloadOutlined />} onClick={resetQuery}>
+							重置
+						</Button>
+					</Space>
+				</Col>
+			</Row>
 			<Table
 				rowKey="userId"
 				loading={loading}
 				columns={columns}
 				dataSource={data}
-				pagination={{ ...page, showSizeChanger: true, showQuickJumper: true }}
+				pagination={{
+					...page,
+					showSizeChanger: true,
+					showQuickJumper: true,
+					showTotal: total => `共 ${total} 条`
+				}}
 				onChange={pagination => void loadUsers(pagination.current || 1, pagination.pageSize || 10)}
 			/>
 		</Card>

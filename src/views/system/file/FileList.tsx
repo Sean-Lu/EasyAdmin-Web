@@ -15,6 +15,7 @@ import FileDetail from "./FileDetail";
 import dayjs from "dayjs";
 import ShareDialog from "@/components/ShareDialog";
 import { ShareTargetType } from "@/services/share/shareService";
+import { useSearchParams } from "react-router-dom";
 
 const { confirm } = Modal;
 
@@ -37,6 +38,7 @@ const FileList: React.FC = () => {
 		total: 0
 	});
 	const [searchForm] = Form.useForm();
+	const [searchParams, setSearchParams] = useSearchParams();
 
 	useEffect(() => {
 		fetchFiles();
@@ -57,6 +59,14 @@ const FileList: React.FC = () => {
 				...pagination,
 				total: result.total || 0
 			});
+			const openFileId = searchParams.get("openFileId");
+			if (openFileId) {
+				const targetFile = (result.list || []).find(file => String(file.id) === openFileId) || ({ id: openFileId } as FileDto);
+				await showDetail(targetFile);
+				const nextSearchParams = new URLSearchParams(searchParams);
+				nextSearchParams.delete("openFileId");
+				setSearchParams(nextSearchParams, { replace: true });
+			}
 		} catch (error) {
 			message.error("获取文件列表失败");
 		} finally {

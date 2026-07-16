@@ -866,7 +866,10 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 					resolveImageUrl={getFileObjectUrl}
 				/>
 			)}
-			{readonly && (
+			{readonly && contentType === NoteContentType.Markdown && (
+				<MarkdownEditor value={contentMarkdown} readonly isDark={isDark} resolveImageUrl={getFileObjectUrl} />
+			)}
+			{readonly && contentType !== NoteContentType.Markdown && (
 				<div ref={previewRef} className="note-preview" dangerouslySetInnerHTML={{ __html: note?.contentHtml || "" }} />
 			)}
 			{noteId && (

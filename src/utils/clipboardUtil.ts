@@ -15,8 +15,8 @@ export default class clipboardUtil {
 	// 		});
 	// };
 
-	static copyString = (text: string) => {
+	static copyString = (text: string, successMessage = "复制成功") => {
 		copy(text);
-		message.success("复制成功");
+		message.success(successMessage);
 	};
 }

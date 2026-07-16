@@ -35,6 +35,15 @@ const userRouter = [
 				}
 			},
 			{
+				path: "/user/share",
+				element: lazyLoad(React.lazy(() => import("@/views/user/share/ShareList"))),
+				meta: {
+					requiresAuth: true,
+					title: "我的分享",
+					key: "user-share"
+				}
+			},
+			{
 				path: "/user/checkIn",
 				element: lazyLoad(React.lazy(() => import("@/views/user/checkIn/index"))),
 				meta: {

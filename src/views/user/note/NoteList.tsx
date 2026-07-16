@@ -17,6 +17,7 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import { BackendIdInput } from "@/api/interface";
 import {
 	NoteCategoryDto,
@@ -83,6 +84,9 @@ const NoteList: React.FC = () => {
 	const [batchExportLoading, setBatchExportLoading] = useState(false);
 	const [batchMoveForm] = Form.useForm();
 	const importInputRef = useRef<HTMLInputElement>(null);
+	const [searchParams, setSearchParams] = useSearchParams();
+	const openNoteIdRef = useRef(searchParams.get("openNoteId"));
+	const openTargetLoadingRef = useRef(false);
 	const [noteDraft, setNoteDraft] = useState<NoteDraft | null>(null);
 	const [shareNoteId, setShareNoteId] = useState<BackendIdInput>();
 
@@ -165,14 +169,20 @@ const NoteList: React.FC = () => {
 		return list;
 	};
 
-	const fetchNotes = async (extra?: Partial<NotePageReqDto>) => {
+	const fetchNotes = async (extra?: Partial<NotePageReqDto>, skipOpenTarget = false) => {
+		const openNoteId = skipOpenTarget ? null : openNoteIdRef.current;
+		if (openNoteId && openTargetLoadingRef.current) return;
+		if (openNoteId) {
+			openTargetLoadingRef.current = true;
+			openNoteIdRef.current = null;
+		}
 		try {
 			setLoading(true);
 			const values = searchForm.getFieldsValue();
 			const params: NotePageReqDto = {
 				pageNumber: pagination.current,
-				pageSize: pagination.pageSize,
-				categoryId: selectedCategoryId || undefined,
+				pageSize: openNoteId ? 1000 : pagination.pageSize,
+				categoryId: openNoteId ? undefined : selectedCategoryId || undefined,
 				keyword: values.keyword,
 				tagIds: values.tagIds,
 				...extra
@@ -181,8 +191,17 @@ const NoteList: React.FC = () => {
 			setNotes(result.list || []);
 			setSelectedRowKeys(prev => prev.filter(key => (result.list || []).some(note => String(note.id) === String(key))));
 			setPagination(prev => ({ ...prev, total: result.total || 0 }));
+			if (openNoteId) {
+				const targetNote = (result.list || []).find(note => String(note.id) === openNoteId);
+				const nextSearchParams = new URLSearchParams(searchParams);
+				nextSearchParams.delete("openNoteId");
+				setSearchParams(nextSearchParams, { replace: true });
+				if (targetNote) await openNote(targetNote, true);
+				await fetchNotes(undefined, true);
+			}
 		} finally {
 			setLoading(false);
+			if (openNoteId) openTargetLoadingRef.current = false;
 		}
 	};
 

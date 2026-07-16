@@ -214,7 +214,7 @@ const CodeGen: React.FC = () => {
 	};
 
 	/**
-	 * 生成代码，校验必选项后调用后端接口
+	 * 生成代码
 	 */
 	const handleGenerateCode = async () => {
 		if (!selectedDbConfig) {
@@ -246,17 +246,6 @@ const CodeGen: React.FC = () => {
 
 	const handleCodeFirstGenerated = (result: CodeGenResultDto) => {
 		setGeneratedResult(result);
-	};
-
-	const getModeLabel = () => {
-		switch (mode) {
-			case "dbFirst":
-				return "数据库模式";
-			case "codeFirst":
-				return "代码解析模式";
-			case "config":
-				return "配置模式";
-		}
 	};
 
 	return (

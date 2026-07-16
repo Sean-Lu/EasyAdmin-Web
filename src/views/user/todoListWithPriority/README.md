@@ -72,24 +72,6 @@
 - 支持数据的持久化保存和读取
 - 确保数据不会丢失
 
-## 技术实现
-
-### 前端
-
-- React 18
-- Ant Design 6.3.6
-- React DnD (拖拽功能)
-- Axios (API 调用)
-
-### 后端
-
-- .NET 8.0
-- Entity Framework Core
-- Repository Pattern
-- Service Layer
-- RESTful API
-- Multi-tenancy (TenantEntityBase inheritance)
-
 ## 文件结构
 
 ```
@@ -106,75 +88,6 @@ EasyAdmin-Web/src/views/user/todoListWithPriority/
 ├── index.jsx         # 主组件
 └── README.md         # 功能说明文档
 ```
-
-## API 接口
-
-### 前端 API 调用
-
-#### 待办事项相关
-
-- `getTodoList(categoryId?)`：获取待办事项列表（可选按分类 ID 筛选）
-- `addTodoItem(data)`：添加待办事项
-- `updateTodoStatus(data)`：更新待办事项状态
-- `batchUpdateTodoStatus(data)`：批量更新待办事项状态
-- `updateTodoPriority(data)`：更新待办事项优先级
-- `updateTodoName(data)`：更新待办事项内容
-- `updateTodoSortOrder(data)`：更新待办事项排序顺序
-- `deleteTodoItem(id)`：删除待办事项
-- `clearCompleted(categoryId?)`：清除已完成的待办事项（可选按分类 ID 筛选）
-
-#### 分类相关
-
-- `getCategoryList()`：获取分类列表
-- `addCategory(data)`：添加分类
-- `deleteCategory(id)`：删除分类
-- `updateCategory(data)`：更新分类
-
-### 后端 API 端点
-
-#### 待办事项相关
-
-- `GET /TodoItem/List?categoryId={id}`：获取待办事项列表
-- `POST /TodoItem/Add`：添加待办事项
-- `POST /TodoItem/UpdateStatus`：更新待办事项状态
-- `POST /TodoItem/BatchUpdateStatus`：批量更新待办事项状态
-- `POST /TodoItem/UpdatePriority`：更新待办事项优先级
-- `POST /TodoItem/UpdateName`：更新待办事项内容
-- `POST /TodoItem/UpdateSortOrder`：更新待办事项排序顺序
-- `POST /TodoItem/Delete`：删除待办事项
-- `POST /TodoItem/ClearCompleted?categoryId={id}`：清除已完成的待办事项
-
-#### 分类相关
-
-- `GET /TodoCategory/List`：获取分类列表
-- `POST /TodoCategory/Add`：添加分类
-- `POST /TodoCategory/Update`：更新分类
-- `POST /TodoCategory/Delete`：删除分类
-
-## 数据库设计
-
-### TodoItemEntity
-
-- `Id`：主键
-- `TenantId`：租户 ID（多租户隔离）
-- `UserId`：用户 ID
-- `CategoryId`：分类 ID
-- `Name`：待办事项内容
-- `Done`：是否完成
-- `Priority`：优先级（1: 低, 2: 中, 3: 高）
-- `SortOrder`：排序顺序
-- `CreateTime`：创建时间
-- `UpdateTime`：更新时间
-
-### TodoCategoryEntity
-
-- `Id`：主键
-- `TenantId`：租户 ID（多租户隔离）
-- `UserId`：用户 ID（用户隔离）
-- `Name`：分类名称
-- `SortOrder`：排序顺序
-- `CreateTime`：创建时间
-- `UpdateTime`：更新时间
 
 ## 使用说明
 

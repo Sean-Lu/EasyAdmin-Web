@@ -1,6 +1,5 @@
-import { BackendId } from "@/api/interface";
+import { BackendId, CommonState } from "@/api/interface";
 import {
-	CommonState,
 	LotteryActivityPayload,
 	LotteryParticipant,
 	LotteryParticipantPayload,

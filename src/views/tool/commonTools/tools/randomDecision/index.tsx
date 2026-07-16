@@ -27,8 +27,8 @@ import {
 	message
 } from "antd";
 import { useSelector } from "react-redux";
-import { BackendIdInput } from "@/api/interface";
-import { CommonState, DecisionItem, DecisionItemService, DecisionItemType } from "@/services/tool/decisionItemService";
+import { BackendIdInput, CommonState } from "@/api/interface";
+import { DecisionItem, DecisionItemService, DecisionItemType } from "@/services/tool/decisionItemService";
 import "./index.less";
 
 interface RandomDecisionProps {

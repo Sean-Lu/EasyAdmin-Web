@@ -35,6 +35,12 @@ export interface DtoBase {
 	isDelete: boolean;
 }
 
+/**通用启用状态 */
+export enum CommonState {
+	Disable = 0,
+	Enable = 1
+}
+
 /**登录 */
 export namespace Login {
 	/**登录方式 */

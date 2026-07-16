@@ -294,7 +294,6 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 
 		message.success(editingId ? "持仓已更新" : "持仓已新增");
 		setModalOpen(false);
-		// 重新拉取后端计算字段和汇总
 		loadHoldings(selectedAccountId, keyword);
 	};
 

@@ -220,7 +220,7 @@ export default class CategoryManager extends Component {
 		// 保存到状态
 		this.setState({ categoryList: updatedCategories });
 
-		// 批量更新后端
+		// 更新分类排序
 		try {
 			for (const category of updatedCategories) {
 				await TodoCategoryService.updateCategory({
@@ -233,7 +233,6 @@ export default class CategoryManager extends Component {
 		} catch (error) {
 			message.error("分类排序更新失败");
 			console.error("分类排序更新失败:", error);
-			// 失败后重新获取分类列表
 			await this.fetchCategoryList();
 		}
 	};

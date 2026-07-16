@@ -81,9 +81,9 @@ export interface NotePageReqDto extends PageReqBase {
 
 /** 新建或编辑笔记的提交数据 */
 export interface NoteUpdateDto {
-	/** 笔记ID，新建时为空 */
+	/** 笔记ID */
 	id?: BackendIdInput;
-	/** 分类ID，后端会兜底到默认分类 */
+	/** 分类ID */
 	categoryId?: BackendIdInput;
 	/** 标题 */
 	title: string;
@@ -97,7 +97,7 @@ export interface NoteUpdateDto {
 	isTop: boolean;
 	/** 是否需要笔记密码打开 */
 	isProtected: boolean;
-	/** 标签名称集合，后端按名称自动创建或复用标签 */
+	/** 标签名称集合 */
 	tags: string[];
 }
 
@@ -216,7 +216,7 @@ export class NoteCategoryService {
 		return request.post<boolean>("/NoteCategory/Update", data);
 	}
 
-	/** 删除分类，后端会把分类下笔记移动到默认分类 */
+	/** 删除分类 */
 	static async delete(id: BackendIdInput) {
 		return request.post<boolean>("/NoteCategory/Delete", { id });
 	}

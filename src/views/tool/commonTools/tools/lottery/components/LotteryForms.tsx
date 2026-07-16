@@ -1,7 +1,6 @@
 import React from "react";
 import { Col, Form, Input, InputNumber, Modal, Row, Switch } from "antd";
 import type { FormInstance } from "antd";
-import { CommonState } from "@/services/tool/lotteryService";
 import {
 	ActivityFormValues,
 	defaultActivityValues,
@@ -10,6 +9,7 @@ import {
 	ParticipantFormValues,
 	PrizeFormValues
 } from "../model";
+import { CommonState } from "@/api/interface";
 
 interface ActivityModalProps {
 	open: boolean;

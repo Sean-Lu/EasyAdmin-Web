@@ -58,7 +58,7 @@ class TodoListWithPriority extends Component {
 		try {
 			const response = await TodoItemService.getTodoList(categoryId);
 			if (response.success) {
-				const sortedList = response.data; // 直接使用后端返回的排序结果
+				const sortedList = response.data;
 				this.setState({ todoList: sortedList, currentCategoryId: categoryId });
 			}
 		} catch (error) {

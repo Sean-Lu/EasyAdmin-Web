@@ -13,15 +13,8 @@ import {
 import { Button, Empty, Form, InputNumber, Popconfirm, Space, Table, Tabs, Tag, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useSelector } from "react-redux";
-import { BackendId, BackendIdInput } from "@/api/interface";
-import {
-	CommonState,
-	LotteryActivity,
-	LotteryParticipant,
-	LotteryPrize,
-	LotteryService,
-	LotteryWinner
-} from "@/services/tool/lotteryService";
+import { BackendId, BackendIdInput, CommonState } from "@/api/interface";
+import { LotteryActivity, LotteryParticipant, LotteryPrize, LotteryService, LotteryWinner } from "@/services/tool/lotteryService";
 import DrawStage from "./components/DrawStage";
 import { ActivityModal, ImportModal, ParticipantModal, PrizeModal } from "./components/LotteryForms";
 import {

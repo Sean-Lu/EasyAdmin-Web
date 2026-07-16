@@ -1,14 +1,9 @@
 import request from "@/api/index";
-import { BackendId, BackendIdInput } from "@/api/interface";
+import { BackendId, BackendIdInput, CommonState } from "@/api/interface";
 
 export enum DecisionItemType {
 	Food = 1,
 	Place = 2
-}
-
-export enum CommonState {
-	Disable = 0,
-	Enable = 1
 }
 
 export interface DecisionItem {

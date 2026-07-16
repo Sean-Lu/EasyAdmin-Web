@@ -114,18 +114,9 @@ const FileList: React.FC = () => {
 	};
 
 	const showDetail = async (file: FileDto) => {
-		// 方式1：不调用后端详情接口，直接取列表数据
-		// setSelectedFile(file);
-		// setDetailVisible(true);
-
-		// 方式2：调用后端详情接口
 		try {
-			// 显示加载状态
 			setLoading(true);
-
-			// 调用接口获取最新文件详情
 			const result = await getFileById(file.id);
-
 			if (result.success && result.data) {
 				setSelectedFile(result.data);
 				setDetailVisible(true);

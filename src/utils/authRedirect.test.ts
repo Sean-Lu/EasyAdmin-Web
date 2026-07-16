@@ -52,6 +52,20 @@ describe("login redirect authorization", () => {
 		expect(consumeAuthorizedLoginRedirect(["/system/menu"], "/home/index", "/403")).toBe("/home/index");
 	});
 
+	it("does not overwrite the protected redirect while already on the login page", () => {
+		localStorage.setItem(LOGIN_REDIRECT_KEY, "/user/todoList?status=pending");
+
+		captureLoginRedirect("/login");
+
+		expect(localStorage.getItem(LOGIN_REDIRECT_KEY)).toBe("/user/todoList?status=pending");
+	});
+
+	it("authorizes by pathname and restores the redirect query string", () => {
+		localStorage.setItem(LOGIN_REDIRECT_KEY, "/user/todoList?status=pending");
+
+		expect(consumeAuthorizedLoginRedirect(["/user/todoList"], "/home/index", "/403")).toBe("/user/todoList?status=pending");
+	});
+
 	it("returns the forbidden page when the new account does not authorize the redirect", () => {
 		localStorage.setItem(LOGIN_REDIRECT_KEY, "/system/menu");
 

@@ -12,7 +12,7 @@ const axiosCanceler = new AxiosCanceler();
  * @description 路由守卫组件
  * */
 const AuthRouter = (props: { children: JSX.Element }) => {
-	const { pathname } = useLocation();
+	const { pathname, search } = useLocation();
 	const route = searchRoute(pathname, rootRouter);
 	// * 在跳转路由之前，清除所有的请求
 	axiosCanceler.removeAllPending();
@@ -23,7 +23,7 @@ const AuthRouter = (props: { children: JSX.Element }) => {
 	// * 判断是否有Token
 	const token = store.getState().global.token;
 	if (!token) {
-		captureLoginRedirect(pathname); // 保存当前页面地址，用于登录成功后跳转
+		captureLoginRedirect(pathname + search); // 保存当前页面地址，用于登录成功后跳转
 		return <Navigate to="/login" replace />;
 	}
 

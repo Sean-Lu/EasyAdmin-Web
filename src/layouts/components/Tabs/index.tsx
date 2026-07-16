@@ -19,6 +19,7 @@ import { setTabsList } from "@/redux/modules/tabs/action";
 import { routerArray } from "@/routers";
 import { searchRoute } from "@/utils/util";
 import * as Icons from "@ant-design/icons";
+import { upsertTab } from "./tabUtils";
 import "./index.less";
 
 interface LayoutTabsOwnProps {
@@ -37,6 +38,7 @@ const renderIcon = (iconName?: string) => {
 const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 	const { t } = useTranslation();
 	const { tabsList } = props.tabs;
+	const { menuList: menuData } = props.menu;
 	const { themeConfig } = props.global;
 	const { setTabsList } = props;
 	const { pathname, search } = useLocation();
@@ -50,7 +52,7 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 			addTabs();
 		}
 		setIsDeleting(false);
-	}, [pathname, search]);
+	}, [pathname, search, menuData]);
 
 	useLayoutEffect(() => {
 		scrollActiveTabIntoView();
@@ -175,7 +177,6 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 	const addTabs = () => {
 		if (pathname === "/empty") return;
 		const route = searchRoute(pathname, routerArray);
-		const menuData = props.menu.menuList;
 		const menuItem = findMenuByPath(menuData, pathname);
 
 		let icon = route.meta?.icon;
@@ -201,14 +202,7 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 		if (!title) return;
 
 		const fullPath = pathname + search;
-		let newTabsList: Menu.MenuOptions[] = JSON.parse(JSON.stringify(tabsList));
-		const existingIndex = newTabsList.findIndex((item: Menu.MenuOptions) => item.path === pathname);
-		if (existingIndex === -1) {
-			newTabsList.push({ title, path: pathname, icon, fullPath });
-		} else {
-			// Tab 已存在，更新 fullPath 以记住最新 query 参数
-			newTabsList[existingIndex] = { ...newTabsList[existingIndex], fullPath };
-		}
+		const newTabsList = upsertTab(tabsList, { title, path: pathname, icon, fullPath });
 		setTabsList(newTabsList);
 		setActiveValue(pathname);
 	};

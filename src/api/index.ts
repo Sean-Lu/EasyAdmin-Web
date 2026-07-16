@@ -11,6 +11,7 @@ import { message } from "antd";
 import { store } from "@/redux";
 import { refreshTokenApi } from "./modules/login";
 import { assertRequestAllowedWhenLocked, shouldSkipGlobalRequestErrorHandling } from "./lockGate";
+import { captureLoginRedirect } from "@/utils/authRedirect";
 
 const axiosCanceler = new AxiosCanceler();
 
@@ -233,7 +234,7 @@ function handleTokenExpired() {
 	store.dispatch(setToken(""));
 	store.dispatch(setTabsList([]));
 	localStorage.removeItem("refreshToken");
-	localStorage.setItem("redirectUrl", window.location.hash.slice(1));
+	captureLoginRedirect(window.location.hash.slice(1));
 	window.location.hash = "/login";
 }
 

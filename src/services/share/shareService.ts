@@ -123,12 +123,42 @@ export interface PublicShareVerifyResultDto {
 	expireMinutes: number;
 }
 
-/** 密码分享访问令牌的会话存储键 */
+/** 密码分享访问令牌的浏览器存储键 */
 const tokenKey = (shareCode: string) => `share-access-token:${shareCode}`;
+
+interface StoredShareAccessToken {
+	accessToken: string;
+	expiresAt: number;
+}
+
+const getStoredAccessToken = (shareCode: string): string | undefined => {
+	const key = tokenKey(shareCode);
+	try {
+		const raw = localStorage.getItem(key);
+		if (!raw) return undefined;
+		const stored = JSON.parse(raw) as Partial<StoredShareAccessToken>;
+		if (typeof stored.accessToken !== "string" || typeof stored.expiresAt !== "number" || stored.expiresAt <= Date.now()) {
+			localStorage.removeItem(key);
+			return undefined;
+		}
+		return stored.accessToken;
+	} catch {
+		localStorage.removeItem(key);
+		return undefined;
+	}
+};
+
+const storeAccessToken = (shareCode: string, accessToken: string, expireMinutes: number) => {
+	const stored: StoredShareAccessToken = {
+		accessToken,
+		expiresAt: Date.now() + expireMinutes * 60 * 1000
+	};
+	localStorage.setItem(tokenKey(shareCode), JSON.stringify(stored));
+};
 
 /** 为匿名分享请求附加短期访问令牌 */
 const headers = (shareCode: string): Record<string, string> => {
-	const accessToken = sessionStorage.getItem(tokenKey(shareCode));
+	const accessToken = getStoredAccessToken(shareCode);
 	return accessToken ? { "X-Share-Access-Token": accessToken } : {};
 };
 
@@ -174,19 +204,25 @@ export class ShareService {
 		return (await request.get<PublicShareStatusDto>("/PublicShare/Status", { shareCode })).data!;
 	}
 
-	/** 校验分享密码并保存会话级访问令牌 */
+	/** 校验分享密码并保存浏览器级短期访问令牌 */
 	static async verify(shareCode: string, password: string) {
 		const data = (await request.post<PublicShareVerifyResultDto>("/PublicShare/Verify", { shareCode, password })).data!;
-		sessionStorage.setItem(tokenKey(shareCode), data.accessToken);
+		storeAccessToken(shareCode, data.accessToken, data.expireMinutes);
 	}
 
-	/** 判断当前会话是否存在分享访问令牌 */
+	/** 判断当前浏览器是否存在有效的分享访问令牌 */
 	static hasAccessToken(shareCode: string) {
-		return !!sessionStorage.getItem(tokenKey(shareCode));
+		return !!getStoredAccessToken(shareCode);
+	}
+
+	/** 获取当前分享的访问令牌 */
+	static getAccessToken(shareCode: string) {
+		return getStoredAccessToken(shareCode);
 	}
 
 	/** 清除当前分享的访问令牌 */
 	static clearAccessToken(shareCode: string) {
+		localStorage.removeItem(tokenKey(shareCode));
 		sessionStorage.removeItem(tokenKey(shareCode));
 	}
 

@@ -1,18 +1,17 @@
 .share-card {
 	position: relative;
 }
-.share-home-link {
-	position: absolute;
-	top: 20px;
-	right: 24px;
-	display: inline-flex;
-	gap: 6px;
+.share-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
 	align-items: center;
-	font-size: 14px;
-	color: #667085;
+	justify-content: space-between;
+	max-width: 860px;
+	margin: 0 auto 16px;
 }
-.share-home-link:hover {
-	color: #1677ff;
+.share-actions-file {
+	max-width: 720px;
 }
 .share-note {
 	max-width: 860px;
@@ -118,6 +117,33 @@
 	font-weight: 500;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+.share-page-dark {
+	.share-source {
+		color: rgb(255 255 255 / 65%);
+		background: #111d2c;
+	}
+	.share-source strong {
+		color: #69b1ff;
+	}
+	.share-note-meta,
+	.share-file-meta span {
+		color: rgb(255 255 255 / 45%);
+	}
+	.share-file-icon {
+		color: #4096ff;
+		background: #111d2c;
+	}
+	.share-file-preview {
+		background: #141414;
+		border-color: #303030;
+	}
+	.share-file-meta {
+		background: #1f1f1f;
+	}
+	.share-file-meta strong {
+		color: rgb(255 255 255 / 85%);
+	}
 }
 
 @media screen and (width <= 576px) {

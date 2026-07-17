@@ -7,6 +7,15 @@ const userRouter = [
 		element: <LayoutIndex />,
 		children: [
 			{
+				path: "/user/favorite",
+				element: lazyLoad(React.lazy(() => import("@/views/user/favorite/FavoriteList"))),
+				meta: {
+					requiresAuth: true,
+					title: "我的收藏",
+					key: "user-favorite"
+				}
+			},
+			{
 				path: "/user/message",
 				element: lazyLoad(React.lazy(() => import("@/views/user/message/MessageList"))),
 				meta: {

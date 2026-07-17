@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Dropdown, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, message } from "antd";
+import { Button, Dropdown, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, message, theme } from "antd";
 import {
 	DeleteOutlined,
 	DownloadOutlined,
@@ -10,10 +10,9 @@ import {
 	PlusOutlined,
 	SearchOutlined,
 	ShareAltOutlined,
-	StarFilled,
-	StarOutlined,
 	UnlockOutlined,
-	UploadOutlined
+	UploadOutlined,
+	VerticalAlignTopOutlined
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
@@ -45,6 +44,9 @@ import {
 	NoteListExportType
 } from "./noteExportOptions";
 import { readMarkdownFile } from "./markdownUtils";
+import FavoriteButton from "@/components/FavoriteButton";
+import { toFavoriteIdMap } from "@/components/FavoriteButton/favoriteState";
+import { FavoriteService, FavoriteTargetType } from "@/services/user/favoriteService";
 import "./note.less";
 
 const { confirm } = Modal;
@@ -52,6 +54,7 @@ type NoteView = "list" | "detail" | "password";
 
 // 笔记列表页
 const NoteList: React.FC = () => {
+	const { token } = theme.useToken();
 	const isDark = useSelector((state: any) => state.global.themeConfig.isDark);
 	const [categories, setCategories] = useState<NoteCategoryDto[]>([]);
 	const [tags, setTags] = useState<NoteTagDto[]>([]);
@@ -89,6 +92,7 @@ const NoteList: React.FC = () => {
 	const openTargetLoadingRef = useRef(false);
 	const [noteDraft, setNoteDraft] = useState<NoteDraft | null>(null);
 	const [shareNoteId, setShareNoteId] = useState<BackendIdInput>();
+	const [favoriteIds, setFavoriteIds] = useState<Record<string, BackendIdInput>>({});
 
 	const getSelectedNoteIds = () => selectedRowKeys.map(key => (typeof key === "number" ? key : String(key)));
 
@@ -189,6 +193,11 @@ const NoteList: React.FC = () => {
 			};
 			const result = await NoteService.page(params);
 			setNotes(result.list || []);
+			const favoriteTargets = (result.list || []).map(note => ({
+				targetType: FavoriteTargetType.Note,
+				targetId: note.id
+			}));
+			setFavoriteIds(favoriteTargets.length ? toFavoriteIdMap(await FavoriteService.status(favoriteTargets)) : {});
 			setSelectedRowKeys(prev => prev.filter(key => (result.list || []).some(note => String(note.id) === String(key))));
 			setPagination(prev => ({ ...prev, total: result.total || 0 }));
 			if (openNoteId) {
@@ -474,7 +483,7 @@ const NoteList: React.FC = () => {
 		},
 		{
 			title: "操作",
-			width: 270,
+			width: 320,
 			render: (_: any, record: NoteDto) => (
 				<Space>
 					<Tooltip title="查看">
@@ -486,9 +495,22 @@ const NoteList: React.FC = () => {
 					<Tooltip title="分享">
 						<Button icon={<ShareAltOutlined />} onClick={() => setShareNoteId(record.id)} />
 					</Tooltip>
+					<FavoriteButton
+						targetType={FavoriteTargetType.Note}
+						targetId={record.id}
+						favoriteId={favoriteIds[String(record.id)]}
+						onChange={favoriteId =>
+							setFavoriteIds(current => {
+								const next = { ...current };
+								if (favoriteId) next[String(record.id)] = favoriteId;
+								else delete next[String(record.id)];
+								return next;
+							})
+						}
+					/>
 					<Tooltip title={record.isTop ? "取消置顶" : "置顶"}>
 						<Button
-							icon={record.isTop ? <StarFilled /> : <StarOutlined />}
+							icon={<VerticalAlignTopOutlined style={record.isTop ? { color: token.colorPrimary } : undefined} />}
 							onClick={async () => {
 								await NoteService.updateTop(record.id, !record.isTop);
 								await fetchNotes();

@@ -1,9 +1,21 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Button, Card, Divider, Image, Input, Spin, Tag, Typography, message } from "antd";
-import { CloudDownloadOutlined, FileImageOutlined, FileOutlined, FilePdfOutlined, HomeOutlined } from "@ant-design/icons";
+import {
+	CloudDownloadOutlined,
+	FileImageOutlined,
+	FileOutlined,
+	FilePdfOutlined,
+	HomeOutlined,
+	StarFilled,
+	StarOutlined
+} from "@ant-design/icons";
 import dayjs from "dayjs";
+import { BackendIdInput } from "@/api/interface";
 import { PublicShareFileDto, PublicShareNoteDto, ShareService, ShareTargetType } from "@/services/share/shareService";
+import { FavoriteService } from "@/services/user/favoriteService";
+import { captureLoginRedirect } from "@/utils/authRedirect";
 import "../user/note/note.less";
 import "./share.less";
 import { isPreviewableImage } from "./filePreview";
@@ -13,7 +25,13 @@ const formatSize = (size: number) =>
 
 const SharePage = () => {
 	const { shareCode = "" } = useParams();
+	const navigate = useNavigate();
+	const location = useLocation();
+	const token = useSelector((state: any) => state.global.token) as string | undefined;
+	const isDark = useSelector((state: any) => state.global.themeConfig?.isDark) as boolean | undefined;
 	const [loading, setLoading] = useState(true);
+	const [favoriteLoading, setFavoriteLoading] = useState(false);
+	const [favoriteId, setFavoriteId] = useState<BackendIdInput>();
 	const [needPassword, setNeedPassword] = useState(false);
 	const [password, setPassword] = useState("");
 	const [file, setFile] = useState<PublicShareFileDto>();
@@ -60,6 +78,23 @@ const SharePage = () => {
 	useEffect(() => {
 		void load();
 	}, [shareCode]);
+	useEffect(() => {
+		if (!token || (!file && !note)) {
+			setFavoriteId(undefined);
+			return;
+		}
+		let active = true;
+		void FavoriteService.shareStatus(shareCode)
+			.then(items => {
+				if (active) setFavoriteId(items.find(item => item.isFavorite)?.favoriteId);
+			})
+			.catch(() => {
+				if (active) setFavoriteId(undefined);
+			});
+		return () => {
+			active = false;
+		};
+	}, [file, note, shareCode, token]);
 	useEffect(() => {
 		if (!note?.contentHtml) return;
 		const documentNode = new DOMParser().parseFromString(note.contentHtml, "text/html");
@@ -121,18 +156,48 @@ const SharePage = () => {
 			message.error("下载失败");
 		}
 	};
+	const toggleFavorite = async () => {
+		if (!token) {
+			captureLoginRedirect(location.pathname + location.search);
+			navigate("/login");
+			return;
+		}
+		try {
+			setFavoriteLoading(true);
+			const result = favoriteId
+				? await FavoriteService.remove(favoriteId)
+				: await FavoriteService.addShare(shareCode, ShareService.getAccessToken(shareCode));
+			setFavoriteId(result.favoriteId);
+			message.success(result.isFavorite ? "收藏成功" : "已取消收藏");
+		} finally {
+			setFavoriteLoading(false);
+		}
+	};
 	const fileIcon = () => {
 		if (isPreviewableImage(file?.contentType)) return <FileImageOutlined />;
 		if (file?.contentType === "application/pdf") return <FilePdfOutlined />;
 		return <FileOutlined />;
 	};
 	return (
-		<div style={{ maxWidth: 900, margin: "0 auto", padding: "48px 20px 0" }}>
+		<div
+			className={`share-page${isDark ? " share-page-dark note-dark" : ""}`}
+			style={{ maxWidth: 900, margin: "0 auto", padding: "48px 20px 0" }}
+		>
 			<Card className="share-card">
-				<a className="share-home-link" href="/">
-					<HomeOutlined />
-					返回首页
-				</a>
+				<div className={`share-actions${file ? " share-actions-file" : ""}`}>
+					<Button icon={<HomeOutlined />} href="/">
+						返回首页
+					</Button>
+					{!loading && !error && (file || note) && (
+						<Button
+							loading={favoriteLoading}
+							icon={favoriteId ? <StarFilled style={{ color: "#faad14" }} /> : <StarOutlined />}
+							onClick={() => void toggleFavorite()}
+						>
+							{favoriteId ? "取消收藏" : token ? "收藏" : "登录后收藏"}
+						</Button>
+					)}
+				</div>
 				{loading && (
 					<div style={{ textAlign: "center", padding: 64 }}>
 						<Spin />

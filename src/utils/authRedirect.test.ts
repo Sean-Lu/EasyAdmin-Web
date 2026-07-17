@@ -73,6 +73,21 @@ describe("login redirect authorization", () => {
 		expect(localStorage.getItem(LOGIN_REDIRECT_KEY)).toBeNull();
 	});
 
+	it("restores a valid public share redirect after login", () => {
+		const code = "a".repeat(64);
+		localStorage.setItem(LOGIN_REDIRECT_KEY, `/share/${code}`);
+
+		expect(consumeAuthorizedLoginRedirect([], "/home/index", "/403")).toBe(`/share/${code}`);
+	});
+
+	it("rejects malformed or external share redirects", () => {
+		localStorage.setItem(LOGIN_REDIRECT_KEY, "/share/not-a-code");
+		expect(consumeAuthorizedLoginRedirect([], "/home/index", "/403")).toBe("/403");
+
+		localStorage.setItem(LOGIN_REDIRECT_KEY, "//evil.example/share/" + "a".repeat(64));
+		expect(consumeAuthorizedLoginRedirect([], "/home/index", "/403")).toBe("/403");
+	});
+
 	it("allows redirect capture again after the explicit logout phase finishes", () => {
 		beginExplicitLogout();
 		finishExplicitLogout();

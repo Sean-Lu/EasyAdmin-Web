@@ -6,6 +6,10 @@ import { SearchOutlined } from "@ant-design/icons";
 import * as Icons from "@ant-design/icons";
 import { flattenMenuTree } from "@/utils/util";
 import { OutLinkOpenType } from "@/enums/menu";
+import { BackendIdInput } from "@/api/interface";
+import FavoriteButton from "@/components/FavoriteButton";
+import { toFavoriteIdMap } from "@/components/FavoriteButton/favoriteState";
+import { FavoriteService, FavoriteTargetType } from "@/services/user/favoriteService";
 import "./MenuSearch.less";
 
 interface MenuSearchProps {
@@ -22,6 +26,7 @@ const MenuSearch = (props: MenuSearchProps) => {
 	const [open, setOpen] = useState(false);
 	const [keyword, setKeyword] = useState("");
 	const [activeIndex, setActiveIndex] = useState(0);
+	const [favoriteIds, setFavoriteIds] = useState<Record<string, BackendIdInput>>({});
 	const inputRef = useRef<InputRef>(null);
 	const listRef = useRef<HTMLDivElement>(null);
 
@@ -32,6 +37,27 @@ const MenuSearch = (props: MenuSearchProps) => {
 		if (!value) return flatMenuList;
 		return flatMenuList.filter(item => item.title.toLowerCase().includes(value));
 	}, [keyword, flatMenuList]);
+
+	useEffect(() => {
+		if (!open || flatMenuList.length === 0) {
+			setFavoriteIds({});
+			return;
+		}
+		let active = true;
+		const targets = flatMenuList
+			.filter(item => Boolean(item.id))
+			.map(item => ({ targetType: FavoriteTargetType.Menu, targetId: item.id! }));
+		void FavoriteService.status(targets)
+			.then(items => {
+				if (active) setFavoriteIds(toFavoriteIdMap(items));
+			})
+			.catch(() => {
+				if (active) setFavoriteIds({});
+			});
+		return () => {
+			active = false;
+		};
+	}, [open, flatMenuList]);
 
 	useEffect(() => {
 		setActiveIndex(0);
@@ -162,11 +188,29 @@ const MenuSearch = (props: MenuSearchProps) => {
 									onClick={() => handleSelect(item)}
 									onMouseEnter={() => setActiveIndex(index)}
 								>
-									<div className="menu-search-item-title">
-										{renderIcon(item.icon)}
-										<span>{highlightTitle(item.title, keyword)}</span>
+									<div className="menu-search-item-content">
+										<div className="menu-search-item-title">
+											{renderIcon(item.icon)}
+											<span>{highlightTitle(item.title, keyword)}</span>
+										</div>
+										<div className="menu-search-item-path">{item.fullTitle}</div>
 									</div>
-									<div className="menu-search-item-path">{item.fullTitle}</div>
+									{item.id && (
+										<FavoriteButton
+											type="text"
+											targetType={FavoriteTargetType.Menu}
+											targetId={item.id}
+											favoriteId={favoriteIds[String(item.id)]}
+											onChange={favoriteId =>
+												setFavoriteIds(current => {
+													const next = { ...current };
+													if (favoriteId) next[String(item.id)] = favoriteId;
+													else delete next[String(item.id)];
+													return next;
+												})
+											}
+										/>
+									)}
 								</div>
 							))
 						) : (

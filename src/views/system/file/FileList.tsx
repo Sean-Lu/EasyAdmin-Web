@@ -16,6 +16,10 @@ import dayjs from "dayjs";
 import ShareDialog from "@/components/ShareDialog";
 import { ShareTargetType } from "@/services/share/shareService";
 import { useSearchParams } from "react-router-dom";
+import FavoriteButton from "@/components/FavoriteButton";
+import { toFavoriteIdMap } from "@/components/FavoriteButton/favoriteState";
+import { FavoriteService, FavoriteTargetType } from "@/services/user/favoriteService";
+import { BackendIdInput } from "@/api/interface";
 
 const { confirm } = Modal;
 
@@ -32,6 +36,7 @@ const FileList: React.FC = () => {
 	const [selectedFile, setSelectedFile] = useState<FileDto | null>(null);
 	const [detailVisible, setDetailVisible] = useState<boolean>(false);
 	const [shareFileId, setShareFileId] = useState<string>();
+	const [favoriteIds, setFavoriteIds] = useState<Record<string, BackendIdInput>>({});
 	const [pagination, setPagination] = useState({
 		current: 1,
 		pageSize: 10,
@@ -55,6 +60,10 @@ const FileList: React.FC = () => {
 
 			const result = await getFiles(params);
 			setFiles(result.list || []);
+			const favoriteTargets = (result.list || [])
+				.filter(file => file.bizType === FileBizType.Normal)
+				.map(file => ({ targetType: FavoriteTargetType.File, targetId: file.id }));
+			setFavoriteIds(favoriteTargets.length ? toFavoriteIdMap(await FavoriteService.status(favoriteTargets)) : {});
 			setPagination({
 				...pagination,
 				total: result.total || 0
@@ -190,23 +199,36 @@ const FileList: React.FC = () => {
 		{
 			title: "操作",
 			key: "actions",
-			width: 180,
+			width: 190,
 			render: (_: any, record: FileDto) => {
 				const canDelete = record.bizType === FileBizType.Normal;
 				return (
-					<Space size="middle">
-						<Button type="primary" size="small" icon={<DownloadOutlined />} onClick={() => handleDownload(record.id)}>
-							下载
-						</Button>
+					<Space>
+						<Tooltip title="下载">
+							<Button icon={<DownloadOutlined />} onClick={() => handleDownload(record.id)} />
+						</Tooltip>
 						{record.bizType === FileBizType.Normal && (
-							<Button size="small" icon={<ShareAltOutlined />} onClick={() => setShareFileId(record.id)}>
-								分享
-							</Button>
+							<>
+								<Tooltip title="分享">
+									<Button icon={<ShareAltOutlined />} onClick={() => setShareFileId(record.id)} />
+								</Tooltip>
+								<FavoriteButton
+									targetType={FavoriteTargetType.File}
+									targetId={record.id}
+									favoriteId={favoriteIds[String(record.id)]}
+									onChange={favoriteId =>
+										setFavoriteIds(current => {
+											const next = { ...current };
+											if (favoriteId) next[String(record.id)] = favoriteId;
+											else delete next[String(record.id)];
+											return next;
+										})
+									}
+								/>
+							</>
 						)}
-						<Tooltip title={canDelete ? "" : "该文件被业务引用，不能在文件管理中删除"}>
-							<Button danger size="small" icon={<DeleteOutlined />} disabled={!canDelete} onClick={() => handleDelete(record.id)}>
-								删除
-							</Button>
+						<Tooltip title={canDelete ? "删除" : "该文件被业务引用，不能在文件管理中删除"}>
+							<Button danger icon={<DeleteOutlined />} disabled={!canDelete} onClick={() => handleDelete(record.id)} />
 						</Tooltip>
 					</Space>
 				);

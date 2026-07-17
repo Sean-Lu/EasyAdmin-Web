@@ -7,6 +7,8 @@ const getInternalPathname = (location: string): string | null => {
 	return location.split(/[?#]/, 1)[0] || null;
 };
 
+export const isPublicLoginReturnPath = (pathname: string): boolean => /^\/share\/[0-9a-f]{64}$/i.test(pathname);
+
 export const beginExplicitLogout = (): void => {
 	localStorage.removeItem(LOGIN_REDIRECT_KEY);
 	sessionStorage.setItem(EXPLICIT_LOGOUT_KEY, "1");
@@ -34,5 +36,5 @@ export const consumeAuthorizedLoginRedirect = (authorizedPaths: string[], fallba
 
 	if (!redirectUrl || redirectUrl === "/login") return fallback;
 	const pathname = getInternalPathname(redirectUrl);
-	return pathname && authorizedPaths.includes(pathname) ? redirectUrl : forbidden;
+	return pathname && (authorizedPaths.includes(pathname) || isPublicLoginReturnPath(pathname)) ? redirectUrl : forbidden;
 };

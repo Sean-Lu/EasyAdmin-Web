@@ -26,7 +26,10 @@ export const getShareStatusColor = (status: ShareListStatus) => {
 	}
 };
 
-export const buildShareLink = (shareCode: string) => `${window.location.origin}${window.location.pathname}#/share/${shareCode}`;
+export type ShareLinkLocation = Pick<Location, "origin" | "pathname">;
+
+export const buildShareLink = (shareCode: string, location: ShareLinkLocation = window.location) =>
+	`${location.origin}${location.pathname}#/share/${shareCode}`;
 
 export const canOpenTarget = (item: ShareListItemDto) => item.targetAvailable;
 

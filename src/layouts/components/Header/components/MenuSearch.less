@@ -29,6 +29,10 @@
 	overflow-y: auto;
 }
 .menu-search-item {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	justify-content: space-between;
 	padding: 10px 12px;
 	cursor: pointer;
 	border-radius: 6px;
@@ -37,6 +41,10 @@
 	&.menu-search-item-active {
 		background-color: #f5f7fa;
 	}
+}
+.menu-search-item-content {
+	flex: 1;
+	min-width: 0;
 }
 .menu-search-item-title {
 	display: flex;

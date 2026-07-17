@@ -135,7 +135,7 @@ const ShareList = () => {
 	];
 
 	return (
-		<Card title="我的分享">
+		<Card>
 			<Space wrap style={{ marginBottom: 16 }}>
 				<Input.Search
 					allowClear

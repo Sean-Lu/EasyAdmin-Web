@@ -121,7 +121,7 @@ const FavoriteList = () => {
 	];
 
 	return (
-		<Card title="我的收藏">
+		<Card>
 			<Tabs
 				activeKey={String(targetType)}
 				items={[

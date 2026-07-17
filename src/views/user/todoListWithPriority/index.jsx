@@ -4,6 +4,7 @@ import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { connect } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 
 import TodoHeader from "./Heaher";
 //import CategorySelector from "./Heaher/CategorySelector";
@@ -13,6 +14,9 @@ import DraggableTodoItem from "./Item/DraggableTodoItem";
 import TodoFooter from "./Footer";
 import { TodoItemService } from "@/services/tool/todoItemService";
 import { TodoCategoryService } from "@/services/tool/todoCategoryService";
+import { deleteCategorySearchValue, setCategorySearchValue } from "@/utils/categorySearchParams";
+import { createLatestRequestGuard } from "@/utils/latestRequest";
+import { resolveTodoCategorySelection } from "./todoCategorySelection";
 
 const { Title } = Typography;
 
@@ -37,13 +41,39 @@ class TodoListWithPriority extends Component {
 
 	// CategoryManager组件引用
 	categoryManagerRef = React.createRef();
+	todoRequestGuard = createLatestRequestGuard();
+	pendingCategoryId = null;
 
-	// 组件挂载时不获取数据，等待CategoryManager传递
-	componentDidMount() {}
+	componentDidUpdate(prevProps) {
+		if (prevProps.categorySearchValue !== this.props.categorySearchValue && this.state.categories.length > 0) {
+			this.syncCategorySelection(this.state.categories);
+		}
+	}
+
+	syncCategorySelection = categories => {
+		const {
+			categoryId,
+			selectedValue: resolved,
+			shouldClear
+		} = resolveTodoCategorySelection(this.props.categorySearchValue, categories);
+		if (shouldClear) {
+			this.props.onCategorySearchValueChange(null, true);
+		}
+		if (!resolved) {
+			this.todoRequestGuard.invalidate();
+			this.pendingCategoryId = null;
+			this.setState({ todoList: [], currentCategoryId: null });
+			return;
+		}
+		if (categoryId !== null && categoryId !== this.state.currentCategoryId && String(categoryId) !== this.pendingCategoryId) {
+			void this.fetchTodoList(categoryId);
+		}
+	};
 
 	// 处理分类列表更新
 	handleCategoriesChange = categories => {
 		this.setState({ categories });
+		this.syncCategorySelection(categories);
 	};
 
 	// 刷新分类列表（通过ref调用CategoryManager的方法）
@@ -55,21 +85,27 @@ class TodoListWithPriority extends Component {
 
 	// 获取待办事项列表
 	fetchTodoList = async categoryId => {
+		const requestId = this.todoRequestGuard.begin();
+		this.pendingCategoryId = String(categoryId);
 		try {
 			const response = await TodoItemService.getTodoList(categoryId);
-			if (response.success) {
+			if (response.success && this.todoRequestGuard.isLatest(requestId)) {
 				const sortedList = response.data;
 				this.setState({ todoList: sortedList, currentCategoryId: categoryId });
 			}
 		} catch (error) {
-			message.error("获取待办事项列表失败");
-			console.error("获取待办事项列表失败:", error);
+			if (this.todoRequestGuard.isLatest(requestId)) {
+				message.error("获取待办事项列表失败");
+				console.error("获取待办事项列表失败:", error);
+			}
+		} finally {
+			if (this.todoRequestGuard.isLatest(requestId)) this.pendingCategoryId = null;
 		}
 	};
 
 	// 处理分类切换
 	handleCategoryChange = categoryId => {
-		this.fetchTodoList(categoryId);
+		this.props.onCategorySearchValueChange(String(categoryId));
 	};
 
 	// 添加todo
@@ -323,6 +359,7 @@ class TodoListWithPriority extends Component {
 								ref={this.categoryManagerRef}
 								onCategorySelect={this.handleCategoryChange}
 								onCategoriesChange={this.handleCategoriesChange}
+								selectedCategoryId={this.state.currentCategoryId}
 							/>
 						</Col>
 						<Col xs={24} md={16}>
@@ -493,4 +530,19 @@ class TodoListWithPriority extends Component {
 }
 
 const mapStateToProps = state => state;
-export default connect(mapStateToProps)(TodoListWithPriority);
+const ConnectedTodoListWithPriority = connect(mapStateToProps)(TodoListWithPriority);
+
+const TodoListWithPriorityRoute = () => {
+	const [searchParams, setSearchParams] = useSearchParams();
+	const setCategory = (value, replace = false) => {
+		setSearchParams(current => (value === null ? deleteCategorySearchValue(current) : setCategorySearchValue(current, value)), {
+			replace
+		});
+	};
+
+	return (
+		<ConnectedTodoListWithPriority categorySearchValue={searchParams.get("category")} onCategorySearchValueChange={setCategory} />
+	);
+};
+
+export default TodoListWithPriorityRoute;

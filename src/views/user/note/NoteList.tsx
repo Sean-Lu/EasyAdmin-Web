@@ -47,6 +47,8 @@ import { readMarkdownFile } from "./markdownUtils";
 import FavoriteButton from "@/components/FavoriteButton";
 import { toFavoriteIdMap } from "@/components/FavoriteButton/favoriteState";
 import { FavoriteService, FavoriteTargetType } from "@/services/user/favoriteService";
+import { deleteCategorySearchValue, resolveCategorySearchState, setCategorySearchValue } from "@/utils/categorySearchParams";
+import { createLatestRequestGuard } from "@/utils/latestRequest";
 import "./note.less";
 
 const { confirm } = Modal;
@@ -57,6 +59,7 @@ const NoteList: React.FC = () => {
 	const { token } = theme.useToken();
 	const isDark = useSelector((state: any) => state.global.themeConfig.isDark);
 	const [categories, setCategories] = useState<NoteCategoryDto[]>([]);
+	const [categoriesLoaded, setCategoriesLoaded] = useState(false);
 	const [tags, setTags] = useState<NoteTagDto[]>([]);
 	const [notes, setNotes] = useState<NoteDto[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -88,8 +91,14 @@ const NoteList: React.FC = () => {
 	const [batchMoveForm] = Form.useForm();
 	const importInputRef = useRef<HTMLInputElement>(null);
 	const [searchParams, setSearchParams] = useSearchParams();
+	const categorySearchValue = searchParams.get("category");
+	const categorySearchValueRef = useRef(categorySearchValue);
+	categorySearchValueRef.current = categorySearchValue;
+	const selectedCategoryIdRef = useRef(selectedCategoryId);
+	selectedCategoryIdRef.current = selectedCategoryId;
 	const openNoteIdRef = useRef(searchParams.get("openNoteId"));
 	const openTargetLoadingRef = useRef(false);
+	const noteRequestGuardRef = useRef(createLatestRequestGuard());
 	const [noteDraft, setNoteDraft] = useState<NoteDraft | null>(null);
 	const [shareNoteId, setShareNoteId] = useState<BackendIdInput>();
 	const [favoriteIds, setFavoriteIds] = useState<Record<string, BackendIdInput>>({});
@@ -104,19 +113,36 @@ const NoteList: React.FC = () => {
 	}, []);
 
 	useEffect(() => {
-		void fetchNotes();
-	}, [selectedCategoryId, pagination.current, pagination.pageSize]);
+		if (categoriesLoaded) void fetchNotes();
+	}, [categoriesLoaded, selectedCategoryId, pagination.current, pagination.pageSize]);
+
+	useEffect(() => {
+		if (categoriesLoaded) syncSelectedCategory(categories, categorySearchValue);
+	}, [categorySearchValue]);
+
+	const syncSelectedCategory = (categoryList: NoteCategoryDto[], searchValue: string | null) => {
+		const fallback = categoryList.length > 0 ? String(categoryList[0].id) : "all";
+		const { selectedValue: resolved, shouldClear } = resolveCategorySearchState(
+			searchValue,
+			categoryList.map(category => category.id),
+			{ allowAll: true, fallback }
+		);
+		setSelectedCategoryId(resolved === "all" ? "" : resolved || "");
+		if (shouldClear) {
+			setSearchParams(current => deleteCategorySearchValue(current), { replace: true });
+		}
+	};
 
 	const fetchCategories = async () => {
 		const list = await NoteCategoryService.list();
 		setCategories(list);
-		if (!selectedCategoryId && list.length > 0) {
-			setSelectedCategoryId(String(list[0].id));
-		}
+		setCategoriesLoaded(true);
+		syncSelectedCategory(list, categorySearchValueRef.current);
 	};
 
 	const selectCategory = (categoryId: string) => {
 		setSelectedCategoryId(categoryId);
+		setSearchParams(current => setCategorySearchValue(current, categoryId || "all"));
 		setSelectedRowKeys([]);
 		setPagination(prev => ({ ...prev, current: 1 }));
 	};
@@ -176,40 +202,50 @@ const NoteList: React.FC = () => {
 	const fetchNotes = async (extra?: Partial<NotePageReqDto>, skipOpenTarget = false) => {
 		const openNoteId = skipOpenTarget ? null : openNoteIdRef.current;
 		if (openNoteId && openTargetLoadingRef.current) return;
+		if (!skipOpenTarget && !openNoteId && openTargetLoadingRef.current) return;
 		if (openNoteId) {
 			openTargetLoadingRef.current = true;
 			openNoteIdRef.current = null;
 		}
+		const requestId = noteRequestGuardRef.current.begin();
 		try {
 			setLoading(true);
 			const values = searchForm.getFieldsValue();
 			const params: NotePageReqDto = {
 				pageNumber: pagination.current,
 				pageSize: openNoteId ? 1000 : pagination.pageSize,
-				categoryId: openNoteId ? undefined : selectedCategoryId || undefined,
+				categoryId: openNoteId ? undefined : selectedCategoryIdRef.current || undefined,
 				keyword: values.keyword,
 				tagIds: values.tagIds,
 				...extra
 			};
 			const result = await NoteService.page(params);
-			setNotes(result.list || []);
-			const favoriteTargets = (result.list || []).map(note => ({
+			const nextNotes = result.list || [];
+			const favoriteTargets = nextNotes.map(note => ({
 				targetType: FavoriteTargetType.Note,
 				targetId: note.id
 			}));
-			setFavoriteIds(favoriteTargets.length ? toFavoriteIdMap(await FavoriteService.status(favoriteTargets)) : {});
-			setSelectedRowKeys(prev => prev.filter(key => (result.list || []).some(note => String(note.id) === String(key))));
+			const nextFavoriteIds = favoriteTargets.length ? toFavoriteIdMap(await FavoriteService.status(favoriteTargets)) : {};
+			if (!noteRequestGuardRef.current.isLatest(requestId)) return;
+			setNotes(nextNotes);
+			setFavoriteIds(nextFavoriteIds);
+			setSelectedRowKeys(prev => prev.filter(key => nextNotes.some(note => String(note.id) === String(key))));
 			setPagination(prev => ({ ...prev, total: result.total || 0 }));
 			if (openNoteId) {
-				const targetNote = (result.list || []).find(note => String(note.id) === openNoteId);
-				const nextSearchParams = new URLSearchParams(searchParams);
-				nextSearchParams.delete("openNoteId");
-				setSearchParams(nextSearchParams, { replace: true });
+				const targetNote = nextNotes.find(note => String(note.id) === openNoteId);
+				setSearchParams(
+					current => {
+						const nextSearchParams = new URLSearchParams(current);
+						nextSearchParams.delete("openNoteId");
+						return nextSearchParams;
+					},
+					{ replace: true }
+				);
 				if (targetNote) await openNote(targetNote, true);
 				await fetchNotes(undefined, true);
 			}
 		} finally {
-			setLoading(false);
+			if (noteRequestGuardRef.current.isLatest(requestId)) setLoading(false);
 			if (openNoteId) openTargetLoadingRef.current = false;
 		}
 	};
@@ -243,10 +279,8 @@ const NoteList: React.FC = () => {
 			onOk: async () => {
 				await NoteCategoryService.delete(category.id);
 				message.success("分类已删除");
-				setSelectedCategoryId("");
 				setPagination(prev => ({ ...prev, current: 1 }));
 				await fetchCategories();
-				await fetchNotes({ pageNumber: 1, categoryId: undefined });
 			}
 		});
 	};

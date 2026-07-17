@@ -78,9 +78,7 @@ export default class CategoryManager extends Component {
 		editModalVisible: false,
 		deleteModalVisible: false,
 		// 待删除的分类ID
-		deletingCategoryId: null,
-		// 当前选中的分类ID
-		selectedCategoryId: null
+		deletingCategoryId: null
 	};
 
 	componentDidMount() {
@@ -94,13 +92,6 @@ export default class CategoryManager extends Component {
 			if (response.success) {
 				const categories = response.data || [];
 				this.setState({ categoryList: categories });
-				// 如果有分类且没有选中分类，默认选择第一个
-				if (categories.length > 0 && !this.state.selectedCategoryId) {
-					this.setState({ selectedCategoryId: categories[0].id });
-					if (this.props.onCategorySelect) {
-						this.props.onCategorySelect(categories[0].id);
-					}
-				}
 				// 通知父组件分类列表更新
 				if (this.props.onCategoriesChange) {
 					this.props.onCategoriesChange(categories);
@@ -185,7 +176,7 @@ export default class CategoryManager extends Component {
 
 	// 处理删除分类
 	handleDeleteCategory = async () => {
-		const { deletingCategoryId, selectedCategoryId } = this.state;
+		const { deletingCategoryId } = this.state;
 		try {
 			const response = await TodoCategoryService.deleteCategory(deletingCategoryId);
 			if (response.success) {
@@ -238,15 +229,9 @@ export default class CategoryManager extends Component {
 	};
 
 	render() {
-		const {
-			categoryList,
-			editModalVisible,
-			deleteModalVisible,
-			newCategoryName,
-			newCategorySortOrder,
-			editingCategory,
-			selectedCategoryId
-		} = this.state;
+		const { categoryList, editModalVisible, deleteModalVisible, newCategoryName, newCategorySortOrder, editingCategory } =
+			this.state;
+		const { selectedCategoryId } = this.props;
 
 		return (
 			<Card
@@ -277,12 +262,7 @@ export default class CategoryManager extends Component {
 								onEdit={this.showEditModal}
 								onDelete={this.showDeleteModal}
 								isSelected={selectedCategoryId}
-								onSelect={id => {
-									this.setState({ selectedCategoryId: id });
-									if (this.props.onCategorySelect) {
-										this.props.onCategorySelect(id);
-									}
-								}}
+								onSelect={this.props.onCategorySelect}
 							/>
 						)}
 					/>

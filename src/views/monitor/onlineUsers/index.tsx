@@ -151,7 +151,7 @@ const OnlineUsers = () => {
 	};
 
 	return (
-		<Card title="在线用户">
+		<Card>
 			<Row gutter={[12, 12]} justify="start" style={{ marginBottom: 16 }}>
 				<Col xs={24} sm={10} md={7} lg={5}>
 					<Input

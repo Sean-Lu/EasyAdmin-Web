@@ -7,7 +7,7 @@ const LOCK_ALLOWED_REQUESTS = new Set([
 	"/api/auth/refreshToken"
 ]);
 
-export class LockedRequestError extends Error {
+class LockedRequestError extends Error {
 	readonly code = "APP_LOCKED";
 
 	constructor() {
@@ -16,7 +16,7 @@ export class LockedRequestError extends Error {
 	}
 }
 
-export const isLockAllowedRequest = (url?: string, allowLockedAvatarPreload = false) =>
+const isLockAllowedRequest = (url?: string, allowLockedAvatarPreload = false) =>
 	Boolean(url && (LOCK_ALLOWED_REQUESTS.has(url) || (allowLockedAvatarPreload && url === "/file/downloadfile")));
 
 export const assertRequestAllowedWhenLocked = (locked: boolean, url?: string, allowLockedAvatarPreload = false) => {

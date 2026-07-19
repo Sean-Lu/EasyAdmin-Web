@@ -4,18 +4,7 @@ import type { BackendId } from "@/api/interface";
 import type { IdleTimeoutMinutes, LockPreference } from "@/redux/interface";
 import { ALLOWED_IDLE_TIMEOUTS, writeLockPreference } from "@/utils/lockStorage";
 
-type WritePreference = (userId: string, preference: LockPreference) => void;
 type SetPreference = (preference: LockPreference) => void;
-
-export const saveLockSettings = (
-	userId: BackendId,
-	preference: LockPreference,
-	write: WritePreference = writeLockPreference,
-	setPreference?: SetPreference
-) => {
-	write(String(userId), preference);
-	setPreference?.(preference);
-};
 
 interface Props extends LockPreference {
 	userId?: BackendId;
@@ -26,7 +15,8 @@ const LockSettings = ({ userId, autoLockEnabled, idleTimeoutMinutes, setLockPref
 	const { t } = useTranslation();
 	const update = (preference: LockPreference) => {
 		if (userId === undefined || userId === null) return;
-		saveLockSettings(userId, preference, writeLockPreference, setLockPreference);
+		writeLockPreference(String(userId), preference);
+		setLockPreference(preference);
 	};
 
 	return (

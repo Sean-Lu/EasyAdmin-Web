@@ -1,5 +1,3 @@
-export const shouldLoadAfterUnlock = (locked: boolean, loaded: boolean) => !locked && !loaded;
-
 export const createProtectedLoader = () => {
 	let status: "idle" | "loading" | "loaded" = "idle";
 	let pending: Promise<void> | null = null;

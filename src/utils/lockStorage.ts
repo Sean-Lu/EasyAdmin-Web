@@ -1,9 +1,9 @@
 import { IdleTimeoutMinutes, LockPreference, LockRuntime } from "@/redux/interface";
 
 export const LOCK_RUNTIME_KEY = "easyadmin:lock:runtime";
-export const lockPreferenceKey = (userId: string) => `easyadmin:lock:preference:${userId}`;
+const lockPreferenceKey = (userId: string) => `easyadmin:lock:preference:${userId}`;
 export const ALLOWED_IDLE_TIMEOUTS = [5, 10, 15, 30, 60] as const;
-export const DEFAULT_LOCK_PREFERENCE: LockPreference = { autoLockEnabled: false, idleTimeoutMinutes: 15 };
+const DEFAULT_LOCK_PREFERENCE: LockPreference = { autoLockEnabled: false, idleTimeoutMinutes: 15 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
@@ -20,7 +20,7 @@ const parseJson = (value: string | null): unknown => {
 const isIdleTimeout = (value: unknown): value is IdleTimeoutMinutes =>
 	typeof value === "number" && (ALLOWED_IDLE_TIMEOUTS as readonly number[]).includes(value);
 
-export const parseLockPreference = (value: unknown): LockPreference => {
+const parseLockPreference = (value: unknown): LockPreference => {
 	if (!isRecord(value) || typeof value.autoLockEnabled !== "boolean" || !isIdleTimeout(value.idleTimeoutMinutes)) {
 		return { ...DEFAULT_LOCK_PREFERENCE };
 	}
@@ -34,7 +34,7 @@ export const writeLockPreference = (userId: string, preference: LockPreference):
 	localStorage.setItem(lockPreferenceKey(userId), JSON.stringify(parseLockPreference(preference)));
 };
 
-export const parseLockRuntime = (value: unknown): LockRuntime | null => {
+const parseLockRuntime = (value: unknown): LockRuntime | null => {
 	if (
 		!isRecord(value) ||
 		typeof value.locked !== "boolean" ||
@@ -80,5 +80,3 @@ export const writeLockRuntime = (userId: string, runtime: LockRuntime): void => 
 };
 
 export const clearLockRuntime = (): void => localStorage.removeItem(LOCK_RUNTIME_KEY);
-
-export const isNewerLockRuntime = (incoming: LockRuntime, currentVersion: number): boolean => incoming.version > currentVersion;

@@ -1,39 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 import md5 from "js-md5";
-import { attemptUnlock, runUnlock, switchAccountCleanup, unlockErrorTranslationKey } from "./lockScreenLogic";
-
-describe("lock screen unlock", () => {
-	it("does not submit an empty password", async () => {
-		const verify = vi.fn();
-		expect(await attemptUnlock("   ", verify)).toBe("empty");
-		expect(verify).not.toHaveBeenCalled();
-	});
-
-	it("hashes the transient password only when submitting", async () => {
-		const verify = vi.fn().mockResolvedValue(true);
-		expect(await attemptUnlock("admin", verify)).toBe("success");
-		expect(verify).toHaveBeenCalledWith(md5("admin"));
-	});
-
-	it("distinguishes rejected passwords from network failures", async () => {
-		expect(await attemptUnlock("bad", vi.fn().mockResolvedValue(false))).toBe("rejected");
-		expect(await attemptUnlock("bad", vi.fn().mockRejectedValue(new Error("offline")))).toBe("network-error");
-	});
-
-	it("preserves a server business error instead of classifying it as a network failure", async () => {
-		expect(await attemptUnlock("bad", vi.fn().mockRejectedValue({ code: 400, msg: "当前密码错误" }))).toEqual({
-			type: "business-error",
-			message: "当前密码错误"
-		});
-	});
-});
+import { runUnlock, switchAccountCleanup, unlockErrorTranslationKey } from "./lockScreenLogic";
 
 describe("lock screen handlers", () => {
 	it("resets the field and unlocks with the current time after success", async () => {
 		const resetFields = vi.fn();
 		const unlock = vi.fn();
+		const verify = vi.fn().mockResolvedValue(true);
 		await runUnlock("admin", {
-			verify: vi.fn().mockResolvedValue(true),
+			verify,
 			now: () => 123,
 			unlock,
 			resetFields,
@@ -41,6 +16,7 @@ describe("lock screen handlers", () => {
 		});
 		expect(resetFields).toHaveBeenCalledOnce();
 		expect(unlock).toHaveBeenCalledWith(123);
+		expect(verify).toHaveBeenCalledWith(md5("admin"));
 	});
 
 	it("resets a rejected password, reports inline feedback, and does not unlock", async () => {

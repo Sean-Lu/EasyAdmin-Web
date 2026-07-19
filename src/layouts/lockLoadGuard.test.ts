@@ -1,17 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { shouldLoadAfterUnlock } from "./lockLoadGuard";
 import { createProtectedLoader } from "./lockLoadGuard";
-
-describe("shouldLoadAfterUnlock", () => {
-	it("defers protected initialization while locked", () => {
-		expect(shouldLoadAfterUnlock(true, false)).toBe(false);
-	});
-
-	it("loads once after unlock", () => {
-		expect(shouldLoadAfterUnlock(false, false)).toBe(true);
-		expect(shouldLoadAfterUnlock(false, true)).toBe(false);
-	});
-});
 
 describe("createProtectedLoader", () => {
 	it("deduplicates in-flight loads and stops after success", async () => {

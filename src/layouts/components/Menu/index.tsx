@@ -14,7 +14,7 @@ import Logo from "./components/Logo";
 import "./index.less";
 import { createProtectedLoader } from "../../lockLoadGuard";
 import { MenuType } from "@/enums/menu";
-import { findMenuById, getAncestorMenuIds, getMenuAction, getSelectedMenuId, mergeOpenMenuIds } from "./menuTree";
+import { findMenuById, findMenuByPath, getAncestorMenuIds, getMenuAction } from "./menuTree";
 
 const LayoutMenu = (props: any) => {
 	const { pathname } = useLocation();
@@ -29,7 +29,7 @@ const LayoutMenu = (props: any) => {
 
 	// 刷新页面菜单保持高亮
 	useEffect(() => {
-		const selectedId = getSelectedMenuId(props.menuList, pathname);
+		const selectedId = findMenuByPath(props.menuList, pathname)?.id;
 		setSelectedKeys(selectedId ? [selectedId] : []);
 		if (isCollapse || mode === "horizontal") {
 			setOpenKeys([]);
@@ -37,7 +37,7 @@ const LayoutMenu = (props: any) => {
 		}
 		if (selectedId) {
 			const ancestorMenuIds = getAncestorMenuIds(props.menuList, selectedId);
-			setOpenKeys(currentOpenKeys => mergeOpenMenuIds(currentOpenKeys, ancestorMenuIds));
+			setOpenKeys(currentOpenKeys => [...new Set([...currentOpenKeys, ...ancestorMenuIds])]);
 		}
 	}, [pathname, isCollapse, mode, props.menuList]);
 

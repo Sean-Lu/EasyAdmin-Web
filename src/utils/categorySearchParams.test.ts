@@ -1,21 +1,16 @@
 import { describe, expect, it } from "vitest";
-import {
-	deleteCategorySearchValue,
-	resolveCategorySearchState,
-	resolveCategorySearchValue,
-	setCategorySearchValue
-} from "./categorySearchParams";
+import { deleteCategorySearchValue, resolveCategorySearchState, setCategorySearchValue } from "./categorySearchParams";
 
 describe("category search params", () => {
 	it("restores a valid category and rejects all when it is not allowed", () => {
-		expect(resolveCategorySearchValue("2", [1, 2], { allowAll: false, fallback: "1" })).toBe("2");
-		expect(resolveCategorySearchValue("all", [1, 2], { allowAll: false, fallback: "1" })).toBe("1");
+		expect(resolveCategorySearchState("2", [1, 2], { allowAll: false, fallback: "1" }).selectedValue).toBe("2");
+		expect(resolveCategorySearchState("all", [1, 2], { allowAll: false, fallback: "1" }).selectedValue).toBe("1");
 	});
 
 	it("restores all and falls back when the category is missing or stale", () => {
-		expect(resolveCategorySearchValue("all", [1, 2], { allowAll: true, fallback: "1" })).toBe("all");
-		expect(resolveCategorySearchValue("9", [1, 2], { allowAll: true, fallback: "1" })).toBe("1");
-		expect(resolveCategorySearchValue(null, [], { allowAll: true, fallback: "all" })).toBe("all");
+		expect(resolveCategorySearchState("all", [1, 2], { allowAll: true, fallback: "1" }).selectedValue).toBe("all");
+		expect(resolveCategorySearchState("9", [1, 2], { allowAll: true, fallback: "1" }).selectedValue).toBe("1");
+		expect(resolveCategorySearchState(null, [], { allowAll: true, fallback: "all" }).selectedValue).toBe("all");
 	});
 
 	it("updates category without dropping other query values", () => {

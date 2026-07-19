@@ -5,11 +5,9 @@ import { forwardRef, useEffect, useState } from "react";
 
 type UserAvatarProps = ComponentProps<typeof Avatar> & { src?: string };
 
-export const shouldUseDefaultAvatar = (src: string | undefined, imageFailed: boolean): boolean => !src || imageFailed;
-
 const UserAvatar = forwardRef<HTMLSpanElement, UserAvatarProps>(({ src, children, onError, ...props }, ref) => {
 	const [imageFailed, setImageFailed] = useState(false);
-	const showDefaultAvatar = shouldUseDefaultAvatar(src, imageFailed);
+	const showDefaultAvatar = !src || imageFailed;
 
 	useEffect(() => setImageFailed(false), [src]);
 

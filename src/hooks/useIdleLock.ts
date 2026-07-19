@@ -7,7 +7,7 @@ interface EventSource {
 	removeEventListener(type: string, listener: () => void): void;
 }
 
-export interface IdleLockMonitorOptions {
+interface IdleLockMonitorOptions {
 	events: EventSource;
 	isVisible: () => boolean;
 	now: () => number;
@@ -21,7 +21,7 @@ export interface IdleLockMonitorOptions {
 	onIdle: (at: number) => void;
 }
 
-export const createIdleLockMonitor = (options: IdleLockMonitorOptions): (() => void) => {
+const createIdleLockMonitor = (options: IdleLockMonitorOptions): (() => void) => {
 	if (!options.enabled || options.locked) return () => undefined;
 
 	let lastActivityWriteAt = Number.NEGATIVE_INFINITY;

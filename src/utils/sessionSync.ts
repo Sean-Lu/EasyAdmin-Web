@@ -1,12 +1,12 @@
-export const LOGOUT_EVENT_KEY = "easyadmin:session:event";
+const LOGOUT_EVENT_KEY = "easyadmin:session:event";
 
-export interface LogoutEvent {
+interface LogoutEvent {
 	type: "logout";
 	version: 1;
 	at: number;
 }
 
-export const createLogoutEvent = (at: number): LogoutEvent => ({ type: "logout", version: 1, at });
+const createLogoutEvent = (at: number): LogoutEvent => ({ type: "logout", version: 1, at });
 
 const parseLogoutEvent = (raw: string | null): LogoutEvent | null => {
 	if (!raw) return null;

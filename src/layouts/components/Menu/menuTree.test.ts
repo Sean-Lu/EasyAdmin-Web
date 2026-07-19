@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MenuType, OutLinkOpenType } from "@/enums/menu";
-import { findMenuById, getAncestorMenuIds, getMenuAction, getSelectedMenuId, mergeOpenMenuIds } from "./menuTree";
+import { findMenuById, findMenuByPath, getAncestorMenuIds, getMenuAction } from "./menuTree";
 
 const tree: Menu.MenuOptions[] = [
 	{
@@ -29,15 +29,10 @@ const tree: Menu.MenuOptions[] = [
 
 describe("menuTree", () => {
 	it("selects a leaf by path and derives its directory ancestors", () => {
-		expect(getSelectedMenuId(tree, "/link/GitHub")).toBe("12");
-		expect(getSelectedMenuId(tree, "/link/github")).toBeUndefined();
+		expect(findMenuByPath(tree, "/link/GitHub")?.id).toBe("12");
+		expect(findMenuByPath(tree, "/link/github")).toBeUndefined();
 		expect(getAncestorMenuIds(tree, "12")).toEqual(["1", "5"]);
 		expect(findMenuById(tree, "12")?.title).toBe("GitHub");
-	});
-
-	it("keeps manually opened directories when navigating", () => {
-		expect(mergeOpenMenuIds(["8", "9"], ["1", "5"])).toEqual(["8", "9", "1", "5"]);
-		expect(mergeOpenMenuIds(["1", "5"], ["1", "5"])).toEqual(["1", "5"]);
 	});
 
 	it("returns a navigation action for each menu type", () => {

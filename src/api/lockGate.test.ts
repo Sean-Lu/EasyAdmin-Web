@@ -1,10 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	LockedRequestError,
-	assertRequestAllowedWhenLocked,
-	isLockAllowedRequest,
-	shouldSkipGlobalRequestErrorHandling
-} from "./lockGate";
+import { assertRequestAllowedWhenLocked, shouldSkipGlobalRequestErrorHandling } from "./lockGate";
 
 const post = vi.fn();
 
@@ -12,36 +7,43 @@ vi.mock("@/api", () => ({ default: { post } }));
 
 describe("locked request gate", () => {
 	it("allows exactly password verification, logout, and token refresh", () => {
-		expect(isLockAllowedRequest("/auth/verifyPassword")).toBe(true);
-		expect(isLockAllowedRequest("/auth/logout")).toBe(true);
-		expect(isLockAllowedRequest("/auth/refreshToken")).toBe(true);
-		expect(isLockAllowedRequest("/api/auth/verifyPassword")).toBe(true);
-		expect(isLockAllowedRequest("/api/auth/logout")).toBe(true);
-		expect(isLockAllowedRequest("/api/auth/refreshToken")).toBe(true);
-		expect(isLockAllowedRequest("/auth/verifyPassword/extra")).toBe(false);
-		expect(isLockAllowedRequest("/api/auth/verifyPassword?next=/menu/listTree")).toBe(false);
-		expect(isLockAllowedRequest("/auth/logoutAll")).toBe(false);
-		expect(isLockAllowedRequest("/other/auth/refreshToken")).toBe(false);
+		for (const url of [
+			"/auth/verifyPassword",
+			"/auth/logout",
+			"/auth/refreshToken",
+			"/api/auth/verifyPassword",
+			"/api/auth/logout",
+			"/api/auth/refreshToken"
+		]) {
+			expect(() => assertRequestAllowedWhenLocked(true, url)).not.toThrow();
+		}
+		for (const url of [
+			"/auth/verifyPassword/extra",
+			"/api/auth/verifyPassword?next=/menu/listTree",
+			"/auth/logoutAll",
+			"/other/auth/refreshToken"
+		]) {
+			expect(() => assertRequestAllowedWhenLocked(true, url)).toThrow();
+		}
 	});
 
 	it("rejects a non-allowed request while locked with a recognizable error", () => {
-		expect(() => assertRequestAllowedWhenLocked(true, "/menu/listTree")).toThrow(LockedRequestError);
 		try {
 			assertRequestAllowedWhenLocked(true, "/menu/listTree");
 		} catch (error) {
 			expect(error).toMatchObject({ code: "APP_LOCKED" });
+			expect(shouldSkipGlobalRequestErrorHandling(error)).toBe(true);
 		}
 		expect(() => assertRequestAllowedWhenLocked(false, "/menu/listTree")).not.toThrow();
 	});
 
 	it("allows only an explicitly marked avatar preload while locked", () => {
 		expect(() => assertRequestAllowedWhenLocked(true, "/file/downloadfile", true)).not.toThrow();
-		expect(() => assertRequestAllowedWhenLocked(true, "/file/downloadfile")).toThrow(LockedRequestError);
-		expect(() => assertRequestAllowedWhenLocked(true, "/menu/listTree", true)).toThrow(LockedRequestError);
+		expect(() => assertRequestAllowedWhenLocked(true, "/file/downloadfile")).toThrow();
+		expect(() => assertRequestAllowedWhenLocked(true, "/menu/listTree", true)).toThrow();
 	});
 
-	it("identifies only locked request errors for zero-side-effect rejection", () => {
-		expect(shouldSkipGlobalRequestErrorHandling(new LockedRequestError())).toBe(true);
+	it("does not classify an ordinary error as a locked request rejection", () => {
 		expect(shouldSkipGlobalRequestErrorHandling(new Error("network"))).toBe(false);
 	});
 });

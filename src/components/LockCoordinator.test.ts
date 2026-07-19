@@ -6,7 +6,6 @@ import {
 	completeLockHydrationAfterUserInfoFailure,
 	isLockHydratedForToken,
 	loadLockAvatar,
-	preloadLockAvatar,
 	refreshLockAvatar,
 	releaseLockAvatar,
 	shouldAcceptProfileUpdate,
@@ -90,20 +89,6 @@ describe("lock coordinator synchronization", () => {
 
 	it("falls back when lock-avatar preloading fails", async () => {
 		await expect(loadLockAvatar("7", () => Promise.reject(new Error("download failed")))).resolves.toBe("");
-	});
-
-	it("applies the preloaded avatar before hydrating the lock state", async () => {
-		const order: string[] = [];
-		await preloadLockAvatar(
-			"7",
-			async () => {
-				order.push("download");
-				return "blob:uploaded-avatar";
-			},
-			avatar => order.push(`avatar:${avatar}`),
-			() => order.push("hydrate")
-		);
-		expect(order).toEqual(["download", "avatar:blob:uploaded-avatar", "hydrate"]);
 	});
 
 	it("releases current and stale lock avatar Blob URLs", () => {

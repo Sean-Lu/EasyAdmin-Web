@@ -3,7 +3,7 @@ import produce from "immer";
 import { LockState } from "@/redux/interface";
 import * as types from "@/redux/mutation-types";
 
-export const initialLockState: LockState = {
+const initialLockState: LockState = {
 	hydrated: false,
 	locked: false,
 	lockedAt: null,

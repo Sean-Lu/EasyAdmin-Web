@@ -3,7 +3,7 @@ type ResolveCategoryOptions = {
 	fallback: string | null;
 };
 
-export const resolveCategorySearchValue = (
+const resolveCategorySearchValue = (
 	value: string | null,
 	categoryIds: Array<string | number>,
 	options: ResolveCategoryOptions

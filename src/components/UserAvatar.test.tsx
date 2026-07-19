@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import UserAvatar, { shouldUseDefaultAvatar } from "./UserAvatar";
+import UserAvatar from "./UserAvatar";
 
 describe("UserAvatar", () => {
 	it("forwards its ref so dropdown menus can anchor to the avatar", () => {
@@ -18,9 +18,5 @@ describe("UserAvatar", () => {
 		const html = renderToStaticMarkup(<UserAvatar src="blob:uploaded-avatar">管</UserAvatar>);
 
 		expect(html).toContain("blob:uploaded-avatar");
-	});
-
-	it("uses the default user icon after an uploaded image fails to load", () => {
-		expect(shouldUseDefaultAvatar("blob:uploaded-avatar", true)).toBe(true);
 	});
 });

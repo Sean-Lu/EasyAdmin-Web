@@ -1,8 +1,8 @@
-export interface BusinessUnlockError {
+interface BusinessUnlockError {
 	type: "business-error";
 	message: string;
 }
-export type UnlockAttemptResult = "empty" | "success" | "rejected" | "network-error" | BusinessUnlockError;
+type UnlockAttemptResult = "empty" | "success" | "rejected" | "network-error" | BusinessUnlockError;
 export type UnlockError = "rejected" | "network-error" | BusinessUnlockError;
 
 const businessError = (error: unknown): BusinessUnlockError | null => {
@@ -11,7 +11,7 @@ const businessError = (error: unknown): BusinessUnlockError | null => {
 	return typeof message === "string" && message.trim() ? { type: "business-error", message } : null;
 };
 
-export const attemptUnlock = async (
+const attemptUnlock = async (
 	password: string,
 	verify: (passwordHash: string) => Promise<boolean>
 ): Promise<UnlockAttemptResult> => {

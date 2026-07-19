@@ -1,4 +1,4 @@
-export type LatestRequestGuard = {
+type LatestRequestGuard = {
 	begin: () => number;
 	invalidate: () => void;
 	isLatest: (requestId: number) => boolean;

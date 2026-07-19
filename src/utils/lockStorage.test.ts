@@ -1,15 +1,16 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
 	ALLOWED_IDLE_TIMEOUTS,
-	DEFAULT_LOCK_PREFERENCE,
 	LOCK_RUNTIME_KEY,
 	clearLockRuntime,
-	lockPreferenceKey,
 	readLockPreference,
 	readLockRuntime,
 	writeLockPreference,
 	writeLockRuntime
 } from "./lockStorage";
+
+const lockPreferenceKey = (userId: string) => `easyadmin:lock:preference:${userId}`;
+const DEFAULT_LOCK_PREFERENCE = { autoLockEnabled: false, idleTimeoutMinutes: 15 };
 
 const values = new Map<string, string>();
 const memoryStorage: Storage = {

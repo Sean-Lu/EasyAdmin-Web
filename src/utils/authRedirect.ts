@@ -1,4 +1,4 @@
-export const LOGIN_REDIRECT_KEY = "redirectUrl";
+const LOGIN_REDIRECT_KEY = "redirectUrl";
 
 const EXPLICIT_LOGOUT_KEY = "easyadmin:explicit-logout";
 
@@ -7,7 +7,7 @@ const getInternalPathname = (location: string): string | null => {
 	return location.split(/[?#]/, 1)[0] || null;
 };
 
-export const isPublicLoginReturnPath = (pathname: string): boolean => /^\/share\/[0-9a-f]{64}$/i.test(pathname);
+const isPublicLoginReturnPath = (pathname: string): boolean => /^\/share\/[0-9a-f]{64}$/i.test(pathname);
 
 export const beginExplicitLogout = (): void => {
 	localStorage.removeItem(LOGIN_REDIRECT_KEY);

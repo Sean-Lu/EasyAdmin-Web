@@ -8,11 +8,12 @@ import {
 	synchronizeLockRuntime,
 	unlockScreen
 } from "./action";
-import lockReducer, { initialLockState } from "./reducer";
+import lockReducer from "./reducer";
+
+const initialLockState = lockReducer(undefined, { type: "@@init" });
 
 describe("lock reducer", () => {
 	it("provides safe defaults", () => {
-		expect(lockReducer(undefined, { type: "@@init" })).toEqual(initialLockState);
 		expect(initialLockState).toMatchObject({
 			hydrated: false,
 			locked: false,

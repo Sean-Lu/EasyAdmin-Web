@@ -1,6 +1,6 @@
 import { MenuType, OutLinkOpenType } from "@/enums/menu";
 
-export type MenuAction = { type: "none" } | { type: "navigate"; url: string } | { type: "external"; url: string };
+type MenuAction = { type: "none" } | { type: "navigate"; url: string } | { type: "external"; url: string };
 
 export const findMenuById = (menus: Menu.MenuOptions[], id: string): Menu.MenuOptions | undefined => {
 	for (const menu of menus) {
@@ -20,10 +20,6 @@ export const findMenuByPath = (menus: Menu.MenuOptions[], path: string): Menu.Me
 	return undefined;
 };
 
-export const getSelectedMenuId = (menus: Menu.MenuOptions[], path: string): string | undefined => {
-	return findMenuByPath(menus, path)?.id;
-};
-
 export const getAncestorMenuIds = (menus: Menu.MenuOptions[], id: string): string[] => {
 	for (const menu of menus) {
 		if (menu.id === id) return [];
@@ -35,10 +31,6 @@ export const getAncestorMenuIds = (menus: Menu.MenuOptions[], id: string): strin
 		}
 	}
 	return [];
-};
-
-export const mergeOpenMenuIds = (openMenuIds: string[], ancestorMenuIds: string[]): string[] => {
-	return [...new Set([...openMenuIds, ...ancestorMenuIds])];
 };
 
 export const getMenuAction = (menu: Menu.MenuOptions): MenuAction => {

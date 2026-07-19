@@ -1,11 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-	beginExplicitLogout,
-	captureLoginRedirect,
-	consumeAuthorizedLoginRedirect,
-	finishExplicitLogout,
-	LOGIN_REDIRECT_KEY
-} from "./authRedirect";
+import { beginExplicitLogout, captureLoginRedirect, consumeAuthorizedLoginRedirect, finishExplicitLogout } from "./authRedirect";
+
+const LOGIN_REDIRECT_KEY = "redirectUrl";
 
 const createMemoryStorage = (): Storage => {
 	const values = new Map<string, string>();

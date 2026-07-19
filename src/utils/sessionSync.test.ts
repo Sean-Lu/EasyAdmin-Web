@@ -1,14 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
-import { applyRemoteLogout, createLogoutEvent, handleLogoutStorageEvent, LOGOUT_EVENT_KEY } from "./sessionSync";
+import { applyRemoteLogout, handleLogoutStorageEvent } from "./sessionSync";
+
+const LOGOUT_EVENT_KEY = "easyadmin:session:event";
 
 describe("session synchronization", () => {
-	it("creates a versioned logout event", () => {
-		expect(createLogoutEvent(123)).toEqual({ type: "logout", version: 1, at: 123 });
-	});
-
 	it("applies valid logout events once without rebroadcasting", () => {
 		const cleanup = vi.fn();
-		expect(handleLogoutStorageEvent(LOGOUT_EVENT_KEY, JSON.stringify(createLogoutEvent(123)), cleanup)).toBe(true);
+		expect(handleLogoutStorageEvent(LOGOUT_EVENT_KEY, JSON.stringify({ type: "logout", version: 1, at: 123 }), cleanup)).toBe(
+			true
+		);
 		expect(cleanup).toHaveBeenCalledOnce();
 		expect(handleLogoutStorageEvent(LOGOUT_EVENT_KEY, "{}", cleanup)).toBe(false);
 	});

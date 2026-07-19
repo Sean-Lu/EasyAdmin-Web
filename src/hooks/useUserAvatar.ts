@@ -8,7 +8,7 @@ interface AvatarLoadDependencies {
 	revoke: (avatarSrc: string) => void;
 }
 
-export const loadUserAvatar = (avatarFileId: BackendIdInput | undefined, dependencies: AvatarLoadDependencies) => {
+const loadUserAvatar = (avatarFileId: BackendIdInput | undefined, dependencies: AvatarLoadDependencies) => {
 	let activeObjectUrl = "";
 	let disposed = false;
 	dependencies.setAvatarSrc("");

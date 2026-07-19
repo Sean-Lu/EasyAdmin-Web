@@ -75,18 +75,6 @@ export const refreshLockAvatar = async (
 	return true;
 };
 
-export const preloadLockAvatar = async (
-	avatarFileId: Parameters<typeof import("@/api/modules/login").getAvatarObjectUrl>[0],
-	load: (avatarFileId: Parameters<typeof import("@/api/modules/login").getAvatarObjectUrl>[0]) => Promise<string>,
-	setAvatarSrc: (avatarSrc: string) => void,
-	hydrate: () => void
-): Promise<string> => {
-	const avatarSrc = await loadLockAvatar(avatarFileId, load);
-	setAvatarSrc(avatarSrc);
-	hydrate();
-	return avatarSrc;
-};
-
 export const applyPreloadedLockAvatar = (
 	active: boolean,
 	avatarSrc: string,

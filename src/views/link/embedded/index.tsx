@@ -1,7 +1,7 @@
 import { OutLinkOpenType } from "@/enums/menu";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 // 外部链接组件(iframe)
 const EmbeddedLink = () => {
@@ -11,15 +11,11 @@ const EmbeddedLink = () => {
 	const [redirected, setRedirected] = useState(false);
 	const menuList = useSelector((state: any) => state.menu.menuList);
 	const { pathname } = useLocation();
-	const { key } = useParams<{ key: string }>();
 
 	useEffect(() => {
 		const findMenu = (list: any[]): any => {
 			for (const item of list) {
 				if (item.path === pathname) {
-					return item;
-				}
-				if (key && item.meta?.key === key) {
 					return item;
 				}
 				if (item.children && item.children.length > 0) {
@@ -35,12 +31,12 @@ const EmbeddedLink = () => {
 			setTitle(menu.title || "");
 			setOpenType(menu.outLinkOpenType || OutLinkOpenType.Inline);
 		}
-	}, [menuList, pathname, key]);
+	}, [menuList, pathname]);
 
 	useEffect(() => {
 		if (openType === OutLinkOpenType.Blank && url && !redirected) {
 			setRedirected(true);
-			window.open(url, "_blank");
+			window.open(url, "_blank", "noopener,noreferrer");
 		}
 	}, [openType, url, redirected]);
 

@@ -1,4 +1,5 @@
 import { RouteObject } from "@/routers/interface";
+import { MenuType } from "@/enums/menu";
 
 /**
  * @description 获取localStorage
@@ -74,7 +75,7 @@ export const flattenMenuTree = (
 			fullTitle: [...parentTitles, menu.title].join(" / ")
 		};
 		// 只保留叶子节点或外链菜单，避免父级分组菜单被导航到 404
-		if (!menu.children?.length || menu.outLink) {
+		if (menu.type !== MenuType.Directory && menu.path) {
 			result.push(current);
 		}
 		if (menu.children?.length) {
@@ -184,7 +185,7 @@ export const findAllBreadcrumb = (menuList: Menu.MenuOptions[]): { [key: string]
 	const loop = (menuItem: Menu.MenuOptions) => {
 		// 下面判断代码解释 *** !item?.children?.length   ==>   (item.children && item.children.length > 0)
 		if (menuItem?.children?.length) menuItem.children.forEach(item => loop(item));
-		else handleBreadcrumbList[menuItem.path] = getBreadcrumbList(menuItem.path, menuList);
+		else if (menuItem.path) handleBreadcrumbList[menuItem.path] = getBreadcrumbList(menuItem.path, menuList);
 	};
 	menuList.forEach(item => loop(item));
 	return handleBreadcrumbList;

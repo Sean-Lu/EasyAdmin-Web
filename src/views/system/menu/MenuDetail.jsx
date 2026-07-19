@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, Modal } from "antd";
 import * as Icons from "@ant-design/icons";
-import { getOutLinkOpenTypeLabel } from "../../../enums/menu";
+import { getMenuTypeLabel, getOutLinkOpenTypeLabel, MenuType } from "../../../enums/menu";
 
 const renderIcon = iconName => {
 	if (!iconName) return null;
@@ -21,18 +21,27 @@ export default class MenuDetail extends React.Component {
 					<Form.Item label="上级菜单">
 						<span>{record.parentFullPath}</span>
 					</Form.Item>
+					<Form.Item label="菜单类型">
+						<span>{getMenuTypeLabel(record.type)}</span>
+					</Form.Item>
 					<Form.Item label="菜单名称">
 						<span>{record.title}</span>
 					</Form.Item>
-					<Form.Item label="菜单路由">
-						<span>{record.path}</span>
-					</Form.Item>
-					<Form.Item label="外部链接">
-						<span>{record.outLink}</span>
-					</Form.Item>
-					<Form.Item label="打开方式">
-						<span>{getOutLinkOpenTypeLabel(record.outLinkOpenType)}</span>
-					</Form.Item>
+					{record.type !== MenuType.Directory && (
+						<Form.Item label="菜单路由">
+							<span>{record.path}</span>
+						</Form.Item>
+					)}
+					{record.type === MenuType.External && (
+						<>
+							<Form.Item label="外部链接">
+								<span>{record.outLink}</span>
+							</Form.Item>
+							<Form.Item label="打开方式">
+								<span>{getOutLinkOpenTypeLabel(record.outLinkOpenType)}</span>
+							</Form.Item>
+						</>
+					)}
 					<Form.Item label="图标">
 						<span>
 							{renderIcon(record.icon)}

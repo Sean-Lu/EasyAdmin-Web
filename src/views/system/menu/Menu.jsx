@@ -5,6 +5,7 @@ import MenuAdd from "./MenuAdd";
 import MenuEdit from "./MenuEdit";
 import MenuDetail from "./MenuDetail";
 import { api } from "../../../actions/system/api";
+import { getMenuTypeLabel } from "../../../enums/menu";
 
 // 菜单列表
 export default class MenuList extends React.Component {
@@ -73,13 +74,21 @@ export default class MenuList extends React.Component {
 				title: "菜单名称",
 				dataIndex: "title",
 				align: tableColumnAlign,
-				width: 150
+				width: 180
+			},
+			{
+				title: "菜单类型",
+				dataIndex: "type",
+				align: tableColumnAlign,
+				width: 100,
+				render: value => getMenuTypeLabel(value)
 			},
 			{
 				title: "菜单路由",
 				dataIndex: "path",
 				align: tableColumnAlign,
-				width: 150
+				width: 150,
+				render: value => value || "-"
 			},
 			{
 				title: "外部链接",

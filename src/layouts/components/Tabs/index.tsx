@@ -72,7 +72,8 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 
 	// click tabs
 	const clickTabs = (item: Menu.MenuOptions) => {
-		navigate(item.fullPath ?? item.path);
+		const target = item.fullPath ?? item.path;
+		if (target) navigate(target);
 	};
 
 	const toggleMenuFullscreen = () => {
@@ -84,17 +85,19 @@ const LayoutTabs = (props: any & LayoutTabsOwnProps) => {
 		if (activeTab) return;
 
 		if (fallbackTab && nextTabsList.some((item: Menu.MenuOptions) => item.path === fallbackTab.path)) {
-			navigate(fallbackTab.fullPath ?? fallbackTab.path);
+			const target = fallbackTab.fullPath ?? fallbackTab.path;
+			if (target) navigate(target);
 			return;
 		}
 
 		const nextTab = nextTabsList[nextTabsList.length - 1];
-		navigate(nextTab ? nextTab.fullPath ?? nextTab.path : "/empty");
+		navigate(nextTab ? nextTab.fullPath ?? nextTab.path ?? "/empty" : "/empty");
 	};
 
 	const refreshTab = (tab: Menu.MenuOptions) => {
 		if (pathname !== tab.path || pathname + search !== tab.fullPath) {
-			navigate(tab.fullPath ?? tab.path);
+			const target = tab.fullPath ?? tab.path;
+			if (target) navigate(target);
 		}
 		props.onRefreshCurrentMenu?.();
 	};

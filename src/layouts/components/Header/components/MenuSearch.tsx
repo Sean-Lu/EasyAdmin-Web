@@ -5,7 +5,7 @@ import { Empty, Input, InputRef, Modal, Tooltip } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import * as Icons from "@ant-design/icons";
 import { flattenMenuTree } from "@/utils/util";
-import { OutLinkOpenType } from "@/enums/menu";
+import { getMenuAction } from "@/layouts/components/Menu/menuTree";
 import { BackendIdInput } from "@/api/interface";
 import FavoriteButton from "@/components/FavoriteButton";
 import { toFavoriteIdMap } from "@/components/FavoriteButton/favoriteState";
@@ -97,11 +97,9 @@ const MenuSearch = (props: MenuSearchProps) => {
 	};
 
 	const handleSelect = (item: SearchableMenuItem) => {
-		if (item.outLink && item.outLinkOpenType === OutLinkOpenType.Blank) {
-			window.open(item.outLink, "_blank");
-		} else {
-			navigate(item.path);
-		}
+		const action = getMenuAction(item);
+		if (action.type === "external") window.open(action.url, "_blank", "noopener,noreferrer");
+		if (action.type === "navigate") navigate(action.url);
 		handleClose();
 	};
 

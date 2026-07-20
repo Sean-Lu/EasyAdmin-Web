@@ -39,6 +39,7 @@ const ShareDialog = ({ open, targetType, targetId, onClose }: Props) => {
 		if (open) void load();
 	}, [open, targetType, targetId]);
 	const link = config?.shareCode ? `${window.location.origin}${window.location.pathname}#/share/${config.shareCode}` : "";
+	const hasPassword = Boolean(config?.password?.trim());
 	const save = async () => {
 		const value = await form.validateFields();
 		if (!permanent && !value.expiresAt) {
@@ -105,8 +106,14 @@ const ShareDialog = ({ open, targetType, targetId, onClose }: Props) => {
 			{link && (
 				<Space.Compact style={{ width: "100%" }}>
 					<Input readOnly value={link} />
-					<Button onClick={() => copy(true)}>复制分享信息</Button>
-					<Button onClick={() => copy(false)}>仅复制链接</Button>
+					{hasPassword ? (
+						<>
+							<Button onClick={() => copy(true)}>复制分享信息</Button>
+							<Button onClick={() => copy(false)}>仅复制链接</Button>
+						</>
+					) : (
+						<Button onClick={() => copy(false)}>复制链接</Button>
+					)}
 					<Button onClick={regenerate}>重置链接</Button>
 				</Space.Compact>
 			)}

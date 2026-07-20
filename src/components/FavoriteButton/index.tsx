@@ -12,9 +12,10 @@ interface FavoriteButtonProps {
 	onChange: (favoriteId?: BackendIdInput) => void;
 	size?: ButtonProps["size"];
 	type?: ButtonProps["type"];
+	disabled?: ButtonProps["disabled"];
 }
 
-const FavoriteButton = ({ targetType, targetId, favoriteId, onChange, size, type }: FavoriteButtonProps) => {
+const FavoriteButton = ({ targetType, targetId, favoriteId, onChange, size, type, disabled }: FavoriteButtonProps) => {
 	const [loading, setLoading] = useState(false);
 	const toggle = async (event: React.MouseEvent<HTMLElement>) => {
 		event.stopPropagation();
@@ -34,6 +35,7 @@ const FavoriteButton = ({ targetType, targetId, favoriteId, onChange, size, type
 				aria-label={favoriteId ? "取消收藏" : "收藏"}
 				type={type}
 				size={size}
+				disabled={disabled}
 				loading={loading}
 				icon={favoriteId ? <StarFilled style={{ color: "#faad14" }} /> : <StarOutlined />}
 				onMouseDown={event => event.stopPropagation()}

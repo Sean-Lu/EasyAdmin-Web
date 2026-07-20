@@ -99,7 +99,7 @@ const FavoriteList = () => {
 			dataIndex: "createTime",
 			key: "createTime",
 			width: 170,
-			render: value => (value ? dayjs(value).format("YYYY-MM-DD HH:mm") : "-")
+			render: value => (value ? dayjs(value).format("YYYY-MM-DD HH:mm:ss") : "-")
 		},
 		{
 			title: "操作",
@@ -126,6 +126,7 @@ const FavoriteList = () => {
 				activeKey={String(targetType)}
 				items={[
 					{ key: String(FavoriteTargetType.Menu), label: "菜单" },
+					{ key: String(FavoriteTargetType.Tool), label: "工具" },
 					{ key: String(FavoriteTargetType.File), label: "文件" },
 					{ key: String(FavoriteTargetType.Note), label: "笔记" }
 				]}

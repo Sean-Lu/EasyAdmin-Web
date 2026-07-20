@@ -95,13 +95,13 @@ const ShareList = () => {
 			title: "创建时间",
 			dataIndex: "createTime",
 			key: "createTime",
-			render: (value?: string) => (value ? dayjs(value).format("YYYY-MM-DD HH:mm") : "-")
+			render: (value?: string) => (value ? dayjs(value).format("YYYY-MM-DD HH:mm:ss") : "-")
 		},
 		{
 			title: "过期时间",
 			dataIndex: "expiresAt",
 			key: "expiresAt",
-			render: (value?: string) => (value ? dayjs(value).format("YYYY-MM-DD HH:mm") : "永久")
+			render: (value?: string) => (value ? dayjs(value).format("YYYY-MM-DD HH:mm:ss") : "永久")
 		},
 		{
 			title: "操作",

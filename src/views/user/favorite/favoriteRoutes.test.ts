@@ -33,5 +33,13 @@ describe("buildFavoriteOpenTarget", () => {
 		expect(
 			buildFavoriteOpenTarget({ sourceType: FavoriteSourceType.Share, isAvailable: false } as FavoriteListItemDto)
 		).toBeNull();
+		expect(
+			buildFavoriteOpenTarget({
+				targetType: FavoriteTargetType.Tool,
+				sourceType: FavoriteSourceType.Direct,
+				path: "/tool/commonTools?tool=jsonParser",
+				isAvailable: true
+			} as FavoriteListItemDto)
+		).toEqual({ url: "/tool/commonTools?tool=jsonParser", external: false });
 	});
 });

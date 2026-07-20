@@ -270,7 +270,7 @@ const SharePage = () => {
 								{note.tags.map(tag => (
 									<Tag key={tag}>{tag}</Tag>
 								))}
-								<span>更新于：{note.updateTime ? dayjs(note.updateTime).format("YYYY-MM-DD HH:mm") : "-"}</span>
+								<span>更新于：{note.updateTime ? dayjs(note.updateTime).format("YYYY-MM-DD HH:mm:ss") : "-"}</span>
 							</div>
 						</header>
 						<Divider />

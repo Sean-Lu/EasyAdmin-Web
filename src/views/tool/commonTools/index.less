@@ -13,6 +13,12 @@
 		.ant-typography {
 			margin-bottom: 4px;
 		}
+		.tool-search-wrap {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+			align-items: flex-end;
+		}
 		.tool-search {
 			width: min(360px, 100%);
 		}
@@ -31,12 +37,11 @@
 			min-height: 224px;
 			padding: 28px;
 		}
-		.tool-card-arrow {
+		.tool-card-favorite {
 			position: absolute;
-			top: 28px;
-			right: 28px;
-			font-size: 20px;
-			color: #1677ff;
+			top: 20px;
+			right: 20px;
+			z-index: 1;
 		}
 		.tool-card-icon {
 			display: inline-flex;
@@ -55,8 +60,25 @@
 			margin-bottom: 0;
 		}
 		.tool-card-footer {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
 			margin-top: auto;
 		}
+		.tool-card-drag-handle {
+			color: #64748b;
+			cursor: grab;
+			&:active {
+				cursor: grabbing;
+			}
+			&:disabled {
+				cursor: not-allowed;
+			}
+		}
+	}
+	.tool-card-drop-target .tool-card {
+		border-color: #1677ff;
+		box-shadow: 0 0 0 2px rgb(22 119 255 / 14%);
 	}
 }
 
@@ -65,6 +87,10 @@
 		.common-tools-header {
 			flex-direction: column;
 			.tool-search {
+				width: 100%;
+			}
+			.tool-search-wrap {
+				align-items: flex-start;
 				width: 100%;
 			}
 		}

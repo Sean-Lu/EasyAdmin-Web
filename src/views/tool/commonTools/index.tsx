@@ -1,22 +1,12 @@
-import React, { useLayoutEffect, useMemo } from "react";
-import {
-	ApiOutlined,
-	ArrowRightOutlined,
-	BarChartOutlined,
-	ClockCircleOutlined,
-	CodeOutlined,
-	CompassOutlined,
-	FileTextOutlined,
-	FundProjectionScreenOutlined,
-	GiftOutlined,
-	LinkOutlined,
-	LockOutlined,
-	QrcodeOutlined,
-	SafetyCertificateOutlined,
-	SearchOutlined
-} from "@ant-design/icons";
-import { Card, Col, Empty, Input, Row, Tag, Typography } from "antd";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { SearchOutlined } from "@ant-design/icons";
+import { Empty, Input, Row, Typography, message } from "antd";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { useSearchParams } from "react-router-dom";
+import { BackendId, BackendIdInput } from "@/api/interface";
+import { FavoriteService, FavoriteTargetType } from "@/services/user/favoriteService";
+import { UserPreferenceService } from "@/services/user/userPreferenceService";
 import Crypto from "./tools/crypto";
 import CronTester from "./tools/cronTester";
 import JsonParser from "./tools/jsonParser";
@@ -32,152 +22,33 @@ import StockPortfolio from "./tools/stockPortfolio";
 import Timestamp from "./tools/timestamp";
 import UrlCodec from "./tools/urlCodec";
 import WebSocketTester from "./tools/webSocketTester";
+import DraggableToolCard from "./DraggableToolCard";
+import {
+	ToolItem,
+	ToolKey,
+	VALID_TOOL_KEYS,
+	applyToolOrder,
+	filterAndPrioritizeTools,
+	reorderToolWithinGroup,
+	tools
+} from "./toolCatalog";
 import "./index.less";
-
-type ToolKey =
-	| "sqlToTable"
-	| "urlCodec"
-	| "jsonToTable"
-	| "jsonParser"
-	| "qrCode"
-	| "randomDecision"
-	| "randomPassword"
-	| "jwtParser"
-	| "webSocketTester"
-	| "lottery"
-	| "stockPortfolio"
-	| "timestamp"
-	| "crypto"
-	| "regexTester"
-	| "cronTester";
-
-interface ToolItem {
-	key: ToolKey;
-	title: string;
-	description: string;
-	tag: string;
-	icon: React.ReactNode;
-}
-
-const tools: ToolItem[] = [
-	{
-		key: "sqlToTable",
-		title: "SQL 转表格",
-		description: "INSERT / REPLACE 转可筛选表格",
-		tag: "developer_tools",
-		icon: <BarChartOutlined />
-	},
-	{
-		key: "jsonToTable",
-		title: "JSON 转表格",
-		description: "JSON 数组转可筛选表格",
-		tag: "developer_tools",
-		icon: <CodeOutlined />
-	},
-	{
-		key: "jsonParser",
-		title: "JSON 解析工具",
-		description: "格式化、压缩、折叠、校验 JSON",
-		tag: "developer_tools",
-		icon: <FileTextOutlined />
-	},
-	{
-		key: "urlCodec",
-		title: "URL 编码/解码",
-		description: "URL 与中文路径互转",
-		tag: "developer_tools",
-		icon: <LinkOutlined />
-	},
-	{
-		key: "qrCode",
-		title: "二维码工具",
-		description: "二维码生成/解析",
-		tag: "image_tools",
-		icon: <QrcodeOutlined />
-	},
-	{
-		key: "randomDecision",
-		title: "随机决策器",
-		description: "吃什么/去哪玩",
-		tag: "life_tools",
-		icon: <CompassOutlined />
-	},
-	{
-		key: "randomPassword",
-		title: "随机密码",
-		description: "安全生成可配置的随机密码",
-		tag: "developer_tools",
-		icon: <LockOutlined />
-	},
-	{
-		key: "jwtParser",
-		title: "JWT 解析",
-		description: "解析并格式化 JWT 内容",
-		tag: "developer_tools",
-		icon: <SafetyCertificateOutlined />
-	},
-	{
-		key: "webSocketTester",
-		title: "WebSocket 测试",
-		description: "在线调试 WebSocket 消息",
-		tag: "developer_tools",
-		icon: <ApiOutlined />
-	},
-	{
-		key: "lottery",
-		title: "抽奖工具",
-		description: "活动奖项与现场抽奖",
-		tag: "life_tools",
-		icon: <GiftOutlined />
-	},
-	{
-		key: "stockPortfolio",
-		title: "股票持仓管理",
-		description: "记录持仓并统计盈亏",
-		tag: "finance_tools",
-		icon: <FundProjectionScreenOutlined />
-	},
-	{
-		key: "timestamp",
-		title: "时间戳转换",
-		description: "秒/毫秒时间戳与时间互转",
-		tag: "developer_tools",
-		icon: <ClockCircleOutlined />
-	},
-	{
-		key: "crypto",
-		title: "加解密工具",
-		description: "MD5/Base64/AES/DES/RSA 等",
-		tag: "developer_tools",
-		icon: <LockOutlined />
-	},
-	{
-		key: "regexTester",
-		title: "正则表达式测试",
-		description: "测试匹配结果与捕获组",
-		tag: "developer_tools",
-		icon: <CodeOutlined />
-	},
-	{
-		key: "cronTester",
-		title: "Cron 表达式测试",
-		description: "校验 Quartz 表达式并预览执行时间",
-		tag: "developer_tools",
-		icon: <ClockCircleOutlined />
-	}
-];
-
-const VALID_TOOL_KEYS: ReadonlySet<string> = new Set(tools.map(t => t.key));
 
 const CommonTools: React.FC = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
+	const [orderedTools, setOrderedTools] = useState<ToolItem[]>(tools);
+	const [favoriteMap, setFavoriteMap] = useState<Map<BackendId, BackendIdInput>>(new Map());
+	const [savingOrder, setSavingOrder] = useState(false);
+	const [loadingToolboxState, setLoadingToolboxState] = useState(true);
+	const pageRef = useRef<HTMLDivElement>(null);
+	const pendingDropScrollTopRef = useRef<number | null>(null);
 
 	const toolParam = searchParams.get("tool");
 	const activeTool: ToolKey | null = toolParam && VALID_TOOL_KEYS.has(toolParam) ? (toolParam as ToolKey) : null;
+	const keyword = searchParams.get("q") ?? "";
 
 	useLayoutEffect(() => {
 		if (!activeTool) return;
-
 		window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 		document.documentElement.scrollTop = 0;
 		document.body.scrollTop = 0;
@@ -186,121 +57,143 @@ const CommonTools: React.FC = () => {
 		});
 	}, [activeTool]);
 
-	const keyword = searchParams.get("q") ?? "";
+	useLayoutEffect(() => {
+		const scrollTop = pendingDropScrollTopRef.current;
+		if (scrollTop === null) return;
+		const scrollContainer = pageRef.current?.closest<HTMLElement>(".ant-layout-content");
+		if (scrollContainer) scrollContainer.scrollTop = scrollTop;
+		pendingDropScrollTopRef.current = null;
+	}, [orderedTools]);
 
-	const filteredTools = useMemo(() => {
-		const normalizedKeyword = keyword.trim().toLowerCase();
-		if (!normalizedKeyword) return tools;
+	useEffect(() => {
+		const loadOrder = async () => {
+			try {
+				const result = await UserPreferenceService.getToolboxToolOrder();
+				setOrderedTools(applyToolOrder(result?.toolIds));
+			} catch {
+				setOrderedTools(tools);
+			}
+		};
+		const loadFavorites = async () => {
+			try {
+				const statuses = await FavoriteService.status(
+					tools.map(tool => ({ targetType: FavoriteTargetType.Tool, targetId: tool.id }))
+				);
+				setFavoriteMap(
+					new Map(
+						(statuses ?? [])
+							.filter(status => status.isFavorite && status.favoriteId)
+							.map(status => [status.targetId as BackendId, status.favoriteId!])
+					)
+				);
+			} catch {
+				setFavoriteMap(new Map());
+			}
+		};
+		void Promise.all([loadOrder(), loadFavorites()]).finally(() => setLoadingToolboxState(false));
+	}, []);
 
-		return tools.filter(tool => `${tool.title} ${tool.description}`.toLowerCase().includes(normalizedKeyword));
-	}, [keyword]);
+	const favoriteIds = useMemo(() => new Set(favoriteMap.keys()), [favoriteMap]);
+	const filteredTools = useMemo(
+		() => filterAndPrioritizeTools(keyword, favoriteIds, orderedTools),
+		[favoriteIds, keyword, orderedTools]
+	);
+	const dragDisabled = loadingToolboxState || Boolean(keyword.trim()) || savingOrder;
 
-	if (activeTool === "sqlToTable") {
-		return <SqlToTable onBack={() => setSearchParams({})} />;
-	}
+	const handleFavoriteChange = useCallback((toolId: BackendId, favoriteId?: BackendIdInput) => {
+		setFavoriteMap(current => {
+			const next = new Map(current);
+			if (favoriteId) next.set(toolId, favoriteId);
+			else next.delete(toolId);
+			return next;
+		});
+	}, []);
 
-	if (activeTool === "urlCodec") {
-		return <UrlCodec onBack={() => setSearchParams({})} />;
-	}
+	const handleDrop = useCallback(
+		async (draggedId: BackendId, targetId: BackendId) => {
+			if (dragDisabled) return;
+			const previous = orderedTools;
+			const next = reorderToolWithinGroup(previous, favoriteIds, draggedId, targetId);
+			if (!next) return;
+			const scrollContainer = pageRef.current?.closest<HTMLElement>(".ant-layout-content");
+			pendingDropScrollTopRef.current = scrollContainer?.scrollTop ?? null;
+			setOrderedTools(next);
+			setSavingOrder(true);
+			try {
+				const saved = await UserPreferenceService.updateToolboxToolOrder(next.map(tool => tool.id));
+				setOrderedTools(applyToolOrder(saved.toolIds));
+				message.success("排序已保存");
+			} catch {
+				setOrderedTools(previous);
+			} finally {
+				setSavingOrder(false);
+			}
+		},
+		[dragDisabled, favoriteIds, orderedTools]
+	);
 
-	if (activeTool === "jsonToTable") {
-		return <JsonToTable onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "jsonParser") {
-		return <JsonParser onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "qrCode") {
-		return <QrCode onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "randomDecision") {
-		return <RandomDecision onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "randomPassword") {
-		return <RandomPassword onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "jwtParser") {
-		return <JwtParser onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "webSocketTester") {
-		return <WebSocketTester onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "lottery") {
-		return <Lottery onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "stockPortfolio") {
-		return <StockPortfolio onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "timestamp") {
-		return <Timestamp onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "crypto") {
-		return <Crypto onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "regexTester") {
-		return <RegexTester onBack={() => setSearchParams({})} />;
-	}
-
-	if (activeTool === "cronTester") {
-		return <CronTester onBack={() => setSearchParams({})} />;
-	}
+	if (activeTool === "sqlToTable") return <SqlToTable onBack={() => setSearchParams({})} />;
+	if (activeTool === "urlCodec") return <UrlCodec onBack={() => setSearchParams({})} />;
+	if (activeTool === "jsonToTable") return <JsonToTable onBack={() => setSearchParams({})} />;
+	if (activeTool === "jsonParser") return <JsonParser onBack={() => setSearchParams({})} />;
+	if (activeTool === "qrCode") return <QrCode onBack={() => setSearchParams({})} />;
+	if (activeTool === "randomDecision") return <RandomDecision onBack={() => setSearchParams({})} />;
+	if (activeTool === "randomPassword") return <RandomPassword onBack={() => setSearchParams({})} />;
+	if (activeTool === "jwtParser") return <JwtParser onBack={() => setSearchParams({})} />;
+	if (activeTool === "webSocketTester") return <WebSocketTester onBack={() => setSearchParams({})} />;
+	if (activeTool === "lottery") return <Lottery onBack={() => setSearchParams({})} />;
+	if (activeTool === "stockPortfolio") return <StockPortfolio onBack={() => setSearchParams({})} />;
+	if (activeTool === "timestamp") return <Timestamp onBack={() => setSearchParams({})} />;
+	if (activeTool === "crypto") return <Crypto onBack={() => setSearchParams({})} />;
+	if (activeTool === "regexTester") return <RegexTester onBack={() => setSearchParams({})} />;
+	if (activeTool === "cronTester") return <CronTester onBack={() => setSearchParams({})} />;
 
 	return (
-		<div className="common-tools-page">
-			<div className="common-tools-header">
-				<div>
-					<Typography.Title level={2}>百宝箱</Typography.Title>
-					<Typography.Text type="secondary">Toolbox</Typography.Text>
+		<DndProvider backend={HTML5Backend}>
+			<div ref={pageRef} className="common-tools-page">
+				<div className="common-tools-header">
+					<div>
+						<Typography.Title level={2}>百宝箱</Typography.Title>
+						<Typography.Text type="secondary">Toolbox</Typography.Text>
+					</div>
+					<div className="tool-search-wrap">
+						<Input
+							allowClear
+							prefix={<SearchOutlined />}
+							placeholder="搜索工具名称"
+							value={keyword}
+							onChange={event => {
+								const value = event.target.value;
+								setSearchParams(value ? { q: value } : {});
+							}}
+							className="tool-search"
+						/>
+						{keyword.trim() && <Typography.Text type="warning">清空搜索后可调整排序</Typography.Text>}
+						{!keyword.trim() && savingOrder && <Typography.Text type="secondary">正在保存排序...</Typography.Text>}
+					</div>
 				</div>
-				<Input
-					allowClear
-					prefix={<SearchOutlined />}
-					placeholder="搜索工具名称"
-					value={keyword}
-					onChange={event => {
-						const val = event.target.value;
-						if (val) {
-							setSearchParams({ q: val });
-						} else {
-							setSearchParams({});
-						}
-					}}
-					className="tool-search"
-				/>
-			</div>
 
-			{filteredTools.length > 0 ? (
-				<Row gutter={[24, 24]}>
-					{filteredTools.map(tool => (
-						<Col key={tool.key} xs={24} sm={12} lg={8} xl={6}>
-							<Card className="tool-card" hoverable onClick={() => setSearchParams({ tool: tool.key })}>
-								<div className="tool-card-arrow">
-									<ArrowRightOutlined />
-								</div>
-								<div className="tool-card-icon">{tool.icon}</div>
-								<Typography.Title level={4}>{tool.title}</Typography.Title>
-								<Typography.Text type="secondary">{tool.description}</Typography.Text>
-								<div className="tool-card-footer">
-									<Tag>{tool.tag}</Tag>
-								</div>
-							</Card>
-						</Col>
-					))}
-				</Row>
-			) : (
-				<Empty description="未找到匹配的工具" />
-			)}
-		</div>
+				{filteredTools.length > 0 ? (
+					<Row gutter={[24, 24]}>
+						{filteredTools.map(tool => (
+							<DraggableToolCard
+								key={tool.key}
+								tool={tool}
+								isFavorite={favoriteIds.has(tool.id)}
+								favoriteId={favoriteMap.get(tool.id)}
+								favoriteDisabled={loadingToolboxState}
+								dragDisabled={dragDisabled}
+								onFavoriteChange={handleFavoriteChange}
+								onOpen={item => setSearchParams({ tool: item.key })}
+								onDrop={handleDrop}
+							/>
+						))}
+					</Row>
+				) : (
+					<Empty description="未找到匹配的工具" />
+				)}
+			</div>
+		</DndProvider>
 	);
 };
 

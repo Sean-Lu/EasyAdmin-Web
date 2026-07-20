@@ -25,6 +25,10 @@ export const buildFavoriteOpenTarget = (
 		return { url: `/user/note?openNoteId=${encodeURIComponent(String(item.directTargetId))}`, external: false };
 	}
 
+	if (item.targetType === FavoriteTargetType.Tool) {
+		return item.path ? { url: item.path, external: false } : null;
+	}
+
 	if (item.targetType === FavoriteTargetType.Menu) {
 		if (item.outLink && item.outLinkOpenType === OutLinkOpenType.Blank) {
 			return { url: item.outLink, external: true };

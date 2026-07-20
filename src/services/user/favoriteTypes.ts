@@ -3,7 +3,8 @@ import { BackendIdInput, PageReqBase } from "@/api/interface";
 export enum FavoriteTargetType {
 	Menu = 0,
 	File = 1,
-	Note = 2
+	Note = 2,
+	Tool = 3
 }
 
 export enum FavoriteSourceType {

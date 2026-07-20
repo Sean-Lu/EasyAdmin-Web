@@ -84,7 +84,7 @@ const MessageNotice = () => {
 									{item.title}
 								</Typography.Text>
 								<Typography.Text type="secondary" style={{ fontSize: 12 }}>
-									{item.sendTime ? dayjs(item.sendTime).format("YYYY-MM-DD HH:mm") : ""}
+									{item.sendTime ? dayjs(item.sendTime).format("YYYY-MM-DD HH:mm:ss") : ""}
 								</Typography.Text>
 							</Space>
 						</List.Item>

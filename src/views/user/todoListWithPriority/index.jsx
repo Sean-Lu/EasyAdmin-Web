@@ -36,7 +36,8 @@ class TodoListWithPriority extends Component {
 		pendingExpanded: true,
 		completedExpanded: true,
 		// 当前选中的分类ID
-		currentCategoryId: null
+		currentCategoryId: null,
+		editingTodoId: null
 	};
 
 	// CategoryManager组件引用
@@ -62,7 +63,7 @@ class TodoListWithPriority extends Component {
 		if (!resolved) {
 			this.todoRequestGuard.invalidate();
 			this.pendingCategoryId = null;
-			this.setState({ todoList: [], currentCategoryId: null });
+			this.setState({ todoList: [], currentCategoryId: null, editingTodoId: null });
 			return;
 		}
 		if (categoryId !== null && categoryId !== this.state.currentCategoryId && String(categoryId) !== this.pendingCategoryId) {
@@ -85,6 +86,7 @@ class TodoListWithPriority extends Component {
 
 	// 获取待办事项列表
 	fetchTodoList = async categoryId => {
+		this.setState({ editingTodoId: null });
 		const requestId = this.todoRequestGuard.begin();
 		this.pendingCategoryId = String(categoryId);
 		try {
@@ -103,8 +105,15 @@ class TodoListWithPriority extends Component {
 		}
 	};
 
+	handleEditChange = (id, isEditing) => {
+		this.setState(prevState => ({
+			editingTodoId: isEditing ? id : prevState.editingTodoId === id ? null : prevState.editingTodoId
+		}));
+	};
+
 	// 处理分类切换
 	handleCategoryChange = categoryId => {
+		this.setState({ editingTodoId: null });
 		this.props.onCategorySearchValueChange(String(categoryId));
 	};
 
@@ -345,7 +354,8 @@ class TodoListWithPriority extends Component {
 	};
 
 	render() {
-		const { todoList, deleteModalVisible, clearModalVisible, pendingExpanded, completedExpanded, categories } = this.state;
+		const { todoList, deleteModalVisible, clearModalVisible, pendingExpanded, completedExpanded, categories, editingTodoId } =
+			this.state;
 		const { themeConfig } = this.props.global;
 		const pendingTodos = todoList.filter(c => !c.done);
 		const completedTodos = todoList.filter(c => c.done);
@@ -429,6 +439,8 @@ class TodoListWithPriority extends Component {
 														delTodo={this.showDeleteConfirm}
 														updatePriority={this.updatePriority}
 														updateName={this.updateName}
+														editingTodoId={editingTodoId}
+														onEditChange={this.handleEditChange}
 														categories={categories}
 														moveToCategory={this.moveToCategory}
 													/>
@@ -487,6 +499,8 @@ class TodoListWithPriority extends Component {
 														delTodo={this.showDeleteConfirm}
 														updatePriority={this.updatePriority}
 														updateName={this.updateName}
+														editingTodoId={editingTodoId}
+														onEditChange={this.handleEditChange}
 														categories={categories}
 														moveToCategory={this.moveToCategory}
 													/>

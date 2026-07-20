@@ -8,7 +8,6 @@ class TodoItem extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			editing: false,
 			editValue: props.name,
 			menuVisible: false
 		};
@@ -19,10 +18,6 @@ class TodoItem extends Component {
 	componentDidMount() {
 		// 添加全局键盘事件监听
 		document.addEventListener("keydown", this.handleKeyDown);
-		const { onEditChange, id } = this.props;
-		if (onEditChange) {
-			onEditChange(id, false);
-		}
 	}
 
 	componentWillUnmount() {
@@ -32,7 +27,7 @@ class TodoItem extends Component {
 
 	// 处理全局键盘事件
 	handleKeyDown = e => {
-		if (this.state.editing && e.key === "Escape") {
+		if (this.props.editing && e.key === "Escape") {
 			this.handleCancelEdit();
 		}
 	};
@@ -61,7 +56,7 @@ class TodoItem extends Component {
 		if (onEditChange) {
 			onEditChange(id, true);
 		}
-		this.setState({ editing: true, editValue: this.props.name });
+		this.setState({ editValue: this.props.name });
 	};
 
 	// 取消编辑
@@ -70,7 +65,7 @@ class TodoItem extends Component {
 		if (onEditChange) {
 			onEditChange(id, false);
 		}
-		this.setState({ editing: false, editValue: this.props.name });
+		this.setState({ editValue: this.props.name });
 	};
 
 	// 保存编辑
@@ -82,7 +77,6 @@ class TodoItem extends Component {
 			if (onEditChange) {
 				onEditChange(id, false);
 			}
-			this.setState({ editing: false });
 		}
 	};
 
@@ -101,8 +95,8 @@ class TodoItem extends Component {
 	};
 
 	render() {
-		const { id, name, done, priority, categoryId, categories, moveToCategory } = this.props;
-		const { editing, editValue } = this.state;
+		const { id, name, done, priority, categoryId, categories, moveToCategory, editing = false } = this.props;
+		const { editValue } = this.state;
 
 		// 根据优先级设置样式
 		let priorityStyle = {};

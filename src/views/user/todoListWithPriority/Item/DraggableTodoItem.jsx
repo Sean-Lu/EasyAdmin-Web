@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDrag, useDrop } from "react-dnd";
 import TodoItem from "./index";
 
@@ -11,19 +11,15 @@ const DraggableTodoItem = ({
 	updatePriority,
 	updateName,
 	disabled,
+	editingTodoId,
+	onEditChange,
 	categories,
 	moveToCategory
 }) => {
 	const ref = React.useRef(null);
-	const [editing, setEditing] = useState(false);
+	const editing = editingTodoId === item.id;
 
 	const isDisabled = disabled || editing;
-
-	const handleEditChange = (id, isEditing) => {
-		if (id === item.id) {
-			setEditing(isEditing);
-		}
-	};
 
 	const [{ isDragging }, drag] = useDrag({
 		type: "todo",
@@ -81,7 +77,8 @@ const DraggableTodoItem = ({
 				delTodo={delTodo}
 				updatePriority={updatePriority}
 				updateName={updateName}
-				onEditChange={handleEditChange}
+				onEditChange={onEditChange}
+				editing={editing}
 				categories={categories}
 				moveToCategory={moveToCategory}
 			/>

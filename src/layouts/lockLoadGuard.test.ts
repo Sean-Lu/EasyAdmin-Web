@@ -36,4 +36,18 @@ describe("createProtectedLoader", () => {
 		await expect(loader.run(false, task)).resolves.toBeUndefined();
 		expect(calls).toBe(2);
 	});
+
+	it("retries when a load completes without usable data", async () => {
+		let calls = 0;
+		const loader = createProtectedLoader();
+		const task = async () => {
+			calls += 1;
+			return calls > 1;
+		};
+
+		await loader.run(false, task);
+		await loader.run(false, task);
+
+		expect(calls).toBe(2);
+	});
 });

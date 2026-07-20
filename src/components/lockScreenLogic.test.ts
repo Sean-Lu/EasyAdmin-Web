@@ -81,4 +81,22 @@ describe("lock screen handlers", () => {
 		});
 		expect(broadcastLogout).toHaveBeenCalledOnce();
 	});
+
+	it("does not apply an unlock result after the attempt becomes stale", async () => {
+		const unlock = vi.fn();
+		const setError = vi.fn();
+		const isCurrent = vi.fn().mockReturnValue(false);
+		const result = await runUnlock("admin", {
+			verify: vi.fn().mockResolvedValue(true),
+			now: () => 123,
+			unlock,
+			resetFields: vi.fn(),
+			setError,
+			isCurrent
+		});
+
+		expect(result).toBe("network-error");
+		expect(unlock).not.toHaveBeenCalled();
+		expect(setError).not.toHaveBeenCalledWith(null);
+	});
 });

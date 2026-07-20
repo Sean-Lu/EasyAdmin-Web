@@ -30,12 +30,16 @@ interface UnlockDependencies {
 	unlock: (at: number) => void;
 	resetFields: () => void;
 	setError: (error: UnlockError | null) => void;
+	isCurrent?: () => boolean;
 }
 
 export const runUnlock = async (password: string, dependencies: UnlockDependencies): Promise<UnlockAttemptResult> => {
+	const isCurrent = dependencies.isCurrent || (() => true);
+	if (!isCurrent()) return "network-error";
 	dependencies.setError(null);
 	const result = await attemptUnlock(password, dependencies.verify);
 	if (result === "empty") return result;
+	if (!isCurrent()) return result;
 	dependencies.resetFields();
 	if (result === "success") dependencies.unlock(dependencies.now());
 	else dependencies.setError(result as UnlockError);

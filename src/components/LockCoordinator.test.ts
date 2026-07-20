@@ -9,6 +9,7 @@ import {
 	refreshLockAvatar,
 	releaseLockAvatar,
 	shouldAcceptProfileUpdate,
+	shouldShowLockScreen,
 	setLockedContentAccessibility
 } from "./lockCoordinatorUtils";
 
@@ -78,6 +79,12 @@ describe("lock coordinator synchronization", () => {
 		setLockedContentAccessibility(element, false);
 		expect(element.removeAttribute).toHaveBeenCalledWith("inert");
 		expect(element.removeAttribute).toHaveBeenCalledWith("aria-hidden");
+	});
+
+	it("never shows the lock screen after the session token is cleared", () => {
+		expect(shouldShowLockScreen("", true)).toBe(false);
+		expect(shouldShowLockScreen("token", true)).toBe(true);
+		expect(shouldShowLockScreen("token", false)).toBe(false);
 	});
 
 	it("preloads the uploaded avatar before hydrating the lock screen", async () => {

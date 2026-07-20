@@ -10,8 +10,8 @@ import { setTabsList } from "@/redux/modules/tabs/action";
 import { message } from "antd";
 import { store } from "@/redux";
 import { refreshTokenApi } from "./modules/login";
-import { assertRequestAllowedWhenLocked, shouldSkipGlobalRequestErrorHandling } from "./lockGate";
 import { captureLoginRedirect } from "@/utils/authRedirect";
+import { clearLockRuntime } from "@/utils/lockStorage";
 
 const axiosCanceler = new AxiosCanceler();
 
@@ -40,8 +40,6 @@ class RequestHttp {
 		 */
 		this.service.interceptors.request.use(
 			(config: AxiosRequestConfig) => {
-				const allowLockedAvatarPreload = config.headers?.["x-easyadmin-lock-avatar-preload"] === "true";
-				assertRequestAllowedWhenLocked(store.getState().lock.locked, config.url, allowLockedAvatarPreload);
 				NProgress.start();
 				// * 将当前请求添加到 pending 中
 				axiosCanceler.addPending(config);
@@ -93,7 +91,6 @@ class RequestHttp {
 				}
 			},
 			async (error: AxiosError) => {
-				if (shouldSkipGlobalRequestErrorHandling(error)) return Promise.reject(error);
 				const { response, config: requestConfig } = error;
 				NProgress.done();
 				tryHideFullScreenLoading();
@@ -233,6 +230,7 @@ function handleTokenExpired() {
 	message.info("登录已过期，请您重新登录！");
 	store.dispatch(setToken(""));
 	store.dispatch(setTabsList([]));
+	clearLockRuntime();
 	localStorage.removeItem("refreshToken");
 	captureLoginRedirect(window.location.hash.slice(1));
 	window.location.hash = "/login";

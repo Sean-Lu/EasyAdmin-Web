@@ -45,6 +45,7 @@ const lock = (state: LockState = initialLockState, action: AnyAction) =>
 			case types.UNLOCK_SCREEN:
 				draftState.locked = false;
 				draftState.lockedAt = null;
+				draftState.lastActiveAt = action.at;
 				draftState.version = action.at;
 				break;
 			case types.RECORD_LOCK_ACTIVITY:

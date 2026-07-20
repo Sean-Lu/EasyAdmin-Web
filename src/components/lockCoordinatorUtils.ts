@@ -42,6 +42,8 @@ export const clearRuntimeForEmptyToken = (token: string, clear: () => void, rese
 
 export const isLockHydratedForToken = (token: string, hydratedToken: string): boolean => !token || token === hydratedToken;
 
+export const shouldShowLockScreen = (token: string, locked: boolean): boolean => Boolean(token && locked);
+
 export const shouldAcceptProfileUpdate = (currentUserId: string, updatedUserId: string): boolean =>
 	!currentUserId || currentUserId === updatedUserId;
 

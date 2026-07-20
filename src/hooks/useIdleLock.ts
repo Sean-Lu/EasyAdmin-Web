@@ -7,8 +7,9 @@ interface EventSource {
 	removeEventListener(type: string, listener: () => void): void;
 }
 
-interface IdleLockMonitorOptions {
+export interface IdleLockMonitorOptions {
 	events: EventSource;
+	lifecycleEvents?: EventSource;
 	isVisible: () => boolean;
 	now: () => number;
 	setInterval: (callback: () => void, delay: number) => number;
@@ -21,29 +22,39 @@ interface IdleLockMonitorOptions {
 	onIdle: (at: number) => void;
 }
 
-const createIdleLockMonitor = (options: IdleLockMonitorOptions): (() => void) => {
+export const createIdleLockMonitor = (options: IdleLockMonitorOptions): (() => void) => {
 	if (!options.enabled || options.locked) return () => undefined;
 
+	const lifecycleEvents = options.lifecycleEvents ?? options.events;
 	let lastActivityWriteAt = Number.NEGATIVE_INFINITY;
+	let idleTriggered = false;
 	const recordVisibleActivity = () => {
 		if (!options.isVisible()) return;
 		const at = options.now();
 		if (at - lastActivityWriteAt < 1000) return;
 		lastActivityWriteAt = at;
+		idleTriggered = false;
 		options.onActivity(at);
 	};
 	const checkIdle = () => {
 		if (!options.isVisible()) return;
 		const at = options.now();
-		if (at - options.lastActiveAt >= options.idleTimeoutMs) options.onIdle(at);
+		if (!idleTriggered && at - options.lastActiveAt >= options.idleTimeoutMs) {
+			idleTriggered = true;
+			options.onIdle(at);
+		}
 	};
 
 	ACTIVITY_EVENTS.forEach(event => options.events.addEventListener(event, recordVisibleActivity));
 	options.events.addEventListener("visibilitychange", checkIdle);
+	lifecycleEvents.addEventListener("focus", checkIdle);
+	lifecycleEvents.addEventListener("pageshow", checkIdle);
 	const timer = options.setInterval(checkIdle, 1000);
 	return () => {
 		ACTIVITY_EVENTS.forEach(event => options.events.removeEventListener(event, recordVisibleActivity));
 		options.events.removeEventListener("visibilitychange", checkIdle);
+		lifecycleEvents.removeEventListener("focus", checkIdle);
+		lifecycleEvents.removeEventListener("pageshow", checkIdle);
 		options.clearInterval(timer);
 	};
 };
@@ -64,6 +75,7 @@ export const useIdleLock = (options: UseIdleLockOptions): void => {
 		() =>
 			createIdleLockMonitor({
 				events: document,
+				lifecycleEvents: window,
 				isVisible: () => document.visibilityState === "visible",
 				now: Date.now,
 				setInterval: (callback, delay) => window.setInterval(callback, delay),

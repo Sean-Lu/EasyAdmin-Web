@@ -92,11 +92,11 @@ const LayoutMenu = (props: any) => {
 	const [menuList, setMenuList] = useState<MenuItem[]>([]);
 	const [loading, setLoading] = useState(false);
 	const menuLoader = React.useRef(createProtectedLoader()).current;
-	const getMenuData = async () => {
+	const getMenuData = async (): Promise<boolean> => {
 		setLoading(true);
 		try {
 			const { data } = await getMenuList();
-			if (!data) return;
+			if (!data?.length) return false;
 			setMenuList(deepLoopFloat(data));
 			// 存储处理过后的所有面包屑导航栏到 redux 中
 			setBreadcrumbList(findAllBreadcrumb(data));
@@ -104,6 +104,7 @@ const LayoutMenu = (props: any) => {
 			const dynamicRouter = handleRouter(data);
 			setAuthRouter(dynamicRouter);
 			setMenuListAction(data);
+			return true;
 		} finally {
 			setLoading(false);
 		}

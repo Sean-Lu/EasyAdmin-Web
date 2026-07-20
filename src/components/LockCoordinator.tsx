@@ -23,7 +23,12 @@ import {
 	refreshLockAvatar,
 	releaseLockAvatar
 } from "./lockCoordinatorUtils";
-import { isLockHydratedForToken, setLockedContentAccessibility, shouldAcceptProfileUpdate } from "./lockCoordinatorUtils";
+import {
+	isLockHydratedForToken,
+	setLockedContentAccessibility,
+	shouldAcceptProfileUpdate,
+	shouldShowLockScreen
+} from "./lockCoordinatorUtils";
 import { setToken } from "@/redux/modules/global/action";
 import { setTabsList } from "@/redux/modules/tabs/action";
 import { applyRemoteLogout, handleLogoutStorageEvent } from "@/utils/sessionSync";
@@ -192,7 +197,7 @@ const LockCoordinator = (props: Props) => {
 	const onActivity = useCallback((at: number) => props.recordActivity(at), [props.recordActivity]);
 	const onIdle = useCallback((at: number) => props.lockScreen(at), [props.lockScreen]);
 	useIdleLock({
-		enabled: props.lock.hydrated && props.lock.autoLockEnabled,
+		enabled: Boolean(props.token) && props.lock.hydrated && props.lock.autoLockEnabled,
 		locked: props.lock.locked,
 		lastActiveAt: props.lock.lastActiveAt,
 		idleTimeoutMinutes: props.lock.idleTimeoutMinutes,
@@ -205,7 +210,9 @@ const LockCoordinator = (props: Props) => {
 			<div ref={routedContentRef} style={{ display: "contents" }}>
 				{props.children}
 			</div>
-			{props.lock.locked && <LockScreen userInfo={userInfo} avatarSrc={avatarSrc} lockedAt={props.lock.lockedAt} />}
+			{shouldShowLockScreen(props.token, props.lock.locked) && (
+				<LockScreen userInfo={userInfo} avatarSrc={avatarSrc} lockedAt={props.lock.lockedAt} />
+			)}
 		</>
 	) : (
 		<Loading />

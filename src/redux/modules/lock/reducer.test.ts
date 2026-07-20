@@ -25,7 +25,12 @@ describe("lock reducer", () => {
 	it("locks and unlocks using the event time as the version", () => {
 		const locked = lockReducer(initialLockState, lockScreen(100));
 		expect(locked).toMatchObject({ locked: true, lockedAt: 100, version: 100 });
-		expect(lockReducer(locked, unlockScreen(200))).toMatchObject({ locked: false, lockedAt: null, version: 200 });
+		expect(lockReducer(locked, unlockScreen(200))).toMatchObject({
+			locked: false,
+			lockedAt: null,
+			lastActiveAt: 200,
+			version: 200
+		});
 	});
 
 	it("replaces a previous user's higher-version runtime during identity hydration", () => {

@@ -1,6 +1,7 @@
-import { Alert, Button, Form, Input, Typography, theme } from "antd";
+import { Alert, Button, Form, Input, InputRef, Typography, theme } from "antd";
 import { UnlockOutlined, UserSwitchOutlined } from "@ant-design/icons";
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { KeyboardEvent, PointerEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
@@ -32,10 +33,49 @@ const LockScreen = (props: Props) => {
 	const navigate = useNavigate();
 	const { token } = theme.useToken();
 	const dialogRef = useRef<HTMLDivElement>(null);
+	const passwordInputRef = useRef<InputRef>(null);
+	const submittingRef = useRef(false);
+	const mountedRef = useRef(true);
 
 	useEffect(() => {
-		dialogRef.current?.querySelector<HTMLElement>("input, button")?.focus();
+		return () => {
+			mountedRef.current = false;
+		};
 	}, []);
+
+	const focusPasswordInput = () => {
+		const input = passwordInputRef.current?.input;
+		if (!input || input.disabled || document.activeElement === input) return;
+		input.focus({ preventScroll: true });
+	};
+
+	useLayoutEffect(() => {
+		let frame = 0;
+		let attempts = 0;
+		const retryFocus = () => {
+			focusPasswordInput();
+			if (document.activeElement !== passwordInputRef.current?.input && attempts < 10) {
+				attempts += 1;
+				frame = window.requestAnimationFrame(retryFocus);
+			}
+		};
+		retryFocus();
+		return () => window.cancelAnimationFrame(frame);
+	}, []);
+
+	useEffect(() => {
+		window.addEventListener("focus", focusPasswordInput);
+		window.addEventListener("pageshow", focusPasswordInput);
+		return () => {
+			window.removeEventListener("focus", focusPasswordInput);
+			window.removeEventListener("pageshow", focusPasswordInput);
+		};
+	}, []);
+
+	const focusOnPasswordPointer = (event: PointerEvent<HTMLDivElement>) => {
+		const target = event.target as HTMLElement;
+		if (target.closest(".ant-input-affix-wrapper, input")) focusPasswordInput();
+	};
 
 	const containFocus = (event: KeyboardEvent<HTMLDivElement>) => {
 		if (event.key !== "Tab") return;
@@ -55,15 +95,25 @@ const LockScreen = (props: Props) => {
 	};
 
 	const submit = async ({ password }: { password: string }) => {
+		if (submittingRef.current) return;
+		submittingRef.current = true;
 		setSubmitting(true);
-		await runUnlock(password, {
-			verify: async hash => (await verifyPasswordApi(hash)).data === true,
-			now: Date.now,
-			unlock: props.unlockScreen,
-			resetFields: form.resetFields,
-			setError: setUnlockError
-		});
-		setSubmitting(false);
+		try {
+			await runUnlock(password, {
+				verify: async hash => (await verifyPasswordApi(hash)).data === true,
+				now: Date.now,
+				unlock: props.unlockScreen,
+				resetFields: form.resetFields,
+				setError: setUnlockError,
+				isCurrent: () => mountedRef.current
+			});
+		} finally {
+			submittingRef.current = false;
+			if (mountedRef.current) {
+				setSubmitting(false);
+				passwordInputRef.current?.focus();
+			}
+		}
 	};
 
 	const switchAccount = () =>
@@ -79,7 +129,7 @@ const LockScreen = (props: Props) => {
 		});
 	const unlockErrorText = unlockErrorTranslationKey(unlockError);
 
-	return (
+	return createPortal(
 		<div
 			ref={dialogRef}
 			className="lock-screen"
@@ -87,6 +137,8 @@ const LockScreen = (props: Props) => {
 			aria-modal="true"
 			aria-labelledby="lock-screen-title"
 			onKeyDown={containFocus}
+			onPointerDownCapture={focusOnPasswordPointer}
+			onClickCapture={focusOnPasswordPointer}
 			style={{ background: token.colorBgBase }}
 		>
 			<div className="lock-screen-card" style={{ color: token.colorText, background: token.colorBgContainer }}>
@@ -113,6 +165,8 @@ const LockScreen = (props: Props) => {
 				<Form form={form} onFinish={submit} autoComplete="off">
 					<Form.Item name="password" rules={[{ required: true, message: t("lockScreen.passwordPlaceholder") }]}>
 						<Input.Password
+							ref={passwordInputRef}
+							onPointerDownCapture={focusPasswordInput}
 							aria-label={t("lockScreen.passwordPlaceholder")}
 							placeholder={t("lockScreen.passwordPlaceholder")}
 							autoFocus
@@ -126,7 +180,8 @@ const LockScreen = (props: Props) => {
 					{t("lockScreen.switchAccount")}
 				</Button>
 			</div>
-		</div>
+		</div>,
+		document.body
 	);
 };
 

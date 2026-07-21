@@ -34,9 +34,11 @@ const MenuSearch = (props: MenuSearchProps) => {
 
 	const filteredList = useMemo(() => {
 		const value = keyword.trim().toLowerCase();
-		if (!value) return flatMenuList;
-		return flatMenuList.filter(item => item.title.toLowerCase().includes(value));
-	}, [keyword, flatMenuList]);
+		const matchingItems = value ? flatMenuList.filter(item => item.title.toLowerCase().includes(value)) : flatMenuList;
+		const favoriteItems = matchingItems.filter(item => item.id != null && favoriteIds[String(item.id)] != null);
+		const otherItems = matchingItems.filter(item => item.id == null || favoriteIds[String(item.id)] == null);
+		return [...favoriteItems, ...otherItems];
+	}, [keyword, flatMenuList, favoriteIds]);
 
 	useEffect(() => {
 		if (!open || flatMenuList.length === 0) {

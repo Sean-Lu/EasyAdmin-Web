@@ -7,7 +7,9 @@ import {
 	CompassOutlined,
 	FileTextOutlined,
 	FundProjectionScreenOutlined,
+	FieldTimeOutlined,
 	GiftOutlined,
+	HourglassOutlined,
 	LinkOutlined,
 	LockOutlined,
 	QrcodeOutlined,
@@ -30,7 +32,10 @@ export type ToolKey =
 	| "timestamp"
 	| "crypto"
 	| "regexTester"
-	| "cronTester";
+	| "cronTester"
+	| "timer"
+	| "countdown"
+	| "flipClock";
 
 export interface ToolItem {
 	id: BackendId;
@@ -161,6 +166,30 @@ export const tools: ToolItem[] = [
 		description: "校验 Quartz 表达式并预览执行时间",
 		tag: "developer_tools",
 		icon: <ClockCircleOutlined />
+	},
+	{
+		id: "16",
+		key: "timer",
+		title: "计时器",
+		description: "记录一段经过的时间",
+		tag: "life_tools",
+		icon: <ClockCircleOutlined />
+	},
+	{
+		id: "17",
+		key: "countdown",
+		title: "倒计时",
+		description: "设置时间并在结束时提醒",
+		tag: "life_tools",
+		icon: <HourglassOutlined />
+	},
+	{
+		id: "18",
+		key: "flipClock",
+		title: "翻页时钟",
+		description: "专注展示当前时间与屏保式时钟",
+		tag: "life_tools",
+		icon: <FieldTimeOutlined />
 	}
 ];
 

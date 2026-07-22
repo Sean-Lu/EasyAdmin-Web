@@ -8,7 +8,9 @@ import { BackendId, BackendIdInput } from "@/api/interface";
 import { FavoriteService, FavoriteTargetType } from "@/services/user/favoriteService";
 import { UserPreferenceService } from "@/services/user/userPreferenceService";
 import Crypto from "./tools/crypto";
+import Countdown from "./tools/countdown";
 import CronTester from "./tools/cronTester";
+import FlipClock from "./tools/flipClock";
 import JsonParser from "./tools/jsonParser";
 import JsonToTable from "./tools/jsonToTable";
 import JwtParser from "./tools/jwtParser";
@@ -20,6 +22,7 @@ import RegexTester from "./tools/regexTester";
 import SqlToTable from "./tools/sqlToTable";
 import StockPortfolio from "./tools/stockPortfolio";
 import Timestamp from "./tools/timestamp";
+import Timer from "./tools/timer";
 import UrlCodec from "./tools/urlCodec";
 import WebSocketTester from "./tools/webSocketTester";
 import DraggableToolCard from "./DraggableToolCard";
@@ -147,6 +150,9 @@ const CommonTools: React.FC = () => {
 	if (activeTool === "crypto") return <Crypto onBack={() => setSearchParams({})} />;
 	if (activeTool === "regexTester") return <RegexTester onBack={() => setSearchParams({})} />;
 	if (activeTool === "cronTester") return <CronTester onBack={() => setSearchParams({})} />;
+	if (activeTool === "timer") return <Timer onBack={() => setSearchParams({})} />;
+	if (activeTool === "countdown") return <Countdown onBack={() => setSearchParams({})} />;
+	if (activeTool === "flipClock") return <FlipClock onBack={() => setSearchParams({})} />;
 
 	return (
 		<DndProvider backend={HTML5Backend}>

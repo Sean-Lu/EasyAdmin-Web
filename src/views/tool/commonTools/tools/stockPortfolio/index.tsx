@@ -198,6 +198,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			id: record.id,
 			name: record.name,
 			code: record.code,
+			remark: record.remark,
 			costPrice: record.costPrice,
 			quantity: record.quantity,
 			currentPrice: record.currentPrice,
@@ -283,6 +284,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			accountId: selectedAccountId,
 			code: values.code.trim(),
 			name: values.name.trim(),
+			remark: values.remark?.trim() || undefined,
 			sortOrder: values.sortOrder ?? 0
 		};
 
@@ -706,6 +708,9 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 					</Row>
 					<Form.Item name="currentPrice" label="当前价格" rules={[{ required: true, message: "请输入当前价格" }]}>
 						<InputNumber min={0} precision={3} prefix="¥" className="form-number-input" />
+					</Form.Item>
+					<Form.Item name="remark" label="备注">
+						<Input.TextArea maxLength={500} showCount rows={3} />
 					</Form.Item>
 					<Form.Item name="isEnabled" label="是否启用" valuePropName="checked">
 						<Switch checkedChildren="启用" unCheckedChildren="禁用" />

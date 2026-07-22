@@ -13,6 +13,8 @@ export interface StockHolding extends DtoBase {
 	name: string;
 	/** 股票代码 */
 	code: string;
+	/** 备注 */
+	remark?: string;
 	/** 持仓成本 */
 	costPrice: number;
 	/** 持仓数量 */
@@ -43,6 +45,8 @@ export interface StockHoldingPayload {
 	name: string;
 	/** 股票代码 */
 	code: string;
+	/** 备注 */
+	remark?: string;
 	/** 持仓成本 */
 	costPrice: number;
 	/** 持仓数量 */

@@ -66,13 +66,49 @@ export namespace Login {
 		captchaKey?: string;
 		captchaCode?: string;
 	}
+	/**注册请求参数 */
+	export interface RegisterReq {
+		/**租户编码 */
+		tenantCode?: string;
+		/**用户名 */
+		userName: string;
+		/**密码 */
+		password: string;
+		/**手机号 */
+		phoneNumber?: string;
+		/**邮箱 */
+		email?: string;
+		captchaKey?: string;
+		captchaCode?: string;
+	}
+	/**注册结果 */
+	export interface RegisterRes {
+		/**是否需要管理员审核 */
+		requiresApproval: boolean;
+		/**用户名 */
+		userName: string;
+		/**手机号 */
+		phoneNumber?: string;
+		/**邮箱 */
+		email?: string;
+		/**租户编码 */
+		tenantCode?: string;
+	}
+	/**验证码响应参数 */
 	export interface CaptchaRes {
+		/**是否启用验证码 */
 		enabled: boolean;
+		/**验证码key */
 		captchaKey: string | null;
+		/**验证码图片 */
 		image: string | null;
 	}
+	/**登录配置响应参数 */
 	export interface LoginConfigRes {
+		/**是否启用租户登录 */
 		tenantEnabled: boolean;
+		/**是否启用注册 */
+		registerEnabled: boolean;
 	}
 	/**登录响应参数 */
 	export interface LoginRes {

@@ -80,6 +80,13 @@ export default class ParamList extends React.Component {
 				width: 300
 			},
 			{
+				title: "参数类型",
+				dataIndex: "valueType",
+				align: tableColumnAlign,
+				width: 120,
+				render: value => ({ 0: "字符串", 1: "布尔值", 2: "数字" }[value] || "字符串")
+			},
+			{
 				title: "参数键值",
 				dataIndex: "paramValue",
 				align: tableColumnAlign,

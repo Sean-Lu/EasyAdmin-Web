@@ -2,11 +2,14 @@ import LoginForm from "./components/LoginForm";
 import SwitchDark from "@/components/SwitchDark";
 import loginLeft from "@/assets/images/login_left.png";
 import logo from "@/assets/images/logo.png";
+import { useSelector } from "react-redux";
 import "./index.less";
 
 const Login = () => {
+	const isDark = useSelector((state: any) => state.global.themeConfig.isDark);
+
 	return (
-		<div className="login-container">
+		<div className={`login-container${isDark ? " dark" : ""}`}>
 			<SwitchDark />
 			<div className="login-box">
 				<div className="login-left">

@@ -14,6 +14,7 @@ export const api = {
 		delete: "/user/delete",
 		update: "/user/update",
 		updateState: "/user/updateState",
+		approve: "/user/approve",
 		page: "/user/page",
 		list: "/user/list",
 		detail: "/user/detail",

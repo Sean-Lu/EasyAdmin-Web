@@ -30,6 +30,9 @@ export default class UserDetail extends React.Component {
 					<Form.Item label="状态">
 						<span>{record.state === 1 ? "启用" : "禁用"}</span>
 					</Form.Item>
+					<Form.Item label="审核状态">
+						<span>{{ 0: "无需审核", 1: "待审核", 2: "已通过" }[record.approvalState] || "无需审核"}</span>
+					</Form.Item>
 				</Form>
 			</Modal>
 		);

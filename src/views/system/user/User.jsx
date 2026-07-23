@@ -79,10 +79,33 @@ export default class UserList extends React.Component {
 	renderRecordOperate = record => {
 		return (
 			<>
+				{record.approvalState === 1 && <span onClick={() => this.approveUser(record)}>审核通过</span>}
 				<span onClick={() => this.resetUserPassword(record)}>重置密码</span>
 				<span onClick={() => this.handleRolePermission(record)}>分配角色</span>
 			</>
 		);
+	};
+
+	approveUser = record => {
+		Modal.confirm({
+			title: "确认通过该用户的注册审核吗？",
+			okText: "通过",
+			cancelText: "取消",
+			onOk: async () => {
+				try {
+					const res = await axios.post(api.user.approve, { id: record.id });
+					if (res.success) {
+						message.success("审核通过");
+						this.searchFormRef.current?.submit?.();
+					} else {
+						message.error(res.message || "审核失败");
+					}
+				} catch (error) {
+					console.log("审核用户异常", error);
+					message.error("审核失败");
+				}
+			}
+		});
 	};
 
 	resetUserPassword = record => {
@@ -176,6 +199,13 @@ export default class UserList extends React.Component {
 				dataIndex: "email",
 				align: tableColumnAlign,
 				width: 150
+			},
+			{
+				title: "审核状态",
+				dataIndex: "approvalState",
+				align: tableColumnAlign,
+				width: 100,
+				render: value => ({ 0: "无需审核", 1: "待审核", 2: "已通过" }[value] || "无需审核")
 			}
 		];
 
@@ -188,7 +218,7 @@ export default class UserList extends React.Component {
 					renderSearchForm={this.renderSearchForm}
 					renderModal={this.renderModal}
 					renderRecordOperate={this.renderRecordOperate}
-					recordOperateColWidth={265}
+					recordOperateColWidth={330}
 					apiAdd={api.user.add}
 					apiDelete={api.user.delete}
 					apiUpdate={api.user.update}

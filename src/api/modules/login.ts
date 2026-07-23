@@ -16,6 +16,11 @@ export const loginApi = (params: Login.LoginReq) => {
 	return http.post<Login.LoginRes>(PORT1 + `/auth/login`, params, { headers: { noLoading: true } }); // 控制当前请求不显示 loading
 };
 
+// * 用户注册接口
+export const registerApi = (params: Login.RegisterReq) => {
+	return http.post<Login.RegisterRes>(PORT1 + `/auth/register`, params);
+};
+
 // * 获取登录配置
 export const getLoginConfigApi = () => {
 	return http.get<Login.LoginConfigRes>(PORT1 + `/auth/loginConfig`, undefined, { headers: { noLoading: true } });

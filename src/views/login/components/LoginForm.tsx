@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Form, Input, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
-import { getCaptchaApi, getLoginConfigApi, getMenuList, loginApi } from "@/api/modules/login";
+import { getCaptchaApi, getLoginConfigApi, getMenuList, loginApi, registerApi } from "@/api/modules/login";
 import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
@@ -41,6 +41,8 @@ const LoginForm = (props: any) => {
 	const [loginConfig, setLoginConfig] = useState<Login.LoginConfigRes | null>(null);
 	const [configLoading, setConfigLoading] = useState<boolean>(true);
 	const [configError, setConfigError] = useState<boolean>(false);
+	const [registering, setRegistering] = useState<boolean>(false);
+	const [registrationResult, setRegistrationResult] = useState<Login.RegisterRes | null>(null);
 	const account = Form.useWatch("account", form);
 	const captchaRequestId = useRef<number>(0);
 
@@ -107,7 +109,7 @@ const LoginForm = (props: any) => {
 	}, [loginConfig, configLoading, form]);
 
 	// 登录
-	const onFinish = async (loginForm: Login.LoginReq) => {
+	const onLoginFinish = async (loginForm: Login.LoginReq) => {
 		try {
 			setLoading(true);
 			const { data } = await loginApi({
@@ -157,12 +159,85 @@ const LoginForm = (props: any) => {
 		}
 	};
 
+	const onRegisterFinish = async (registerForm: Login.RegisterReq & { confirmPassword: string }) => {
+		try {
+			setLoading(true);
+			const { data } = await registerApi({
+				...registerForm,
+				password: md5(registerForm.password),
+				captchaKey: captcha?.enabled ? captcha.captchaKey || undefined : undefined
+			});
+			if (data.requiresApproval) {
+				setRegistrationResult(data);
+				setRegistering(false);
+			} else {
+				message.success("注册成功，请登录");
+				setRegistering(false);
+				form.setFieldsValue({ account: registerForm.userName, tenantCode: registerForm.tenantCode, password: undefined });
+			}
+			if (captcha?.enabled) await loadCaptcha();
+		} catch {
+			if (captcha?.enabled) await loadCaptcha();
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const onFinish = (formValues: any) => (registering ? onRegisterFinish(formValues) : onLoginFinish(formValues));
+
 	const onFinishFailed = (errorInfo: any) => {
 		console.log("Login failed:", errorInfo);
 	};
 
 	const accountPrefix = isEmail(account) ? <MailOutlined /> : isPhoneNumber(account) ? <PhoneOutlined /> : <UserOutlined />;
 	const accountPlaceholder = "用户名 / 手机号 / 邮箱";
+
+	if (registrationResult) {
+		return (
+			<div className="registration-result">
+				<h3>注册申请已提交</h3>
+				<p>请联系管理员审核，并提供以下注册信息：</p>
+				<div className="registration-result-info">
+					<div>
+						<span>用户名</span>
+						<strong>{registrationResult.userName}</strong>
+					</div>
+					{registrationResult.phoneNumber && (
+						<div>
+							<span>手机号</span>
+							<strong>{registrationResult.phoneNumber}</strong>
+						</div>
+					)}
+					{registrationResult.email && (
+						<div>
+							<span>邮箱</span>
+							<strong>{registrationResult.email}</strong>
+						</div>
+					)}
+					{loginConfig?.tenantEnabled && registrationResult.tenantCode && (
+						<div>
+							<span>租户编码</span>
+							<strong>{registrationResult.tenantCode}</strong>
+						</div>
+					)}
+				</div>
+				<Button
+					type="primary"
+					block
+					onClick={() => {
+						setRegistrationResult(null);
+						form.resetFields();
+						form.setFieldsValue({
+							account: registrationResult.userName,
+							tenantCode: loginConfig?.tenantEnabled ? registrationResult.tenantCode : undefined
+						});
+					}}
+				>
+					返回登录
+				</Button>
+			</div>
+		);
+	}
 
 	return (
 		<Form
@@ -187,12 +262,44 @@ const LoginForm = (props: any) => {
 					<Input placeholder="租户编码" prefix={<ShopOutlined />} maxLength={50} />
 				</Form.Item>
 			)}
-			<Form.Item name="account" rules={[{ required: true, message: "请输入用户名 / 手机号 / 邮箱" }]}>
-				<Input placeholder={accountPlaceholder} prefix={accountPrefix} maxLength={50} />
-			</Form.Item>
+			{registering ? (
+				<Form.Item name="userName" rules={[{ required: true, whitespace: true, message: "请输入用户名" }]}>
+					<Input placeholder="用户名" prefix={<UserOutlined />} maxLength={50} />
+				</Form.Item>
+			) : (
+				<Form.Item name="account" rules={[{ required: true, message: "请输入用户名 / 手机号 / 邮箱" }]}>
+					<Input placeholder={accountPlaceholder} prefix={accountPrefix} maxLength={50} />
+				</Form.Item>
+			)}
 			<Form.Item name="password" rules={[{ required: true, message: "请输入密码" }]}>
 				<Input.Password autoComplete="new-password" placeholder="密码" prefix={<LockOutlined />} />
 			</Form.Item>
+			{registering && (
+				<>
+					<Form.Item
+						name="confirmPassword"
+						dependencies={["password"]}
+						rules={[
+							{ required: true, message: "请输入确认密码" },
+							({ getFieldValue }) => ({
+								validator(_: unknown, value: string) {
+									return !value || getFieldValue("password") === value
+										? Promise.resolve()
+										: Promise.reject(new Error("两次密码不一致"));
+								}
+							})
+						]}
+					>
+						<Input.Password autoComplete="new-password" placeholder="确认密码" prefix={<LockOutlined />} />
+					</Form.Item>
+					<Form.Item name="phoneNumber" rules={[{ pattern: /^1\d{10}$/, message: "手机号码格式不正确" }]}>
+						<Input placeholder="手机号（可选）" prefix={<PhoneOutlined />} maxLength={11} />
+					</Form.Item>
+					<Form.Item name="email" rules={[{ type: "email", message: "邮箱格式不正确" }]}>
+						<Input placeholder="邮箱（可选）" prefix={<MailOutlined />} maxLength={50} />
+					</Form.Item>
+				</>
+			)}
 			{captcha?.enabled && (
 				<div className="captcha-row">
 					<Form.Item name="captchaCode" rules={[{ required: true, message: "请输入验证码" }]}>
@@ -232,26 +339,41 @@ const LoginForm = (props: any) => {
 				</div>
 			)}
 			<Form.Item className="login-btn">
-				<Button
-					type="primary"
-					htmlType="submit"
-					loading={loading}
-					disabled={captchaLoading || captchaError || captcha === null || configLoading || configError || loginConfig === null}
-					icon={<UserOutlined />}
-				>
-					{t("login.confirm")}
-				</Button>
-				<Button
-					onClick={() => {
-						form.resetFields();
-						if (captcha?.enabled) {
-							void loadCaptcha();
-						}
-					}}
-					icon={<CloseCircleOutlined />}
-				>
-					{t("login.reset")}
-				</Button>
+				<div className="login-actions">
+					<Button
+						type="primary"
+						htmlType="submit"
+						loading={loading}
+						disabled={captchaLoading || captchaError || captcha === null || configLoading || configError || loginConfig === null}
+						icon={<UserOutlined />}
+					>
+						{registering ? "注册" : t("login.confirm")}
+					</Button>
+					<Button
+						onClick={() => {
+							form.resetFields();
+							if (captcha?.enabled) {
+								void loadCaptcha();
+							}
+						}}
+						icon={<CloseCircleOutlined />}
+					>
+						{t("login.reset")}
+					</Button>
+				</div>
+				{loginConfig?.registerEnabled && (
+					<div className="login-register-entry">
+						<Button
+							type="link"
+							onClick={() => {
+								setRegistering(value => !value);
+								form.resetFields();
+							}}
+						>
+							{registering ? "返回登录" : "注册账号"}
+						</Button>
+					</div>
+				)}
 			</Form.Item>
 		</Form>
 	);

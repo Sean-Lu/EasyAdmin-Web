@@ -10,11 +10,15 @@
 	gap: 12px;
 	align-items: center;
 }
+.todo-item-content-editing {
+	align-items: flex-start;
+}
 .todo-item-text {
 	flex: 1;
 	font-size: 14px;
 	line-height: 1.4;
 	word-break: break-word;
+	white-space: pre-wrap;
 }
 .todo-item-text-priority-1 {
 	color: #000000;

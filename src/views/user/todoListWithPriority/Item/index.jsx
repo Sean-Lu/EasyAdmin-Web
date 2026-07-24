@@ -88,7 +88,20 @@ class TodoItem extends Component {
 	// 处理编辑框回车和Esc键
 	handleEditKeyPress = e => {
 		if (e.key === "Enter") {
-			this.handleSaveEdit();
+			if (e.ctrlKey || e.metaKey) {
+				e.preventDefault();
+				const target = e.currentTarget;
+				const { selectionStart = this.state.editValue.length, selectionEnd = selectionStart } = target;
+				const { editValue } = this.state;
+				const nextValue = `${editValue.slice(0, selectionStart)}\n${editValue.slice(selectionEnd)}`;
+				this.setState({ editValue: nextValue }, () => {
+					target.selectionStart = selectionStart + 1;
+					target.selectionEnd = selectionStart + 1;
+				});
+			} else {
+				e.preventDefault();
+				this.handleSaveEdit();
+			}
 		} else if (e.key === "Escape") {
 			this.handleCancelEdit();
 		}
@@ -142,12 +155,13 @@ class TodoItem extends Component {
 		return (
 			<div className="todo-item">
 				{editing ? (
-					<div className="todo-item-content">
-						<Input
+					<div className="todo-item-content todo-item-content-editing">
+						<Input.TextArea
 							className="todo-item-input"
 							value={editValue}
 							onChange={this.handleEditChange}
-							onKeyPress={this.handleEditKeyPress}
+							onKeyDown={this.handleEditKeyPress}
+							autoSize={{ minRows: 1 }}
 							autoFocus
 						/>
 						<div className="todo-item-actions">

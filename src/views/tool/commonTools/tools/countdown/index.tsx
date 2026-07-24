@@ -3,27 +3,12 @@ import { ArrowLeftOutlined, PauseOutlined, PlayCircleOutlined, ReloadOutlined } 
 import { Alert, Button, Card, InputNumber, Space, Typography, message } from "antd";
 import { formatDuration, getCountdownRemaining, normalizeCountdownInput } from "../timeUtils";
 import TimeDisplay from "../TimeDisplay";
+import { createCountdownAudio, type CountdownAudio } from "./countdownAudio";
 import "./index.less";
 
 interface CountdownProps {
 	onBack: () => void;
 }
-
-const playCompletionBeep = () => {
-	const AudioContextClass =
-		window.AudioContext ?? (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-	if (!AudioContextClass) return;
-	const context = new AudioContextClass();
-	const oscillator = context.createOscillator();
-	const gain = context.createGain();
-	oscillator.frequency.value = 880;
-	gain.gain.value = 0.08;
-	oscillator.connect(gain);
-	gain.connect(context.destination);
-	oscillator.start();
-	oscillator.stop(context.currentTime + 0.35);
-	void context.close();
-};
 
 const Countdown: React.FC<CountdownProps> = ({ onBack }) => {
 	const [input, setInput] = useState({ hours: 0, minutes: 5, seconds: 0 });
@@ -32,7 +17,10 @@ const Countdown: React.FC<CountdownProps> = ({ onBack }) => {
 	const [running, setRunning] = useState(false);
 	const startedAtRef = useRef<number | null>(null);
 	const lastBeepedRef = useRef(false);
+	const audioRef = useRef<CountdownAudio | null>(null);
 	const configuredSeconds = useMemo(() => normalizeCountdownInput(input.hours, input.minutes, input.seconds), [input]);
+
+	useEffect(() => () => void audioRef.current?.close(), []);
 
 	useEffect(() => {
 		if (!running) return undefined;
@@ -44,7 +32,7 @@ const Countdown: React.FC<CountdownProps> = ({ onBack }) => {
 			if (nextRemaining === 0) {
 				if (!lastBeepedRef.current) {
 					lastBeepedRef.current = true;
-					playCompletionBeep();
+					void audioRef.current?.playBeep();
 				}
 				setRunning(false);
 			}
@@ -67,6 +55,8 @@ const Countdown: React.FC<CountdownProps> = ({ onBack }) => {
 			return;
 		}
 		if (remainingSeconds === totalSeconds) lastBeepedRef.current = false;
+		audioRef.current ??= createCountdownAudio();
+		void audioRef.current.activate();
 		startedAtRef.current = Date.now() - (totalSeconds - remainingSeconds) * 1000;
 		setRunning(true);
 	};

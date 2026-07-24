@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Card,
@@ -54,6 +54,11 @@ const compactCurrencyFormatter = (value: number) => {
 };
 
 const percentFormatter = (value: number) => `${value.toFixed(2)}%`;
+const getRecoveryRatio = (costPrice: number, currentPrice: number) => {
+	if (currentPrice <= 0) return undefined;
+	return ((costPrice / currentPrice - 1) * 100).toFixed(2);
+};
+
 const quantityFormatter = (value: number) => value.toLocaleString("zh-CN");
 const getProfitClassName = (value: number) => {
 	if (value > 0) return "profit-up";
@@ -431,7 +436,24 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			key: "profitRatio",
 			width: 120,
 			align: "right",
-			render: (value: number) => <Tag color={value > 0 ? "red" : value < 0 ? "green" : "default"}>{percentFormatter(value)}</Tag>
+			render: (value: number, record) => {
+				const recoveryRatio = value < 0 ? getRecoveryRatio(record.costPrice, record.currentPrice) : undefined;
+				const tooltipTitle =
+					recoveryRatio === undefined
+						? "当前价为0，无法计算回本涨幅"
+						: `当前亏损 ${Math.abs(value).toFixed(2)}%，从当前价上涨 ${recoveryRatio}% 可回本`;
+
+				return (
+					<Space size={4}>
+						<Tag color={value > 0 ? "red" : value < 0 ? "green" : "default"}>{percentFormatter(value)}</Tag>
+						{value < 0 && (
+							<Tooltip title={tooltipTitle}>
+								<InfoCircleOutlined className="recovery-ratio-icon" tabIndex={0} />
+							</Tooltip>
+						)}
+					</Space>
+				);
+			}
 		},
 		{
 			title: "状态",

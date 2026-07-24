@@ -62,6 +62,9 @@ export default class ParamEdit extends React.Component {
 					<Form.Item name="remark" label="备注">
 						<TextArea placeholder="请输入备注" autoSize={{ minRows: 3, maxRows: 5 }} />
 					</Form.Item>
+					<Form.Item name="sort" label="排序">
+						<InputNumber style={{ width: "100%" }} min={0} />
+					</Form.Item>
 					<Form.Item name="state" label="状态" valuePropName="checked">
 						<Switch checkedChildren="启用" unCheckedChildren="禁用" />
 					</Form.Item>

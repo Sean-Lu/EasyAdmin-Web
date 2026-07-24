@@ -21,6 +21,9 @@ export default class ParamDetail extends React.Component {
 					<Form.Item label="备注">
 						<span>{record.remark}</span>
 					</Form.Item>
+					<Form.Item label="排序">
+						<span>{record.sort}</span>
+					</Form.Item>
 					<Form.Item label="状态">
 						<span>{record.state === 1 ? "启用" : "禁用"}</span>
 					</Form.Item>

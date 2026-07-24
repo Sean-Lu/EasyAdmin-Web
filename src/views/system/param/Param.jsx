@@ -91,6 +91,12 @@ export default class ParamList extends React.Component {
 				dataIndex: "paramValue",
 				align: tableColumnAlign,
 				width: 300
+			},
+			{
+				title: "排序",
+				dataIndex: "sort",
+				align: tableColumnAlign,
+				width: 80
 			}
 		];
 

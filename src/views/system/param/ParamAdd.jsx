@@ -47,7 +47,7 @@ export default class ParamAdd extends React.Component {
 					wrapperCol={{ span: 17 }}
 					layout="horizontal"
 					onFinish={values => onSubmit({ ...values, paramValue: serializeParamValue(values.paramValue, values.valueType) })}
-					initialValues={{ state: true, valueType: ParamValueType.String }}
+					initialValues={{ state: true, valueType: ParamValueType.String, sort: 0 }}
 				>
 					<Form.Item name="paramName" label="参数名称" rules={[{ required: true }]}>
 						<Input placeholder="请输入参数名称" />
@@ -61,6 +61,9 @@ export default class ParamAdd extends React.Component {
 					<ParamValueInput />
 					<Form.Item name="remark" label="备注">
 						<TextArea placeholder="请输入备注" autoSize={{ minRows: 3, maxRows: 5 }} />
+					</Form.Item>
+					<Form.Item name="sort" label="排序">
+						<InputNumber style={{ width: "100%" }} min={0} />
 					</Form.Item>
 					<Form.Item name="state" label="状态" valuePropName="checked">
 						<Switch checkedChildren="启用" unCheckedChildren="禁用" />

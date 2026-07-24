@@ -26,6 +26,9 @@
 	.time-tool-card {
 		text-align: center;
 		.time-display {
+			display: flex;
+			align-items: center;
+			justify-content: center;
 			margin: 56px 0 48px;
 			font-family: "Segoe UI", Arial, sans-serif;
 			font-size: clamp(64px, 13vw, 148px);
@@ -33,6 +36,34 @@
 			font-variant-numeric: tabular-nums;
 			line-height: 1;
 			letter-spacing: 0.06em;
+			.time-display-separator {
+				position: relative;
+				display: inline-block;
+				width: 0.18em;
+				height: 1.18em;
+				margin: 0 clamp(2px, 0.03em, 6px);
+				font-size: inherit;
+				letter-spacing: 0;
+				transform: translateY(0.08em);
+				&::before,
+				&::after {
+					position: absolute;
+					left: 50%;
+					display: block;
+					width: 0.18em;
+					height: 0.18em;
+					content: "";
+					background: currentcolor;
+					border-radius: 50%;
+					transform: translateX(-50%);
+				}
+				&::before {
+					top: 25%;
+				}
+				&::after {
+					bottom: 25%;
+				}
+			}
 		}
 	}
 }

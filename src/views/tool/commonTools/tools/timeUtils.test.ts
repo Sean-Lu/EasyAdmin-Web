@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDuration, getCountdownRemaining, normalizeCountdownInput } from "./timeUtils";
+import { formatDuration, getCountdownRemaining, normalizeCountdownInput, splitTimeDisplay } from "./timeUtils";
 
 describe("timeUtils", () => {
 	it("formats a duration with hours, minutes and seconds", () => {
@@ -9,6 +9,10 @@ describe("timeUtils", () => {
 
 	it("formats a short duration without hours when requested", () => {
 		expect(formatDuration(65, false)).toBe("01:05");
+	});
+
+	it("splits duration text so separators can be rendered independently", () => {
+		expect(splitTimeDisplay("01:02:03")).toEqual(["01", ":", "02", ":", "03"]);
 	});
 
 	it("normalizes non-negative countdown input into seconds", () => {

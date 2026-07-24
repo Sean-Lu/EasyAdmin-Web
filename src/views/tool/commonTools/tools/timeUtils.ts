@@ -8,6 +8,10 @@ export function formatDuration(totalSeconds: number, showHours = true): string {
 	return showHours ? `${pad(hours)}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
 }
 
+export function splitTimeDisplay(timeText: string): string[] {
+	return timeText.split(/(:)/);
+}
+
 export function normalizeCountdownInput(hours: number, minutes: number, seconds: number): number {
 	const safeHours = Math.max(0, Math.floor(Number.isFinite(hours) ? hours : 0));
 	const safeMinutes = Math.max(0, Math.floor(Number.isFinite(minutes) ? minutes : 0));

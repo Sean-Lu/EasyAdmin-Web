@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeftOutlined, PauseOutlined, PlayCircleOutlined, ReloadOutlined } from "@ant-design/icons";
 import { Button, Card, Space, Typography } from "antd";
 import { formatDuration } from "../timeUtils";
+import TimeDisplay from "../TimeDisplay";
 import "./index.less";
 
 interface TimerProps {
@@ -50,7 +51,7 @@ const Timer: React.FC<TimerProps> = ({ onBack }) => {
 				<Typography.Text type="secondary">记录一段经过的时间</Typography.Text>
 			</div>
 			<Card className="time-tool-card">
-				<div className="time-display">{formatDuration(Math.floor(elapsedMilliseconds / 1000))}</div>
+				<TimeDisplay value={formatDuration(Math.floor(elapsedMilliseconds / 1000))} />
 				<Space size="middle">
 					<Button type="primary" size="large" icon={running ? <PauseOutlined /> : <PlayCircleOutlined />} onClick={toggleRunning}>
 						{running ? "暂停" : elapsedMilliseconds > 0 ? "继续" : "开始"}

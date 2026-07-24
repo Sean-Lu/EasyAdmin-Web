@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeftOutlined, PauseOutlined, PlayCircleOutlined, ReloadOutlined } from "@ant-design/icons";
 import { Alert, Button, Card, InputNumber, Space, Typography, message } from "antd";
 import { formatDuration, getCountdownRemaining, normalizeCountdownInput } from "../timeUtils";
+import TimeDisplay from "../TimeDisplay";
 import "./index.less";
 
 interface CountdownProps {
@@ -130,7 +131,7 @@ const Countdown: React.FC<CountdownProps> = ({ onBack }) => {
 						应用时间
 					</Button>
 				</div>
-				<div className="time-display">{formatDuration(remainingSeconds)}</div>
+				<TimeDisplay value={formatDuration(remainingSeconds)} />
 				<Space size="middle">
 					<Button type="primary" size="large" icon={running ? <PauseOutlined /> : <PlayCircleOutlined />} onClick={toggleRunning}>
 						{running ? "暂停" : remainingSeconds < totalSeconds ? "继续" : "开始"}

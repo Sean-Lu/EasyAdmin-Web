@@ -54,6 +54,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					// target: "http://192.168.88.241:9090", // 测试环境
 					target: "http://127.0.0.1:9001", // 本地环境
 					changeOrigin: true,
+					xfwd: true, // 添加 X-Forwarded-* 请求头，使后端获取客户端真实 IP
 					rewrite: path => path.replace(/^\/proxy/, ""),
 					secure: false // 不进行证书验证
 				}

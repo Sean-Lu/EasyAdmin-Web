@@ -11,7 +11,7 @@ interface Props extends LockPreference {
 	setLockPreference: SetPreference;
 }
 
-const LockSettings = ({ userId, autoLockEnabled, idleTimeoutMinutes, setLockPreference }: Props) => {
+const LockSettings = ({ userId, autoLockEnabled, idleTimeoutMinutes, showFlipClockOnLock, setLockPreference }: Props) => {
 	const { t } = useTranslation();
 	const update = (preference: LockPreference) => {
 		if (userId === undefined || userId === null) return;
@@ -26,7 +26,7 @@ const LockSettings = ({ userId, autoLockEnabled, idleTimeoutMinutes, setLockPref
 				<Switch
 					aria-label={t("lockScreen.automaticLock")}
 					checked={autoLockEnabled}
-					onChange={checked => update({ autoLockEnabled: checked, idleTimeoutMinutes })}
+					onChange={checked => update({ autoLockEnabled: checked, idleTimeoutMinutes, showFlipClockOnLock })}
 				/>
 			</div>
 			<div className="theme-item">
@@ -35,7 +35,17 @@ const LockSettings = ({ userId, autoLockEnabled, idleTimeoutMinutes, setLockPref
 					aria-label={t("lockScreen.timeout")}
 					value={idleTimeoutMinutes}
 					options={ALLOWED_IDLE_TIMEOUTS.map(minutes => ({ label: `${minutes} min`, value: minutes }))}
-					onChange={(minutes: IdleTimeoutMinutes) => update({ autoLockEnabled, idleTimeoutMinutes: minutes })}
+					onChange={(minutes: IdleTimeoutMinutes) =>
+						update({ autoLockEnabled, idleTimeoutMinutes: minutes, showFlipClockOnLock })
+					}
+				/>
+			</div>
+			<div className="theme-item">
+				<span>{t("lockScreen.flipClockOnLock")}</span>
+				<Switch
+					aria-label={t("lockScreen.flipClockOnLock")}
+					checked={showFlipClockOnLock}
+					onChange={checked => update({ autoLockEnabled, idleTimeoutMinutes, showFlipClockOnLock: checked })}
 				/>
 			</div>
 		</>

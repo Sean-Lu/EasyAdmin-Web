@@ -56,6 +56,7 @@ export type IdleTimeoutMinutes = 5 | 10 | 15 | 30 | 60;
 export interface LockPreference {
 	autoLockEnabled: boolean;
 	idleTimeoutMinutes: IdleTimeoutMinutes;
+	showFlipClockOnLock: boolean;
 }
 
 export interface LockRuntime {

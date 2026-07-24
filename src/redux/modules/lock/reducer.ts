@@ -10,7 +10,8 @@ const initialLockState: LockState = {
 	lastActiveAt: 0,
 	version: 0,
 	autoLockEnabled: false,
-	idleTimeoutMinutes: 15
+	idleTimeoutMinutes: 15,
+	showFlipClockOnLock: false
 };
 
 const lock = (state: LockState = initialLockState, action: AnyAction) =>
@@ -55,6 +56,7 @@ const lock = (state: LockState = initialLockState, action: AnyAction) =>
 			case types.SET_LOCK_PREFERENCE:
 				draftState.autoLockEnabled = action.preference.autoLockEnabled;
 				draftState.idleTimeoutMinutes = action.preference.idleTimeoutMinutes;
+				draftState.showFlipClockOnLock = action.preference.showFlipClockOnLock;
 				break;
 			case types.RESET_LOCK_RUNTIME:
 				draftState.hydrated = true;

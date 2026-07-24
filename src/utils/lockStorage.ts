@@ -3,7 +3,7 @@ import { IdleTimeoutMinutes, LockPreference, LockRuntime } from "@/redux/interfa
 export const LOCK_RUNTIME_KEY = "easyadmin:lock:runtime";
 const lockPreferenceKey = (userId: string) => `easyadmin:lock:preference:${userId}`;
 export const ALLOWED_IDLE_TIMEOUTS = [5, 10, 15, 30, 60] as const;
-const DEFAULT_LOCK_PREFERENCE: LockPreference = { autoLockEnabled: false, idleTimeoutMinutes: 15 };
+const DEFAULT_LOCK_PREFERENCE: LockPreference = { autoLockEnabled: false, idleTimeoutMinutes: 15, showFlipClockOnLock: false };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
@@ -24,7 +24,11 @@ const parseLockPreference = (value: unknown): LockPreference => {
 	if (!isRecord(value) || typeof value.autoLockEnabled !== "boolean" || !isIdleTimeout(value.idleTimeoutMinutes)) {
 		return { ...DEFAULT_LOCK_PREFERENCE };
 	}
-	return { autoLockEnabled: value.autoLockEnabled, idleTimeoutMinutes: value.idleTimeoutMinutes };
+	return {
+		autoLockEnabled: value.autoLockEnabled,
+		idleTimeoutMinutes: value.idleTimeoutMinutes,
+		showFlipClockOnLock: typeof value.showFlipClockOnLock === "boolean" ? value.showFlipClockOnLock : false
+	};
 };
 
 export const readLockPreference = (userId: string): LockPreference =>

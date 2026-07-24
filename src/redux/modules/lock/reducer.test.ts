@@ -18,7 +18,8 @@ describe("lock reducer", () => {
 			hydrated: false,
 			locked: false,
 			autoLockEnabled: false,
-			idleTimeoutMinutes: 15
+			idleTimeoutMinutes: 15,
+			showFlipClockOnLock: false
 		});
 	});
 
@@ -68,10 +69,21 @@ describe("lock reducer", () => {
 
 	it("records activity and preferences", () => {
 		expect(lockReducer(initialLockState, recordActivity(50))).toMatchObject({ lastActiveAt: 50, version: 50 });
-		expect(lockReducer(initialLockState, setLockPreference({ autoLockEnabled: true, idleTimeoutMinutes: 30 }))).toMatchObject({
+		expect(
+			lockReducer(
+				initialLockState,
+				setLockPreference({ autoLockEnabled: true, idleTimeoutMinutes: 30, showFlipClockOnLock: false })
+			)
+		).toMatchObject({
 			autoLockEnabled: true,
-			idleTimeoutMinutes: 30
+			idleTimeoutMinutes: 30,
+			showFlipClockOnLock: false
 		});
+	});
+
+	it("stores whether the lock should start with the flip clock", () => {
+		const preference = { autoLockEnabled: true, idleTimeoutMinutes: 30 as const, showFlipClockOnLock: true };
+		expect(lockReducer(initialLockState, setLockPreference(preference))).toMatchObject(preference);
 	});
 
 	it("resets in-memory runtime while remaining hydrated", () => {

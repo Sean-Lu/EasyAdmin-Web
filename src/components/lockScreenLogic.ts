@@ -5,6 +5,27 @@ interface BusinessUnlockError {
 type UnlockAttemptResult = "empty" | "success" | "rejected" | "network-error" | BusinessUnlockError;
 export type UnlockError = "rejected" | "network-error" | BusinessUnlockError;
 
+export type LockScreenPhase = "clock" | "password";
+
+export const getInitialLockScreenPhase = (showFlipClockOnLock: boolean, passwordPhasePersisted = false): LockScreenPhase =>
+	showFlipClockOnLock && !passwordPhasePersisted ? "clock" : "password";
+
+export const getLockScreenWakeStorageKey = (lockedAt: number | null): string =>
+	`easyadmin:lock:password-phase:${lockedAt ?? "unknown"}`;
+
+export const wakeLockScreen = (phase: LockScreenPhase): LockScreenPhase => (phase === "clock" ? "password" : phase);
+
+export const isBrowserRefreshKey = (event: { key: string; ctrlKey?: boolean; metaKey?: boolean }): boolean =>
+	event.key === "F5" || ((event.key === "r" || event.key === "R") && Boolean(event.ctrlKey || event.metaKey));
+
+export const isLockScreenIgnoredKey = (event: { key: string; ctrlKey?: boolean; metaKey?: boolean }): boolean =>
+	isBrowserRefreshKey(event) || ["Control", "Shift", "Alt", "Meta"].includes(event.key);
+
+export const consumeLockScreenWakeEvent = (event: { preventDefault: () => void; stopPropagation: () => void }): void => {
+	event.preventDefault();
+	event.stopPropagation();
+};
+
 const businessError = (error: unknown): BusinessUnlockError | null => {
 	if (typeof error !== "object" || error === null) return null;
 	const message = (error as { msg?: unknown }).msg;

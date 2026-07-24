@@ -17,6 +17,8 @@ export default {
 		exitMenuFullscreen: "退出菜单全屏"
 	},
 	lockScreen: {
+		flipClockOnLock: "锁屏显示翻页时钟",
+		flipClockWakeHint: "点击或按任意键解锁",
 		lock: "锁定屏幕",
 		unlock: "解锁",
 		passwordPlaceholder: "请输入密码",

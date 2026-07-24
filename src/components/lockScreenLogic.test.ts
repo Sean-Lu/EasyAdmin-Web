@@ -1,8 +1,44 @@
 import { describe, expect, it, vi } from "vitest";
 import md5 from "js-md5";
-import { runUnlock, switchAccountCleanup, unlockErrorTranslationKey } from "./lockScreenLogic";
+import {
+	consumeLockScreenWakeEvent,
+	getInitialLockScreenPhase,
+	isBrowserRefreshKey,
+	isLockScreenIgnoredKey,
+	runUnlock,
+	switchAccountCleanup,
+	unlockErrorTranslationKey,
+	wakeLockScreen
+} from "./lockScreenLogic";
 
 describe("lock screen handlers", () => {
+	it("starts in the clock phase only when the preference is enabled", () => {
+		expect(getInitialLockScreenPhase(true)).toBe("clock");
+		expect(getInitialLockScreenPhase(false)).toBe("password");
+		expect(getInitialLockScreenPhase(true, true)).toBe("password");
+	});
+
+	it("wakes the password phase once and leaves it unchanged afterward", () => {
+		expect(wakeLockScreen("clock")).toBe("password");
+		expect(wakeLockScreen(wakeLockScreen("clock"))).toBe("password");
+	});
+
+	it("does not treat browser refresh shortcuts as wake keys", () => {
+		expect(isBrowserRefreshKey({ key: "F5" })).toBe(true);
+		expect(isBrowserRefreshKey({ key: "r", ctrlKey: true })).toBe(true);
+		expect(isBrowserRefreshKey({ key: "R", metaKey: true })).toBe(true);
+		expect(isBrowserRefreshKey({ key: "Enter" })).toBe(false);
+		expect(isLockScreenIgnoredKey({ key: "Control" })).toBe(true);
+		expect(isLockScreenIgnoredKey({ key: "F5", ctrlKey: true })).toBe(true);
+	});
+
+	it("consumes the wake event before switching to the password phase", () => {
+		const event = { preventDefault: vi.fn(), stopPropagation: vi.fn() };
+		consumeLockScreenWakeEvent(event);
+		expect(event.preventDefault).toHaveBeenCalledOnce();
+		expect(event.stopPropagation).toHaveBeenCalledOnce();
+	});
+
 	it("resets the field and unlocks with the current time after success", async () => {
 		const resetFields = vi.fn();
 		const unlock = vi.fn();

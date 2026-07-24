@@ -18,6 +18,8 @@ export default {
 	},
 	lockScreen: {
 		lock: "Lock screen",
+		flipClockOnLock: "Show flip clock when locked",
+		flipClockWakeHint: "Click or press any key to unlock",
 		unlock: "Unlock",
 		passwordPlaceholder: "Enter your password",
 		automaticLock: "Automatic lock",

@@ -11,14 +11,28 @@ import { setToken } from "@/redux/modules/global/action";
 import { setTabsList } from "@/redux/modules/tabs/action";
 import { clearLockRuntime } from "@/utils/lockStorage";
 import { broadcastLogout } from "@/utils/sessionSync";
-import { runUnlock, switchAccountCleanup, unlockErrorTranslationKey, type UnlockError } from "./lockScreenLogic";
+import {
+	getInitialLockScreenPhase,
+	consumeLockScreenWakeEvent,
+	getLockScreenWakeStorageKey,
+	isLockScreenIgnoredKey,
+	runUnlock,
+	switchAccountCleanup,
+	unlockErrorTranslationKey,
+	wakeLockScreen,
+	type LockScreenPhase,
+	type UnlockError
+} from "./lockScreenLogic";
 import UserAvatar from "./UserAvatar";
+import { loadFlipClockSettings } from "@/views/tool/commonTools/tools/flipClock/flipClockSettings";
+import { FlipClockDisplay, getClockText } from "@/views/tool/commonTools/tools/flipClock/FlipClockDisplay";
 import "./LockScreen.less";
 
 interface Props {
 	userInfo?: UserInfo;
 	avatarSrc: string;
 	lockedAt: number | null;
+	showFlipClockOnLock: boolean;
 	unlockScreen: typeof unlockScreen;
 	resetLockRuntime: typeof resetLockRuntime;
 	setToken: typeof setToken;
@@ -29,6 +43,13 @@ const LockScreen = (props: Props) => {
 	const [form] = Form.useForm<{ password: string }>();
 	const [submitting, setSubmitting] = useState(false);
 	const [unlockError, setUnlockError] = useState<UnlockError | null>(null);
+	const wakeStorageKey = getLockScreenWakeStorageKey(props.lockedAt);
+	const [phase, setPhase] = useState<LockScreenPhase>(() =>
+		getInitialLockScreenPhase(props.showFlipClockOnLock, sessionStorage.getItem(wakeStorageKey) === "password")
+	);
+	const [now, setNow] = useState(() => new Date());
+	const [flipClockSettings] = useState(() => loadFlipClockSettings(window.localStorage));
+	const previousClockTextRef = useRef<string>(getClockText(new Date(), flipClockSettings.showSeconds));
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { token } = theme.useToken();
@@ -49,7 +70,16 @@ const LockScreen = (props: Props) => {
 		input.focus({ preventScroll: true });
 	};
 
+	const showPasswordPhase = () => {
+		sessionStorage.setItem(wakeStorageKey, "password");
+		setPhase(current => wakeLockScreen(current));
+	};
+
 	useLayoutEffect(() => {
+		if (phase === "clock") {
+			dialogRef.current?.focus({ preventScroll: true });
+			return undefined;
+		}
 		let frame = 0;
 		let attempts = 0;
 		const retryFocus = () => {
@@ -61,16 +91,27 @@ const LockScreen = (props: Props) => {
 		};
 		retryFocus();
 		return () => window.cancelAnimationFrame(frame);
-	}, []);
+	}, [phase]);
 
 	useEffect(() => {
+		if (phase !== "clock") return undefined;
+		const intervalId = window.setInterval(() => setNow(new Date()), 1000);
+		return () => window.clearInterval(intervalId);
+	}, [phase]);
+
+	useEffect(() => {
+		if (phase === "clock") previousClockTextRef.current = getClockText(now, flipClockSettings.showSeconds);
+	}, [flipClockSettings.showSeconds, now, phase]);
+
+	useEffect(() => {
+		if (phase !== "password") return undefined;
 		window.addEventListener("focus", focusPasswordInput);
 		window.addEventListener("pageshow", focusPasswordInput);
 		return () => {
 			window.removeEventListener("focus", focusPasswordInput);
 			window.removeEventListener("pageshow", focusPasswordInput);
 		};
-	}, []);
+	}, [phase]);
 
 	const focusOnPasswordPointer = (event: PointerEvent<HTMLDivElement>) => {
 		const target = event.target as HTMLElement;
@@ -94,6 +135,25 @@ const LockScreen = (props: Props) => {
 		}
 	};
 
+	const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+		if (phase === "clock") {
+			if (isLockScreenIgnoredKey(event)) return;
+			consumeLockScreenWakeEvent(event);
+			showPasswordPhase();
+			return;
+		}
+		containFocus(event);
+	};
+
+	const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+		if (phase === "clock") {
+			consumeLockScreenWakeEvent(event);
+			showPasswordPhase();
+			return;
+		}
+		focusOnPasswordPointer(event);
+	};
+
 	const submit = async ({ password }: { password: string }) => {
 		if (submittingRef.current) return;
 		submittingRef.current = true;
@@ -102,7 +162,10 @@ const LockScreen = (props: Props) => {
 			await runUnlock(password, {
 				verify: async hash => (await verifyPasswordApi(hash)).data === true,
 				now: Date.now,
-				unlock: props.unlockScreen,
+				unlock: at => {
+					sessionStorage.removeItem(wakeStorageKey);
+					props.unlockScreen(at);
+				},
 				resetFields: form.resetFields,
 				setError: setUnlockError,
 				isCurrent: () => mountedRef.current
@@ -123,7 +186,10 @@ const LockScreen = (props: Props) => {
 			clearTabs: props.setTabsList,
 			resetRuntime: props.resetLockRuntime,
 			removeStorage: key => localStorage.removeItem(key),
-			clearRuntime: clearLockRuntime,
+			clearRuntime: () => {
+				sessionStorage.removeItem(wakeStorageKey);
+				clearLockRuntime();
+			},
 			broadcastLogout,
 			navigateLogin: () => navigate("/login", { replace: true })
 		});
@@ -132,54 +198,76 @@ const LockScreen = (props: Props) => {
 	return createPortal(
 		<div
 			ref={dialogRef}
-			className="lock-screen"
+			className={`lock-screen${phase === "clock" ? " lock-screen-clock" : ""}`}
 			role="dialog"
 			aria-modal="true"
-			aria-labelledby="lock-screen-title"
-			onKeyDown={containFocus}
-			onPointerDownCapture={focusOnPasswordPointer}
-			onClickCapture={focusOnPasswordPointer}
-			style={{ background: token.colorBgBase }}
+			aria-label={phase === "clock" ? t("lockScreen.lock") : undefined}
+			aria-labelledby={phase === "password" ? "lock-screen-title" : undefined}
+			tabIndex={phase === "clock" ? 0 : -1}
+			onKeyDown={handleKeyDown}
+			onPointerDownCapture={handlePointerDown}
+			onClickCapture={phase === "password" ? focusOnPasswordPointer : undefined}
+			style={
+				phase === "clock"
+					? {
+							backgroundColor: flipClockSettings.backgroundColor,
+							backgroundImage: flipClockSettings.backgroundImage ? `url(${flipClockSettings.backgroundImage})` : undefined
+					  }
+					: { background: token.colorBgBase }
+			}
 		>
-			<div className="lock-screen-card" style={{ color: token.colorText, background: token.colorBgContainer }}>
-				<UserAvatar size={72} src={props.avatarSrc}>
-					{props.userInfo?.nickName?.slice(0, 1) || props.userInfo?.userName?.slice(0, 1) || "-"}
-				</UserAvatar>
-				<Typography.Title id="lock-screen-title" level={3}>
-					{t("lockScreen.lock")}
-				</Typography.Title>
-				<Typography.Text>{props.userInfo?.nickName || props.userInfo?.userName}</Typography.Text>
-				{props.lockedAt && (
-					<Typography.Text type="secondary">
-						{t("lockScreen.lockedTime")}: {new Date(props.lockedAt).toLocaleString()}
-					</Typography.Text>
-				)}
-				{unlockErrorText && (
-					<Alert
-						className="lock-screen-error"
-						type="error"
-						showIcon
-						title={typeof unlockError === "object" ? unlockErrorText : t(unlockErrorText)}
+			{phase === "clock" ? (
+				<>
+					<FlipClockDisplay
+						now={now}
+						settings={flipClockSettings}
+						previousClockText={previousClockTextRef.current}
+						animate={false}
+						isFullscreen
 					/>
-				)}
-				<Form form={form} onFinish={submit} autoComplete="off">
-					<Form.Item name="password" rules={[{ required: true, message: t("lockScreen.passwordPlaceholder") }]}>
-						<Input.Password
-							ref={passwordInputRef}
-							onPointerDownCapture={focusPasswordInput}
-							aria-label={t("lockScreen.passwordPlaceholder")}
-							placeholder={t("lockScreen.passwordPlaceholder")}
-							autoFocus
+					<Typography.Text className="lock-screen-clock-hint">{t("lockScreen.flipClockWakeHint")}</Typography.Text>
+				</>
+			) : (
+				<div className="lock-screen-card" style={{ color: token.colorText, background: token.colorBgContainer }}>
+					<UserAvatar size={72} src={props.avatarSrc}>
+						{props.userInfo?.nickName?.slice(0, 1) || props.userInfo?.userName?.slice(0, 1) || "-"}
+					</UserAvatar>
+					<Typography.Title id="lock-screen-title" level={3}>
+						{t("lockScreen.lock")}
+					</Typography.Title>
+					<Typography.Text>{props.userInfo?.nickName || props.userInfo?.userName}</Typography.Text>
+					{props.lockedAt && (
+						<Typography.Text type="secondary">
+							{t("lockScreen.lockedTime")}: {new Date(props.lockedAt).toLocaleString()}
+						</Typography.Text>
+					)}
+					{unlockErrorText && (
+						<Alert
+							className="lock-screen-error"
+							type="error"
+							showIcon
+							title={typeof unlockError === "object" ? unlockErrorText : t(unlockErrorText)}
 						/>
-					</Form.Item>
-					<Button block type="primary" htmlType="submit" icon={<UnlockOutlined />} loading={submitting}>
-						{t("lockScreen.unlock")}
+					)}
+					<Form form={form} onFinish={submit} autoComplete="off">
+						<Form.Item name="password" rules={[{ required: true, message: t("lockScreen.passwordPlaceholder") }]}>
+							<Input.Password
+								ref={passwordInputRef}
+								onPointerDownCapture={focusPasswordInput}
+								aria-label={t("lockScreen.passwordPlaceholder")}
+								placeholder={t("lockScreen.passwordPlaceholder")}
+								autoFocus
+							/>
+						</Form.Item>
+						<Button block type="primary" htmlType="submit" icon={<UnlockOutlined />} loading={submitting}>
+							{t("lockScreen.unlock")}
+						</Button>
+					</Form>
+					<Button type="link" icon={<UserSwitchOutlined />} onClick={switchAccount}>
+						{t("lockScreen.switchAccount")}
 					</Button>
-				</Form>
-				<Button type="link" icon={<UserSwitchOutlined />} onClick={switchAccount}>
-					{t("lockScreen.switchAccount")}
-				</Button>
-			</div>
+				</div>
+			)}
 		</div>,
 		document.body
 	);

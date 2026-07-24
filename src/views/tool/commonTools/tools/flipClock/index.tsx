@@ -13,6 +13,7 @@ import screenfull from "screenfull";
 import { useSelector } from "react-redux";
 import { loadFlipClockSettings, saveFlipClockSettings, type FlipClockSettings } from "./flipClockSettings";
 import { getChangedDigitIndexes } from "./flipClockUtils";
+import { FlipClockDisplay, getClockText } from "./FlipClockDisplay";
 import "./index.less";
 
 interface FlipClockProps {
@@ -22,63 +23,6 @@ interface FlipClockProps {
 const BACKGROUND_PRESETS = ["#101828", "#0f172a", "#172554", "#0f766e", "#7c2d12", "#3b0764"];
 const MAX_BACKGROUND_IMAGE_SIZE = 2 * 1024 * 1024;
 
-const getClockText = (date: Date, showSeconds: boolean): string => {
-	const time = [date.getHours(), date.getMinutes(), ...(showSeconds ? [date.getSeconds()] : [])];
-	return time.map(value => String(value).padStart(2, "0")).join(":");
-};
-
-const getDateText = (date: Date): string =>
-	new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "long", day: "numeric" }).format(date);
-
-const getWeekdayText = (date: Date): string => new Intl.DateTimeFormat("zh-CN", { weekday: "long" }).format(date);
-
-const FlipDigits: React.FC<{
-	value: string;
-	previousValue?: string;
-	changedDigitIndexes: number[];
-}> = ({ value, previousValue, changedDigitIndexes }) => {
-	let digitIndex = 0;
-	const currentDigits = value.replace(/:/g, "");
-	const previousDigits = (previousValue ?? value).replace(/:/g, "");
-	return (
-		<div className="flip-clock-digits" aria-label={value}>
-			{value.split(":").map((part, index) => (
-				<React.Fragment key={`${part}-${index}`}>
-					{index > 0 && <span className="flip-clock-separator">:</span>}
-					{part.split("").map(digit => {
-						const currentDigitIndex = digitIndex++;
-						const isFlipping = changedDigitIndexes.includes(currentDigitIndex);
-						const previousDigit = previousDigits[currentDigitIndex] ?? currentDigits[currentDigitIndex] ?? digit;
-						return (
-							<span
-								className={`flip-digit${isFlipping ? " is-flipping" : ""}`}
-								key={`${currentDigitIndex}-${digit}-${previousDigit}-${isFlipping}`}
-							>
-								<span className="flip-digit-half flip-digit-half-top">
-									<span>{digit}</span>
-								</span>
-								<span className="flip-digit-half flip-digit-half-bottom">
-									<span>{previousDigit}</span>
-								</span>
-								{isFlipping && (
-									<>
-										<span className="flip-digit-flap flip-digit-flap-top">
-											<span>{previousDigit}</span>
-										</span>
-										<span className="flip-digit-flap flip-digit-flap-bottom">
-											<span>{digit}</span>
-										</span>
-									</>
-								)}
-							</span>
-						);
-					})}
-				</React.Fragment>
-			))}
-		</div>
-	);
-};
-
 const FlipClock: React.FC<FlipClockProps> = ({ onBack }) => {
 	const isDark = useSelector((state: any) => Boolean(state.global.themeConfig.isDark));
 	const pageRef = useRef<HTMLDivElement>(null);
@@ -87,8 +31,6 @@ const FlipClock: React.FC<FlipClockProps> = ({ onBack }) => {
 	const [isFullscreen, setIsFullscreen] = useState(screenfull.isFullscreen);
 	const [settingsOpen, setSettingsOpen] = useState(false);
 	const clockText = useMemo(() => getClockText(now, settings.showSeconds), [now, settings.showSeconds]);
-	const dateText = useMemo(() => getDateText(now), [now]);
-	const weekdayText = useMemo(() => getWeekdayText(now), [now]);
 	const previousClockTextRef = useRef<string>();
 	const changedDigitIndexes = getChangedDigitIndexes(previousClockTextRef.current, clockText);
 
@@ -184,17 +126,14 @@ const FlipClock: React.FC<FlipClockProps> = ({ onBack }) => {
 				</Space>
 			</div>
 
-			<div className="flip-clock-stage">
-				{(settings.showDate || settings.showWeekday) && (
-					<div className="flip-clock-date-info">
-						{settings.showDate && <span>{dateText}</span>}
-						{settings.showDate && settings.showWeekday && <span className="date-info-separator">·</span>}
-						{settings.showWeekday && <span>{weekdayText}</span>}
-					</div>
-				)}
-				<FlipDigits value={clockText} previousValue={previousClockTextRef.current} changedDigitIndexes={changedDigitIndexes} />
-				{isFullscreen && <div className="flip-clock-exit-hint">按 Esc 退出全屏</div>}
-			</div>
+			<FlipClockDisplay
+				now={now}
+				settings={settings}
+				previousClockText={previousClockTextRef.current}
+				changedDigitIndexes={changedDigitIndexes}
+				isFullscreen={isFullscreen}
+			/>
+			{isFullscreen && <div className="flip-clock-exit-hint">按 Esc 退出全屏</div>}
 
 			<Drawer
 				className={`flip-clock-settings-drawer${isDark ? " flip-clock-settings-drawer-dark" : ""}`}

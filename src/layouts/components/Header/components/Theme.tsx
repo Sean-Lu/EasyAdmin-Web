@@ -84,6 +84,7 @@ const Theme = (props: any & { userInfo?: UserInfo }) => {
 					userId={props.userInfo?.id}
 					autoLockEnabled={props.lock.autoLockEnabled}
 					idleTimeoutMinutes={props.lock.idleTimeoutMinutes}
+					showFlipClockOnLock={props.lock.showFlipClockOnLock}
 					setLockPreference={props.setLockPreference}
 				/>
 				<br />

@@ -211,7 +211,12 @@ const LockCoordinator = (props: Props) => {
 				{props.children}
 			</div>
 			{shouldShowLockScreen(props.token, props.lock.locked) && (
-				<LockScreen userInfo={userInfo} avatarSrc={avatarSrc} lockedAt={props.lock.lockedAt} />
+				<LockScreen
+					userInfo={userInfo}
+					avatarSrc={avatarSrc}
+					lockedAt={props.lock.lockedAt}
+					showFlipClockOnLock={props.lock.showFlipClockOnLock}
+				/>
 			)}
 		</>
 	) : (

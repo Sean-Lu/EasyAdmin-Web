@@ -10,7 +10,7 @@ import {
 } from "./lockStorage";
 
 const lockPreferenceKey = (userId: string) => `easyadmin:lock:preference:${userId}`;
-const DEFAULT_LOCK_PREFERENCE = { autoLockEnabled: false, idleTimeoutMinutes: 15 };
+const DEFAULT_LOCK_PREFERENCE = { autoLockEnabled: false, idleTimeoutMinutes: 15, showFlipClockOnLock: false };
 
 const values = new Map<string, string>();
 const memoryStorage: Storage = {
@@ -39,13 +39,23 @@ describe("lock storage", () => {
 		expect(ALLOWED_IDLE_TIMEOUTS).toEqual([5, 10, 15, 30, 60]);
 		for (const idleTimeoutMinutes of ALLOWED_IDLE_TIMEOUTS) {
 			localStorage.setItem(lockPreferenceKey("7"), JSON.stringify({ autoLockEnabled: true, idleTimeoutMinutes }));
-			expect(readLockPreference("7")).toEqual({ autoLockEnabled: true, idleTimeoutMinutes });
+			expect(readLockPreference("7")).toEqual({ autoLockEnabled: true, idleTimeoutMinutes, showFlipClockOnLock: false });
 		}
 	});
 
+	it("defaults the flip clock lock preference to disabled for legacy data", () => {
+		localStorage.setItem(lockPreferenceKey("7"), JSON.stringify({ autoLockEnabled: true, idleTimeoutMinutes: 30 }));
+		expect(readLockPreference("7")).toEqual({ autoLockEnabled: true, idleTimeoutMinutes: 30, showFlipClockOnLock: false });
+	});
+
+	it("persists the flip clock lock preference", () => {
+		writeLockPreference("7", { autoLockEnabled: true, idleTimeoutMinutes: 30, showFlipClockOnLock: true });
+		expect(readLockPreference("7").showFlipClockOnLock).toBe(true);
+	});
+
 	it("keeps preferences separate per user", () => {
-		writeLockPreference("7", { autoLockEnabled: true, idleTimeoutMinutes: 5 });
-		writeLockPreference("8", { autoLockEnabled: false, idleTimeoutMinutes: 60 });
+		writeLockPreference("7", { autoLockEnabled: true, idleTimeoutMinutes: 5, showFlipClockOnLock: false });
+		writeLockPreference("8", { autoLockEnabled: false, idleTimeoutMinutes: 60, showFlipClockOnLock: false });
 		expect(lockPreferenceKey("7")).not.toBe(lockPreferenceKey("8"));
 		expect(readLockPreference("7").idleTimeoutMinutes).toBe(5);
 		expect(readLockPreference("8").idleTimeoutMinutes).toBe(60);

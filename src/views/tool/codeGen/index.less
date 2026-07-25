@@ -1,0 +1,54 @@
+.code-gen-page {
+	.code-gen-secondary-text {
+		color: var(--ant-color-text-secondary);
+	}
+	.code-gen-tertiary-text,
+	.code-gen-empty-state {
+		color: var(--ant-color-text-tertiary);
+	}
+	.code-gen-help-panel {
+		.code-gen-help-header {
+			background-color: var(--ant-color-fill-quaternary);
+		}
+		.code-gen-variable {
+			color: var(--ant-color-primary);
+		}
+		.code-gen-inline-code {
+			color: var(--ant-color-text);
+			background-color: var(--ant-color-fill-tertiary);
+		}
+		.code-gen-path-example {
+			background-color: var(--ant-color-fill-tertiary);
+		}
+		p[style*="color"],
+		ul[style*="color"],
+		span[style*="color"] {
+			color: var(--ant-color-text-secondary) !important;
+		}
+		code[style*="background"] {
+			color: var(--ant-color-text) !important;
+			background-color: var(--ant-color-fill-tertiary) !important;
+		}
+		.ant-collapse-content,
+		.ant-tabs-tabpane {
+			color: var(--ant-color-text);
+		}
+	}
+	.code-gen-file-list {
+		flex: 0 0 220px;
+		min-width: 0;
+	}
+	.code-gen-file-icon {
+		flex: 0 0 auto;
+		margin-right: 6px;
+		font-size: 12px;
+	}
+	.code-gen-file-name {
+		display: block;
+		flex: 1 1 auto;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}

@@ -1,0 +1,26 @@
+.code-block-editor {
+	overflow: hidden;
+	background: var(--ant-color-bg-container);
+	border: 1px solid var(--ant-color-border);
+	border-radius: 6px;
+	.cm-editor {
+		min-height: 240px;
+		font-size: 13px;
+	}
+	.cm-scroller {
+		font-family: "JetBrains Mono", Consolas, Monaco, Menlo, monospace;
+	}
+}
+.code-block,
+.code-block-plain {
+	min-height: 100%;
+	overflow: auto;
+	font-family: "JetBrains Mono", Consolas, Monaco, Menlo, monospace;
+}
+.code-block-plain {
+	padding: 16px 20px;
+	margin: 0;
+	color: var(--ant-color-text);
+	word-break: break-all;
+	white-space: pre-wrap;
+}

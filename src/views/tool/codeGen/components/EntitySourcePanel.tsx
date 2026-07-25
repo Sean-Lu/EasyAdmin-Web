@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Button, Input, Select, Table, message, Space, Tag } from "antd";
+import { Card, Button, Select, Table, message, Space, Tag } from "antd";
 import { CodeOutlined, PlayCircleOutlined, FileTextOutlined } from "@ant-design/icons";
 import { BackendId } from "@/api/interface";
 import {
@@ -10,8 +10,7 @@ import {
 	generateCodeByConfig,
 	CodeGenResultDto
 } from "@/services/tool/codeGenService";
-
-const { TextArea } = Input;
+import CodeBlock from "@/components/CodeBlock";
 
 interface EntitySourcePanelProps {
 	templateIds: BackendId[];
@@ -157,16 +156,12 @@ const EntitySourcePanel: React.FC<EntitySourcePanelProps> = ({ templateIds, genP
 				/>
 			</div>
 
-			<TextArea
-				value={sourceCode}
-				onChange={e => setSourceCode(e.target.value)}
-				placeholder={
-					language === "csharp"
-						? '// 粘贴C# Entity类源码\npublic class UserEntity : EntityBase\n{\n    [Description("用户名")]\n    public string Name { get; set; }\n}'
-						: "// 粘贴Java Entity类源码\n@Data\npublic class User {\n    private String name;\n}"
-				}
-				rows={10}
-				style={{ fontFamily: "Consolas, Monaco, monospace", fontSize: 13, marginBottom: 12 }}
+			<CodeBlock
+				code={sourceCode}
+				language={language === "java" ? "java" : "csharp"}
+				editable
+				onChange={setSourceCode}
+				className="entity-source-editor"
 			/>
 
 			<Space>
@@ -186,7 +181,11 @@ const EntitySourcePanel: React.FC<EntitySourcePanelProps> = ({ templateIds, genP
 								<Tag style={{ marginLeft: 8 }}>className: {parseResult.className}</Tag>
 								<Tag>tableName: {parseResult.tableName}</Tag>
 								{parseResult.namespace && <Tag color="purple">{parseResult.namespace}</Tag>}
-								{parseResult.tableComment && <span style={{ fontSize: 12, color: "#666" }}>{parseResult.tableComment}</span>}
+								{parseResult.tableComment && (
+									<span className="code-gen-secondary-text" style={{ fontSize: 12 }}>
+										{parseResult.tableComment}
+									</span>
+								)}
 							</div>
 						}
 						size="small"

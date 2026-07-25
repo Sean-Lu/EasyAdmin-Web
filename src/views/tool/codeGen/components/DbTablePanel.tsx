@@ -70,7 +70,9 @@ const DbTablePanel: React.FC<DbTablePanelProps> = ({
 				<div style={{ display: "flex", alignItems: "center" }}>
 					<Checkbox checked={isAllSelected} onChange={onSelectAll} />
 					<span style={{ marginLeft: 8, fontSize: 13 }}>{isAllSelected ? "取消全选" : "全选"}</span>
-					<span style={{ marginLeft: 16, fontSize: 12, color: "#999" }}>已选择 {selectedTables.length} 个表</span>
+					<span className="code-gen-tertiary-text" style={{ marginLeft: 16, fontSize: 12 }}>
+						已选择 {selectedTables.length} 个表
+					</span>
 				</div>
 				<Search
 					placeholder="搜索数据表"
@@ -92,7 +94,7 @@ const DbTablePanel: React.FC<DbTablePanelProps> = ({
 					size="small"
 				/>
 			) : (
-				<div style={{ textAlign: "center", padding: "40px 20px", color: "#999" }}>
+				<div className="code-gen-empty-state" style={{ textAlign: "center", padding: "40px 20px" }}>
 					<TableOutlined style={{ fontSize: 48, marginBottom: 12, opacity: 0.3 }} />
 					<p style={{ marginBottom: 8 }}>请先选择数据库配置</p>
 					<p style={{ fontSize: 12 }}>选择后将显示该数据库中的所有数据表</p>

@@ -146,7 +146,9 @@ const TemplatePanel: React.FC<TemplatePanelProps> = ({
 					<div style={{ display: "flex", alignItems: "center" }}>
 						<Checkbox checked={isAllSelected} onChange={onSelectAll} />
 						<span style={{ marginLeft: 8, fontSize: 13 }}>{isAllSelected ? "取消全选" : "全选"}</span>
-						<span style={{ marginLeft: 16, fontSize: 12, color: "#999" }}>已选择 {selectedTemplates.length} 个模板</span>
+						<span className="code-gen-tertiary-text" style={{ marginLeft: 16, fontSize: 12 }}>
+							已选择 {selectedTemplates.length} 个模板
+						</span>
 					</div>
 					<Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => openModal()}>
 						新增模板
@@ -163,7 +165,7 @@ const TemplatePanel: React.FC<TemplatePanelProps> = ({
 						scroll={{ x: 980 }}
 					/>
 				) : (
-					<div style={{ textAlign: "center", padding: "40px 20px", color: "#999" }}>
+					<div className="code-gen-empty-state" style={{ textAlign: "center", padding: "40px 20px" }}>
 						<CodeOutlined style={{ fontSize: 48, marginBottom: 12, opacity: 0.3 }} />
 						<p style={{ marginBottom: 8 }}>请先选择代码模板分类</p>
 						<p style={{ fontSize: 12 }}>选择分类后将显示该分类下的模板</p>

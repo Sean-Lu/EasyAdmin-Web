@@ -80,7 +80,9 @@ const GenConfigPanel: React.FC<GenConfigPanelProps> = ({ mode, genParams, onPara
 							</Form.Item>
 						) : (
 							<Form.Item label="提示">
-								<span style={{ color: "#999", fontSize: 12 }}>代码解析/配置模式下无需设置表前缀</span>
+								<span className="code-gen-tertiary-text" style={{ fontSize: 12 }}>
+									代码解析/配置模式下无需设置表前缀
+								</span>
 							</Form.Item>
 						)}
 					</Col>

@@ -22,6 +22,7 @@ import GenResultPanel from "./components/GenResultPanel";
 import HelpPanel from "./components/HelpPanel";
 import EntitySourcePanel from "./components/EntitySourcePanel";
 import ConfigModePanel from "./components/ConfigModePanel";
+import "./index.less";
 
 /**
  * 代码生成器组件
@@ -250,7 +251,14 @@ const CodeGen: React.FC = () => {
 
 	return (
 		<div className="code-gen-page" style={{ padding: 16 }}>
-			<Card title="代码生成器" extra={<span style={{ fontSize: 12, color: "#666" }}>三种生成模式，灵活适配不同场景</span>}>
+			<Card
+				title="代码生成器"
+				extra={
+					<span className="code-gen-secondary-text" style={{ fontSize: 12 }}>
+						三种生成模式，灵活适配不同场景
+					</span>
+				}
+			>
 				<div style={{ marginBottom: 16 }}>
 					<Segmented
 						value={mode}

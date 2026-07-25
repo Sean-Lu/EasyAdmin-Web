@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Space, Tabs, message } from "antd";
+import { Card, Button, Space, Tooltip, message } from "antd";
 import { CopyOutlined, DownloadOutlined, FileOutlined, CodeOutlined } from "@ant-design/icons";
 import copy from "copy-to-clipboard";
 import { CodeGenResultDto, downloadPackage, downloadFile } from "@/services/tool/codeGenService";
+import CodeBlock from "@/components/CodeBlock";
+import { detectCodeLanguage } from "@/components/CodeBlock/languages";
 
 interface GenResultPanelProps {
 	result: CodeGenResultDto;
@@ -67,7 +69,9 @@ const GenResultPanel: React.FC<GenResultPanelProps> = ({ result }) => {
 				<div style={{ display: "flex", alignItems: "center", gap: 8 }}>
 					<CodeOutlined style={{ fontSize: 18 }} />
 					<span>生成结果</span>
-					<span style={{ fontSize: 12, color: "#999", marginLeft: 8 }}>({result.files.length} 个文件)</span>
+					<span className="code-gen-tertiary-text" style={{ fontSize: 12, marginLeft: 8 }}>
+						({result.files.length} 个文件)
+					</span>
 				</div>
 			}
 			variant="outlined"
@@ -88,10 +92,11 @@ const GenResultPanel: React.FC<GenResultPanelProps> = ({ result }) => {
 		>
 			<div style={{ display: "flex", height: 500, gap: 0 }}>
 				<div
+					className="code-gen-file-list"
 					style={{
-						width: 180,
-						backgroundColor: "#fafafa",
-						borderRight: "1px solid #e8e8e8",
+						width: 220,
+						backgroundColor: "var(--ant-color-fill-quaternary)",
+						borderRight: "1px solid var(--ant-color-border)",
 						overflowY: "auto",
 						paddingTop: 8
 					}}
@@ -101,17 +106,20 @@ const GenResultPanel: React.FC<GenResultPanelProps> = ({ result }) => {
 							key={index}
 							onClick={() => setActiveFileIndex(index)}
 							style={{
+								width: "100%",
+								display: "flex",
+								alignItems: "center",
 								padding: "8px 12px",
 								cursor: "pointer",
 								fontSize: 13,
-								color: activeFileIndex === index ? "#1890ff" : "#666",
-								backgroundColor: activeFileIndex === index ? "#e6f7ff" : "transparent",
-								borderLeft: activeFileIndex === index ? "3px solid #1890ff" : "3px solid transparent",
+								color: activeFileIndex === index ? "var(--ant-color-primary)" : "var(--ant-color-text-secondary)",
+								backgroundColor: activeFileIndex === index ? "var(--ant-color-primary-bg)" : "transparent",
+								borderLeft: activeFileIndex === index ? "3px solid var(--ant-color-primary)" : "3px solid transparent",
 								transition: "background-color 0.2s"
 							}}
 							onMouseEnter={e => {
 								if (activeFileIndex !== index) {
-									e.currentTarget.style.backgroundColor = "#f5f5f5";
+									e.currentTarget.style.backgroundColor = "var(--ant-color-fill-tertiary)";
 								}
 							}}
 							onMouseLeave={e => {
@@ -120,13 +128,10 @@ const GenResultPanel: React.FC<GenResultPanelProps> = ({ result }) => {
 								}
 							}}
 						>
-							<FileOutlined
-								style={{
-									marginRight: 6,
-									fontSize: 12
-								}}
-							/>
-							{file.fileName}
+							<FileOutlined className="code-gen-file-icon" />
+							<Tooltip title={file.fileName} placement="right">
+								<span className="code-gen-file-name">{file.fileName}</span>
+							</Tooltip>
 						</div>
 					))}
 				</div>
@@ -137,20 +142,11 @@ const GenResultPanel: React.FC<GenResultPanelProps> = ({ result }) => {
 						overflow: "auto"
 					}}
 				>
-					<pre
-						style={{
-							margin: 0,
-							padding: "16px 20px",
-							color: "#d4d4d4",
-							fontFamily: "'JetBrains Mono', 'Consolas', 'Monaco', 'Menlo', monospace",
-							fontSize: 13,
-							lineHeight: 1.7,
-							whiteSpace: "pre-wrap",
-							wordBreak: "break-all"
-						}}
-					>
-						{result.files[activeFileIndex]?.content || ""}
-					</pre>
+					<CodeBlock
+						code={result.files[activeFileIndex]?.content || ""}
+						language={detectCodeLanguage(result.files[activeFileIndex]?.fileName || "")}
+						className="code-gen-result-block"
+					/>
 				</div>
 			</div>
 		</Card>

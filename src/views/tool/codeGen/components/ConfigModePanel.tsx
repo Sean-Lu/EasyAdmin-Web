@@ -320,7 +320,7 @@ const ConfigModePanel: React.FC<ConfigModePanelProps> = ({ templateIds, onCodeGe
 					scroll={{ x: 800 }}
 				/>
 			) : (
-				<div style={{ textAlign: "center", padding: "16px 0", color: "#999", fontSize: 12 }}>
+				<div className="code-gen-empty-state" style={{ textAlign: "center", padding: "16px 0", fontSize: 12 }}>
 					列配置为空 — 适用于只使用基础模板变量（ClassName等）的模板
 				</div>
 			)}

@@ -2,6 +2,7 @@ import { HomeFilled, HomeOutlined, BellOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { HOME_URL } from "@/config/config";
+import { APP_NAME } from "@/config/app";
 import "./index.less";
 
 // 空状态页面：没有打开任何菜单时显示的页面
@@ -15,7 +16,7 @@ const EmptyPage = (props: any) => {
 				<div className="empty-logo">
 					<HomeFilled className="logo-icon" />
 				</div>
-				<h2>欢迎使用 EasyAdmin</h2>
+				<h2>欢迎使用 {APP_NAME}</h2>
 				<p className="empty-desc">暂无打开的页面</p>
 				<div className="empty-actions">
 					<button className="action-btn" onClick={() => navigate(HOME_URL)}>

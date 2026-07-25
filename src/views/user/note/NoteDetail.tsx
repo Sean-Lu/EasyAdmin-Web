@@ -640,7 +640,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 		if (!includeImages && extractNoteImageIds(contentMarkdown).length > 0) {
 			Modal.confirm({
 				title: "导出Markdown",
-				content: "正文包含EasyAdmin内部图片引用，单独导出后图片不可用。建议导出Markdown资源包。",
+				content: "正文包含内部图片引用，单独导出后图片不可用。建议导出Markdown资源包。",
 				okText: "仍然导出",
 				onOk: download
 			});

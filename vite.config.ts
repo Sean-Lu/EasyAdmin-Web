@@ -66,7 +66,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			createHtmlPlugin({
 				inject: {
 					data: {
-						title: viteEnv.VITE_GLOB_APP_TITLE
+						title: viteEnv.VITE_APP_NAME
 					}
 				}
 			}),

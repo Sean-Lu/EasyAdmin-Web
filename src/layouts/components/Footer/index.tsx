@@ -1,4 +1,5 @@
 import { connect } from "react-redux";
+import { APP_NAME } from "@/config/app";
 import "./index.less";
 
 const LayoutFooter = (props: any) => {
@@ -8,7 +9,7 @@ const LayoutFooter = (props: any) => {
 			{!themeConfig.footer && (
 				<div className="footer">
 					<a href="https://github.com/Sean-Lu/EasyAdmin-Web" target="_blank" rel="noreferrer">
-						EasyAdmin © 2024-2026 Sean
+						{APP_NAME} © 2024-2026 Sean
 					</a>
 				</div>
 			)}

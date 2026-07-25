@@ -222,7 +222,6 @@ const LockScreen = (props: Props) => {
 						now={now}
 						settings={flipClockSettings}
 						previousClockText={previousClockTextRef.current}
-						animate={false}
 						isFullscreen
 					/>
 					<Typography.Text className="lock-screen-clock-hint">{t("lockScreen.flipClockWakeHint")}</Typography.Text>

@@ -6,12 +6,10 @@ import { ResultEnum } from "@/enums/httpEnum";
 import { checkStatus } from "./helper/checkStatus";
 import { AxiosCanceler } from "./helper/axiosCancel";
 import { setToken } from "@/redux/modules/global/action";
-import { setTabsList } from "@/redux/modules/tabs/action";
 import { message } from "antd";
 import { store } from "@/redux";
 import { refreshTokenApi } from "./modules/login";
-import { captureLoginRedirect } from "@/utils/authRedirect";
-import { clearLockRuntime } from "@/utils/lockStorage";
+import { handleTokenExpired } from "./authExpiry";
 
 const axiosCanceler = new AxiosCanceler();
 
@@ -223,17 +221,6 @@ class RequestHttp {
 			returnFullResponse: true
 		});
 	}
-}
-
-// * 登录过期处理
-function handleTokenExpired() {
-	message.info("登录已过期，请您重新登录！");
-	store.dispatch(setToken(""));
-	store.dispatch(setTabsList([]));
-	clearLockRuntime();
-	localStorage.removeItem("refreshToken");
-	captureLoginRedirect(window.location.hash.slice(1));
-	window.location.hash = "/login";
 }
 
 export default new RequestHttp(config);

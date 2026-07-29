@@ -135,6 +135,24 @@ const systemRouter = [
 					title: "通知管理",
 					key: "system-notification"
 				}
+			},
+			{
+				path: "/system/ai/config",
+				element: lazyLoad(React.lazy(() => import("@/views/system/ai/AiConfig"))),
+				meta: {
+					requiresAuth: true,
+					title: "AI 模型配置",
+					key: "system-ai-config"
+				}
+			},
+			{
+				path: "/system/ai/usage",
+				element: lazyLoad(React.lazy(() => import("@/views/system/ai/AiUsage"))),
+				meta: {
+					requiresAuth: true,
+					title: "AI 用量记录",
+					key: "system-ai-usage"
+				}
 			}
 		]
 	}

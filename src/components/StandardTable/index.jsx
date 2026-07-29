@@ -4,6 +4,7 @@ import { Button, Card, Col, Form, message, Modal, Pagination, Row, Space, Table,
 import dayjs from "dayjs";
 
 import axios from "../../api/index";
+import { handleTokenExpired } from "@/api/authExpiry";
 
 import "./index.less";
 
@@ -163,9 +164,7 @@ class StandardTable extends React.Component {
 				// 在弹窗之前校验token是否过期，避免填完信息后因为token过期导致保存失败
 				if (res.success === true) {
 					if (res.data.expired === true) {
-						message.info("登录已过期，请您重新登录！");
-						localStorage.setItem("redirectUrl", window.location.hash.slice(1));
-						window.location.hash = "/login";
+						handleTokenExpired();
 						return;
 					}
 

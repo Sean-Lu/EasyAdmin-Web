@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Button, Layout, Tooltip } from "antd";
 import { FullscreenExitOutlined } from "@ant-design/icons";
@@ -12,6 +12,9 @@ import LayoutHeader from "./components/Header";
 import LayoutTabs from "./components/Tabs";
 import LayoutFooter from "./components/Footer";
 import GlobalWatermark from "./GlobalWatermark";
+import AiAssistantDrawer from "@/components/AiAssistantDrawer";
+import { deriveDrawerPageContext } from "@/components/AiAssistantDrawer/drawerContext";
+import { aiService } from "@/services/ai/aiService";
 import { getWatermarkContent } from "./watermark";
 import "./index.less";
 
@@ -27,12 +30,34 @@ const LayoutIndex = (props: any) => {
 	const [contentRefreshKey, setContentRefreshKey] = useState(0);
 	const [userInfo, setUserInfo] = useState<UserInfo>();
 	const [isUserInfoLoaded, setIsUserInfoLoaded] = useState(false);
+	const [aiAvailable, setAiAvailable] = useState<boolean>();
 	const userInfoRequestGeneration = useRef(0);
 	const mountedRef = useRef(true);
+	const aiAvailabilityLoaded = useRef(false);
+	const aiAvailabilityRequest = useRef<Promise<boolean>>();
 	const authButtonsLoaded = useRef(false);
 	const authButtonsLoading = useRef(false);
 	const userInfoLoading = useRef(false);
 	const watermarkContent = getWatermarkContent(props.global?.themeConfig ?? {}, userInfo ?? {});
+	const currentTab = tabsList?.find((tab: any) => tab.path === pathname);
+	const drawerContext = deriveDrawerPageContext({ pathname }, { key: currentTab?.key, title: currentTab?.title });
+
+	const refreshAiAvailability = useCallback(() => {
+		// 合并同时发起的检查，完成后允许 AI 助手重新打开时再次刷新
+		if (aiAvailabilityRequest.current) return aiAvailabilityRequest.current;
+		const request = aiService
+			.availability()
+			.catch(() => false)
+			.then(value => {
+				if (mountedRef.current) setAiAvailable(value);
+				return value;
+			})
+			.finally(() => {
+				if (aiAvailabilityRequest.current === request) aiAvailabilityRequest.current = undefined;
+			});
+		aiAvailabilityRequest.current = request;
+		return request;
+	}, []);
 
 	// 获取按钮权限列表
 	const getAuthButtonsList = async () => {
@@ -102,6 +127,14 @@ const LayoutIndex = (props: any) => {
 				});
 		}
 	}, [props.lock?.locked, isUserInfoLoaded]);
+
+	useEffect(() => {
+		if (props.lock?.locked || aiAvailabilityLoaded.current) return;
+		aiAvailabilityLoaded.current = true;
+		// AI 助手会在挂载时检查，避免懒加载导致整页刷新时重复请求
+		if (pathname === "/ai/assistant") return;
+		void refreshAiAvailability();
+	}, [pathname, props.lock?.locked, refreshAiAvailability]);
 
 	useEffect(() => {
 		listeningWindow();
@@ -184,7 +217,7 @@ const LayoutIndex = (props: any) => {
 							</div>
 						</>
 					)}
-					<Outlet key={`${pathname}-${contentRefreshKey}`} />
+					<Outlet key={`${pathname}-${contentRefreshKey}`} context={{ refreshAiAvailability }} />
 				</Content>
 				{!menuFullscreen && <LayoutFooter></LayoutFooter>}
 			</Layout>
@@ -195,6 +228,11 @@ const LayoutIndex = (props: any) => {
 		<div style={{ height: "100%" }}>
 			{layoutContent}
 			<GlobalWatermark content={watermarkContent} />
+			<AiAssistantDrawer
+				available={aiAvailable}
+				hidden={Boolean(props.lock?.locked || menuFullscreen)}
+				pageContext={drawerContext}
+			/>
 		</div>
 	);
 };

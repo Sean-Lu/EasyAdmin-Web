@@ -4,6 +4,7 @@ import StandardTable from "../../../components/StandardTable";
 import TenantAdd from "./TenantAdd";
 import TenantEdit from "./TenantEdit";
 import TenantDetail from "./TenantDetail";
+import TenantAiSettings from "./TenantAiSettings";
 import { api } from "../../../actions/system/api";
 import dayjs from "dayjs";
 
@@ -20,6 +21,24 @@ const getValidityStatus = record => {
 // 租户列表
 export default class TenantList extends React.Component {
 	searchFormRef = React.createRef();
+	state = {
+		aiSettingsVisible: false,
+		aiTenant: null
+	};
+
+	showAiSettings = record => {
+		this.setState({
+			aiSettingsVisible: true,
+			aiTenant: record
+		});
+	};
+
+	hideAiSettings = () => {
+		this.setState({
+			aiSettingsVisible: false,
+			aiTenant: null
+		});
+	};
 
 	// ============ 查询表单 ===============
 	renderSearchForm = onSearchFormReset => {
@@ -133,6 +152,13 @@ export default class TenantList extends React.Component {
 						startTime: formatTenantDate(values.startTime),
 						expireTime: formatTenantDate(values.expireTime)
 					})}
+					recordOperateColWidth={190}
+					renderRecordOperate={record => <span onClick={() => this.showAiSettings(record)}>AI设置</span>}
+				/>
+				<TenantAiSettings
+					modalVisible={this.state.aiSettingsVisible}
+					onCancel={this.hideAiSettings}
+					record={this.state.aiTenant}
 				/>
 			</>
 		);

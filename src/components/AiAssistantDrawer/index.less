@@ -1,0 +1,38 @@
+.ai-assistant-float {
+	right: 28px;
+	bottom: 88px;
+}
+.ai-drawer-suggestions {
+	margin: 14px 0;
+	.ant-tag {
+		padding: 4px 8px;
+		cursor: pointer;
+	}
+}
+.ai-drawer-messages {
+	height: min(46vh, 440px);
+	padding: 8px;
+	margin: 12px 0;
+	overflow: auto;
+	border: 1px solid var(--ant-color-border-secondary, #f0f0f0);
+	border-radius: 8px;
+}
+.ai-drawer-message {
+	width: fit-content;
+	max-width: 88%;
+	padding: 8px 10px;
+	margin: 8px 0;
+	overflow-wrap: anywhere;
+	background: var(--ant-color-fill-tertiary, #f5f5f5);
+	border-radius: 8px;
+}
+.ai-drawer-message.user {
+	margin-left: auto;
+	color: #ffffff;
+	background: var(--ant-color-primary, #1677ff);
+}
+.ai-drawer-actions {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 8px;
+}

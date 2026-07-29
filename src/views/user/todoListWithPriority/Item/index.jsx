@@ -161,6 +161,7 @@ class TodoItem extends Component {
 							value={editValue}
 							onChange={this.handleEditChange}
 							onKeyDown={this.handleEditKeyPress}
+							maxLength={500}
 							autoSize={{ minRows: 1 }}
 							autoFocus
 						/>

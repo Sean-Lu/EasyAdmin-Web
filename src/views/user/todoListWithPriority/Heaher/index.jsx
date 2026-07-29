@@ -51,6 +51,7 @@ export default class TodoHeader extends Component {
 					value={this.state.inputValue}
 					onChange={this.handleChange}
 					onPressEnter={this.handleEnter}
+					maxLength={500}
 					allowClear
 					style={{ flex: 1, marginRight: 8 }}
 				/>

@@ -102,6 +102,9 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 	const objectUrlsRef = useRef<string[]>([]);
 	const uploadedImageIdsRef = useRef<Set<string>>(new Set());
 	const savedRef = useRef(false);
+	const savingRef = useRef(false);
+	const saveRef = useRef<() => Promise<void>>(async () => undefined);
+	const activeNoteIdRef = useRef(noteId);
 	const selectedImageRef = useRef<HTMLImageElement | null>(null);
 	const resizeStateRef = useRef<ResizeState | null>(null);
 	const [form] = Form.useForm();
@@ -115,10 +118,21 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 	const [selectedImageRect, setSelectedImageRect] = useState<ImageRect | null>(null);
 	const [contentType, setContentType] = useState<NoteContentType>(NoteContentType.Markdown);
 	const [contentMarkdown, setContentMarkdown] = useState("");
+	const [activeNoteId, setActiveNoteId] = useState(noteId);
 
 	useEffect(() => {
 		void init();
 	}, [noteId, unlockToken]);
+
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (readonly || !event.ctrlKey || event.key.toLowerCase() !== "s") return;
+			event.preventDefault();
+			void saveRef.current().catch(() => undefined);
+		};
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [readonly]);
 
 	useEffect(() => {
 		return () => {
@@ -590,31 +604,35 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 	};
 
 	const save = async () => {
-		if (readonly) return;
-		const values = await form.validateFields();
-		const contentHtml = contentType === NoteContentType.RichText ? getContentHtmlForSave() : undefined;
-		const savedImageIds =
-			contentType === NoteContentType.Markdown
-				? new Set(extractNoteImageIds(contentMarkdown))
-				: getImageFileIdsFromHtml(contentHtml || "");
-		const data: NoteUpdateDto = {
-			id: noteId || undefined,
-			title: values.title,
-			categoryId: values.categoryId,
-			contentType,
-			contentMarkdown: contentType === NoteContentType.Markdown ? contentMarkdown : undefined,
-			contentHtml,
-			isTop: !!values.isTop,
-			isProtected: !!values.isProtected,
-			tags: values.tags || []
-		};
+		if (readonly || savingRef.current) return;
+		savingRef.current = true;
 		setSaving(true);
 		try {
-			if (noteId) {
+			const values = await form.validateFields();
+			const contentHtml = contentType === NoteContentType.RichText ? getContentHtmlForSave() : undefined;
+			const savedImageIds =
+				contentType === NoteContentType.Markdown
+					? new Set(extractNoteImageIds(contentMarkdown))
+					: getImageFileIdsFromHtml(contentHtml || "");
+			const currentNoteId = activeNoteIdRef.current;
+			const data: NoteUpdateDto = {
+				id: currentNoteId || undefined,
+				title: values.title,
+				categoryId: values.categoryId,
+				contentType,
+				contentMarkdown: contentType === NoteContentType.Markdown ? contentMarkdown : undefined,
+				contentHtml,
+				isTop: !!values.isTop,
+				isProtected: !!values.isProtected,
+				tags: values.tags || []
+			};
+			if (currentNoteId) {
 				await NoteService.update(data);
 				message.success("笔记已保存");
 			} else {
-				await NoteService.add(data);
+				const createdNoteId = await NoteService.add(data);
+				activeNoteIdRef.current = String(createdNoteId);
+				setActiveNoteId(activeNoteIdRef.current);
 				message.success("笔记已创建");
 			}
 			markUploadedImagesAsSaved(savedImageIds);
@@ -622,21 +640,23 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 			savedRef.current = true;
 			onSaved?.();
 		} finally {
+			savingRef.current = false;
 			setSaving(false);
 		}
 	};
+	saveRef.current = save;
 
 	const exportNote = async (exportType: NoteExportType) => {
-		if (!noteId) {
+		if (!activeNoteId) {
 			message.warning("请先保存笔记再导出");
 			return;
 		}
-		await downloadNoteExport(noteId, exportType, note?.title, unlockToken);
+		await downloadNoteExport(activeNoteId, exportType, note?.title, unlockToken);
 	};
 
 	const exportMarkdown = (includeImages: boolean) => {
-		if (!noteId) return;
-		const download = () => downloadMarkdownExport(noteId, note?.title || "我的笔记", includeImages, unlockToken);
+		if (!activeNoteId) return;
+		const download = () => downloadMarkdownExport(activeNoteId, note?.title || "我的笔记", includeImages, unlockToken);
 		if (!includeImages && extractNoteImageIds(contentMarkdown).length > 0) {
 			Modal.confirm({
 				title: "导出Markdown",
@@ -656,10 +676,10 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 					<Button icon={<ArrowLeftOutlined />} onClick={() => void backToList()}>
 						返回
 					</Button>
-					<strong>{readonly ? "查看笔记" : noteId ? "编辑笔记" : "新建笔记"}</strong>
+					<strong>{readonly ? "查看笔记" : activeNoteId ? "编辑笔记" : "新建笔记"}</strong>
 				</Space>
 				<Space>
-					{noteId && contentType === NoteContentType.Markdown && (
+					{activeNoteId && contentType === NoteContentType.Markdown && (
 						<>
 							<Button icon={<DownloadOutlined />} onClick={() => exportMarkdown(false)}>
 								Markdown
@@ -678,7 +698,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 					<Button icon={<DownloadOutlined />} onClick={() => exportNote("pdf")}>
 						PDF
 					</Button>
-					{noteId && (
+					{activeNoteId && (
 						<Button icon={<ShareAltOutlined />} onClick={() => setShareOpen(true)}>
 							分享
 						</Button>
@@ -689,7 +709,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 						</Button>
 					)}
 					{!readonly && (
-						<Button type="primary" icon={<SaveOutlined />} loading={saving || loading} onClick={save}>
+						<Button type="primary" icon={<SaveOutlined />} loading={saving || loading} title="保存（Ctrl+S）" onClick={save}>
 							保存
 						</Button>
 					)}
@@ -704,7 +724,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 					<Form.Item label="正文格式">
 						<Select
 							value={contentType}
-							disabled={readonly || !!noteId}
+							disabled={readonly || !!activeNoteId}
 							style={{ width: 130 }}
 							options={[
 								{ value: NoteContentType.Markdown, label: "Markdown" },
@@ -872,8 +892,13 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 			{readonly && contentType !== NoteContentType.Markdown && (
 				<div ref={previewRef} className="note-preview" dangerouslySetInnerHTML={{ __html: note?.contentHtml || "" }} />
 			)}
-			{noteId && (
-				<ShareDialog open={shareOpen} targetType={ShareTargetType.Note} targetId={noteId} onClose={() => setShareOpen(false)} />
+			{activeNoteId && (
+				<ShareDialog
+					open={shareOpen}
+					targetType={ShareTargetType.Note}
+					targetId={activeNoteId}
+					onClose={() => setShareOpen(false)}
+				/>
 			)}
 			<Modal
 				title="插入链接"

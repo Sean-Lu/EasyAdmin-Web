@@ -129,7 +129,8 @@ export class NoteService {
 
 	/** 新建笔记 */
 	static async add(data: NoteUpdateDto) {
-		return request.post<boolean>("/Note/Add", data);
+		const response = await request.post<BackendId>("/Note/Add", data);
+		return response.data;
 	}
 
 	/** 更新笔记 */

@@ -187,7 +187,6 @@ const NoteList: React.FC = () => {
 	};
 
 	const refreshList = async () => {
-		backToList();
 		await fetchNotes();
 		await fetchCategories();
 		await fetchTags();

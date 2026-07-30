@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Dropdown, Form, Input, Modal, Select, Space, Table, Tag, Tooltip, message, theme } from "antd";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import {
 	DeleteOutlined,
 	DownloadOutlined,
@@ -49,6 +51,7 @@ import { toFavoriteIdMap } from "@/components/FavoriteButton/favoriteState";
 import { FavoriteService, FavoriteTargetType } from "@/services/user/favoriteService";
 import { deleteCategorySearchValue, resolveCategorySearchState, setCategorySearchValue } from "@/utils/categorySearchParams";
 import { createLatestRequestGuard } from "@/utils/latestRequest";
+import DraggableNoteCategoryItem from "./DraggableNoteCategoryItem";
 import "./note.less";
 
 const { confirm } = Modal;
@@ -60,6 +63,7 @@ const NoteList: React.FC = () => {
 	const isDark = useSelector((state: any) => state.global.themeConfig.isDark);
 	const [categories, setCategories] = useState<NoteCategoryDto[]>([]);
 	const [categoriesLoaded, setCategoriesLoaded] = useState(false);
+	const [categorySorting, setCategorySorting] = useState(false);
 	const [tags, setTags] = useState<NoteTagDto[]>([]);
 	const [notes, setNotes] = useState<NoteDto[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -145,6 +149,30 @@ const NoteList: React.FC = () => {
 		setSearchParams(current => setCategorySearchValue(current, categoryId || "all"));
 		setSelectedRowKeys([]);
 		setPagination(prev => ({ ...prev, current: 1 }));
+	};
+
+	const reorderCategory = async (draggedId: BackendIdInput, targetId: BackendIdInput) => {
+		if (categorySorting || String(draggedId) === String(targetId)) return;
+		const draggedIndex = categories.findIndex(category => String(category.id) === String(draggedId));
+		const targetIndex = categories.findIndex(category => String(category.id) === String(targetId));
+		if (draggedIndex < 0 || targetIndex < 0) return;
+
+		const previousCategories = categories;
+		const reorderedCategories = [...categories];
+		const [draggedCategory] = reorderedCategories.splice(draggedIndex, 1);
+		reorderedCategories.splice(targetIndex, 0, draggedCategory);
+		setCategories(reorderedCategories.map((category, index) => ({ ...category, sortOrder: index })));
+
+		try {
+			setCategorySorting(true);
+			await NoteCategoryService.reorder(reorderedCategories.map(category => category.id));
+			message.success("分类排序已更新");
+		} catch {
+			setCategories(previousCategories);
+			await fetchCategories();
+		} finally {
+			setCategorySorting(false);
+		}
 	};
 
 	const openDetail = (noteId = "", unlockToken = "", readonly = false, draft: NoteDraft | null = null) => {
@@ -595,45 +623,28 @@ const NoteList: React.FC = () => {
 					<strong>笔记分类</strong>
 					<Button type="text" icon={<PlusOutlined />} onClick={() => openCategoryModal()} />
 				</div>
-				<div className="note-category-list">
-					<div
-						className={`note-category-item${selectedCategoryId === "" ? " note-category-item-active" : ""}`}
-						onClick={() => selectCategory("")}
-					>
-						<span className="note-category-name">全部笔记</span>
-					</div>
-					{categories.map(category => (
+				<DndProvider backend={HTML5Backend}>
+					<div className="note-category-list">
 						<div
-							key={category.id}
-							className={`note-category-item${selectedCategoryId === String(category.id) ? " note-category-item-active" : ""}`}
-							onClick={() => selectCategory(String(category.id))}
+							className={`note-category-item${selectedCategoryId === "" ? " note-category-item-active" : ""}`}
+							onClick={() => selectCategory("")}
 						>
-							<span className="note-category-name">{category.name}</span>
-							<Space size={4}>
-								<Tag>{category.noteCount || 0}</Tag>
-								<Button
-									size="small"
-									type="text"
-									icon={<EditOutlined />}
-									onClick={event => {
-										event.stopPropagation();
-										openCategoryModal(category);
-									}}
-								/>
-								<Button
-									size="small"
-									type="text"
-									danger
-									icon={<DeleteOutlined />}
-									onClick={event => {
-										event.stopPropagation();
-										deleteCategory(category);
-									}}
-								/>
-							</Space>
+							<span className="note-category-name">全部笔记</span>
 						</div>
-					))}
-				</div>
+						{categories.map(category => (
+							<DraggableNoteCategoryItem
+								key={category.id}
+								category={category}
+								selected={selectedCategoryId === String(category.id)}
+								disabled={categorySorting}
+								onSelect={() => selectCategory(String(category.id))}
+								onEdit={() => openCategoryModal(category)}
+								onDelete={() => deleteCategory(category)}
+								onDrop={(draggedId, targetId) => void reorderCategory(draggedId, targetId)}
+							/>
+						))}
+					</div>
+				</DndProvider>
 
 				<div className="note-tag-section">
 					<div className="note-tag-header">

@@ -217,6 +217,11 @@ export class NoteCategoryService {
 		return request.post<boolean>("/NoteCategory/Update", data);
 	}
 
+	/** 按分类 ID 顺序重新排序 */
+	static async reorder(ids: BackendIdInput[]) {
+		return request.post<boolean>("/NoteCategory/Reorder", { ids });
+	}
+
 	/** 删除分类 */
 	static async delete(id: BackendIdInput) {
 		return request.post<boolean>("/NoteCategory/Delete", { id });

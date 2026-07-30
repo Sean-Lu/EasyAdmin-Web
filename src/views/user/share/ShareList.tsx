@@ -5,12 +5,26 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BackendIdInput } from "@/api/interface";
+import ResizableHeaderCell from "@/components/ResizableTableHeader";
+import type { ResizableHeaderCellProps } from "@/components/ResizableTableHeader";
 import ShareDialog from "@/components/ShareDialog";
 import { ShareListItemDto, ShareListStatus, ShareService, ShareTargetType } from "@/services/share/shareService";
 import clipboardUtil from "@/utils/clipboardUtil";
 import { buildShareLink, buildShareTargetRoute, canOpenTarget, getShareStatusColor, getShareStatusLabel } from "./shareListLogic";
 
 export { buildShareLink, buildShareTargetRoute, canOpenTarget, getShareStatusColor, getShareStatusLabel } from "./shareListLogic";
+
+type ShareColumnKey = "targetName" | "status" | "enabled" | "password" | "createTime" | "expiresAt" | "actions";
+
+const defaultColumnWidths: Record<ShareColumnKey, number> = {
+	targetName: 260,
+	status: 100,
+	enabled: 120,
+	password: 140,
+	createTime: 190,
+	expiresAt: 190,
+	actions: 360
+};
 
 // 我的分享列表页
 const ShareList = () => {
@@ -23,6 +37,7 @@ const ShareList = () => {
 	const [targetType, setTargetType] = useState<ShareTargetType>();
 	const [status, setStatus] = useState<ShareListStatus>();
 	const [editing, setEditing] = useState<ShareListItemDto>();
+	const [columnWidths, setColumnWidths] = useState(defaultColumnWidths);
 
 	const load = async (nextPageNumber = pageNumber, nextPageSize = pageSize, nextKeyword = keyword) => {
 		setLoading(true);
@@ -62,18 +77,25 @@ const ShareList = () => {
 		navigate(buildShareTargetRoute(item));
 	};
 
-	const columns: TableProps<ShareListItemDto>["columns"] = [
+	const baseColumns: TableProps<ShareListItemDto>["columns"] = [
 		{
 			title: "分享内容",
 			dataIndex: "targetName",
 			key: "targetName",
 			ellipsis: true,
 			render: (value: string, record) => (
-				<Space>
-					{record.targetType === ShareTargetType.Note ? <FileOutlined /> : <ShareAltOutlined />}
-					<span>{value || "未命名内容"}</span>
-					<Tag>{record.targetType === ShareTargetType.Note ? "笔记" : "文件"}</Tag>
-				</Space>
+				<div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+					<span style={{ flexShrink: 0 }}>
+						{record.targetType === ShareTargetType.Note ? <FileOutlined /> : <ShareAltOutlined />}
+					</span>
+					<span
+						title={value || "未命名内容"}
+						style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+					>
+						{value || "未命名内容"}
+					</span>
+					<Tag style={{ flexShrink: 0, marginInlineEnd: 0 }}>{record.targetType === ShareTargetType.Note ? "笔记" : "文件"}</Tag>
+				</div>
 			)
 		},
 		{
@@ -133,6 +155,23 @@ const ShareList = () => {
 			)
 		}
 	];
+	const columns = baseColumns.map(column => {
+		const key = column.key as ShareColumnKey;
+		const width = columnWidths[key];
+
+		return {
+			...column,
+			width,
+			onHeaderCell: () =>
+				({
+					width,
+					onResize: (nextWidth: number) => {
+						setColumnWidths(current => ({ ...current, [key]: nextWidth }));
+					}
+				} as ResizableHeaderCellProps)
+		};
+	});
+	const tableWidth = Object.values(columnWidths).reduce((total, width) => total + width, 0);
 
 	return (
 		<Card>
@@ -179,6 +218,8 @@ const ShareList = () => {
 				loading={loading}
 				columns={columns}
 				dataSource={data.list}
+				components={{ header: { cell: ResizableHeaderCell } }}
+				scroll={{ x: tableWidth }}
 				pagination={{
 					current: pageNumber,
 					pageSize,

@@ -4,6 +4,8 @@ import type { TableProps } from "antd";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ResizableHeaderCell from "@/components/ResizableTableHeader";
+import type { ResizableHeaderCellProps } from "@/components/ResizableTableHeader";
 import {
 	FavoriteAvailabilityStatus,
 	FavoriteListItemDto,
@@ -21,6 +23,17 @@ const statusLabels: Record<FavoriteAvailabilityStatus, string> = {
 	[FavoriteAvailabilityStatus.ShareTargetDeleted]: "原内容已删除"
 };
 
+type FavoriteColumnKey = "title" | "sourceType" | "ownerName" | "status" | "createTime" | "actions";
+
+const defaultColumnWidths: Record<FavoriteColumnKey, number> = {
+	title: 400,
+	sourceType: 140,
+	ownerName: 160,
+	status: 160,
+	createTime: 200,
+	actions: 300
+};
+
 const FavoriteList = () => {
 	const navigate = useNavigate();
 	const [form] = Form.useForm<{ keyword?: string; status?: FavoriteAvailabilityStatus }>();
@@ -30,6 +43,7 @@ const FavoriteList = () => {
 	const [pageSize, setPageSize] = useState(10);
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState<{ list: FavoriteListItemDto[]; total: number }>({ list: [], total: 0 });
+	const [columnWidths, setColumnWidths] = useState(defaultColumnWidths);
 
 	const load = useCallback(async () => {
 		setLoading(true);
@@ -65,7 +79,7 @@ const FavoriteList = () => {
 		else void load();
 	};
 
-	const columns: TableProps<FavoriteListItemDto>["columns"] = [
+	const baseColumns: TableProps<FavoriteListItemDto>["columns"] = [
 		{
 			title: "名称",
 			dataIndex: "title",
@@ -119,6 +133,23 @@ const FavoriteList = () => {
 			)
 		}
 	];
+	const columns = baseColumns.map(column => {
+		const key = column.key as FavoriteColumnKey;
+		const width = columnWidths[key];
+
+		return {
+			...column,
+			width,
+			onHeaderCell: () =>
+				({
+					width,
+					onResize: (nextWidth: number) => {
+						setColumnWidths(current => ({ ...current, [key]: nextWidth }));
+					}
+				} as ResizableHeaderCellProps)
+		};
+	});
+	const tableWidth = Object.values(columnWidths).reduce((total, width) => total + width, 0);
 
 	return (
 		<Card>
@@ -191,6 +222,8 @@ const FavoriteList = () => {
 				loading={loading}
 				columns={columns}
 				dataSource={data.list}
+				components={{ header: { cell: ResizableHeaderCell } }}
+				scroll={{ x: tableWidth }}
 				pagination={{
 					current: pageNumber,
 					pageSize,

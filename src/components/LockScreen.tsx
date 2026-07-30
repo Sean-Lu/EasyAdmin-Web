@@ -1,7 +1,7 @@
 import { Alert, Button, Form, Input, InputRef, Typography, theme } from "antd";
 import { UnlockOutlined, UserSwitchOutlined } from "@ant-design/icons";
 import { createPortal } from "react-dom";
-import { KeyboardEvent, PointerEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { KeyboardEvent, MouseEvent, PointerEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
@@ -76,6 +76,41 @@ const LockScreen = (props: Props) => {
 	};
 
 	useLayoutEffect(() => {
+		const dialog = dialogRef.current;
+		if (!dialog) return undefined;
+		const previousAttributes = new Map<HTMLElement, { inert: boolean; ariaHidden: string | null }>();
+		const isolateBackground = () => {
+			Array.from(document.body.children).forEach(element => {
+				if (
+					!(element instanceof HTMLElement) ||
+					element === dialog ||
+					element.contains(dialog) ||
+					previousAttributes.has(element)
+				) {
+					return;
+				}
+				previousAttributes.set(element, {
+					inert: element.hasAttribute("inert"),
+					ariaHidden: element.getAttribute("aria-hidden")
+				});
+				element.setAttribute("inert", "");
+				element.setAttribute("aria-hidden", "true");
+			});
+		};
+		isolateBackground();
+		const observer = new MutationObserver(isolateBackground);
+		observer.observe(document.body, { childList: true });
+		return () => {
+			observer.disconnect();
+			previousAttributes.forEach((attributes, element) => {
+				if (!attributes.inert) element.removeAttribute("inert");
+				if (attributes.ariaHidden === null) element.removeAttribute("aria-hidden");
+				else element.setAttribute("aria-hidden", attributes.ariaHidden);
+			});
+		};
+	}, []);
+
+	useLayoutEffect(() => {
 		if (phase === "clock") {
 			dialogRef.current?.focus({ preventScroll: true });
 			return undefined;
@@ -145,13 +180,9 @@ const LockScreen = (props: Props) => {
 		containFocus(event);
 	};
 
-	const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-		if (phase === "clock") {
-			consumeLockScreenWakeEvent(event);
-			showPasswordPhase();
-			return;
-		}
-		focusOnPasswordPointer(event);
+	const handleClockClick = (event: MouseEvent<HTMLDivElement>) => {
+		consumeLockScreenWakeEvent(event);
+		showPasswordPhase();
 	};
 
 	const submit = async ({ password }: { password: string }) => {
@@ -205,8 +236,9 @@ const LockScreen = (props: Props) => {
 			aria-labelledby={phase === "password" ? "lock-screen-title" : undefined}
 			tabIndex={phase === "clock" ? 0 : -1}
 			onKeyDown={handleKeyDown}
-			onPointerDownCapture={handlePointerDown}
+			onPointerDownCapture={phase === "password" ? focusOnPasswordPointer : undefined}
 			onClickCapture={phase === "password" ? focusOnPasswordPointer : undefined}
+			onClick={phase === "clock" ? handleClockClick : undefined}
 			style={
 				phase === "clock"
 					? {

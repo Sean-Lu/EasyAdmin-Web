@@ -168,12 +168,12 @@ export class ShareService {
 		return (await request.get<PageRes<ShareListItemDto>>("/Share/List", params)).data!;
 	}
 
-	/** 查询指定文件或笔记的分享配置 */
+	/** 查询指定分享目标的配置 */
 	static async config(targetType: ShareTargetType, targetId: BackendIdInput) {
 		return (await request.get<ShareConfigDto>("/Share/Config", { targetType, targetId })).data!;
 	}
 
-	/** 保存指定文件或笔记的分享配置 */
+	/** 保存指定分享目标的配置 */
 	static async save(data: {
 		/** 目标类型 */
 		targetType: ShareTargetType;
@@ -197,6 +197,11 @@ export class ShareService {
 	/** 重新生成分享码，使旧链接失效 */
 	static async regenerate(targetType: ShareTargetType, targetId: BackendIdInput) {
 		return (await request.post<ShareConfigDto>("/Share/Regenerate", { targetType, targetId })).data!;
+	}
+
+	/** 删除指定分享目标 */
+	static async delete(targetType: ShareTargetType, targetId: BackendIdInput) {
+		return (await request.post<boolean>("/Share/Delete", { targetType, targetId })).data!;
 	}
 
 	/** 查询匿名分享状态 */

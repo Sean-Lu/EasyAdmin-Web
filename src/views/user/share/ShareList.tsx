@@ -1,4 +1,12 @@
-import { CopyOutlined, EditOutlined, FileOutlined, LinkOutlined, ReloadOutlined, ShareAltOutlined } from "@ant-design/icons";
+import {
+	CopyOutlined,
+	DeleteOutlined,
+	EditOutlined,
+	FileOutlined,
+	LinkOutlined,
+	ReloadOutlined,
+	ShareAltOutlined
+} from "@ant-design/icons";
 import { Button, Card, Input, Popconfirm, Select, Space, Switch, Table, Tag, message } from "antd";
 import type { TableProps } from "antd";
 import dayjs from "dayjs";
@@ -76,6 +84,11 @@ const ShareList = () => {
 		if (!canOpenTarget(item)) return;
 		navigate(buildShareTargetRoute(item));
 	};
+	const remove = async (item: ShareListItemDto) => {
+		await ShareService.delete(item.targetType, item.targetId);
+		message.success("分享已删除");
+		void load();
+	};
 
 	const baseColumns: TableProps<ShareListItemDto>["columns"] = [
 		{
@@ -151,6 +164,11 @@ const ShareList = () => {
 							打开内容
 						</Button>
 					)}
+					<Popconfirm title="删除后分享链接将立即失效，确定删除吗？" onConfirm={() => void remove(record)}>
+						<Button danger size="small" icon={<DeleteOutlined />}>
+							删除
+						</Button>
+					</Popconfirm>
 				</Space>
 			)
 		}

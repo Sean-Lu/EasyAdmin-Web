@@ -1,9 +1,10 @@
 import { UserOutlined } from "@ant-design/icons";
 import { Avatar } from "antd";
-import type { ComponentProps } from "react";
+import type { ComponentProps, HTMLAttributes } from "react";
 import { forwardRef, useEffect, useState } from "react";
 
-type UserAvatarProps = ComponentProps<typeof Avatar> & { src?: string };
+type UserAvatarProps = ComponentProps<typeof Avatar> &
+	Pick<HTMLAttributes<HTMLSpanElement>, "onKeyDown" | "role" | "tabIndex" | "aria-label"> & { src?: string };
 
 const UserAvatar = forwardRef<HTMLSpanElement, UserAvatarProps>(({ src, children, onError, ...props }, ref) => {
 	const [imageFailed, setImageFailed] = useState(false);

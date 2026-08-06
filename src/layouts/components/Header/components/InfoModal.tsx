@@ -1,5 +1,5 @@
-import { useEffect, useState, useImperativeHandle, Ref } from "react";
-import { Button, Form, Input, Modal, Spin, Upload, message } from "antd";
+import { useEffect, useState, useImperativeHandle, Ref, KeyboardEvent } from "react";
+import { Button, Form, Image, Input, Modal, Spin, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { RcFile } from "antd/lib/upload/interface";
 import md5 from "js-md5";
@@ -38,6 +38,7 @@ const InfoModal = (props: Props) => {
 	const [passwordModalVisible, setPasswordModalVisible] = useState(false);
 	const [pendingValues, setPendingValues] = useState<{ nickName?: string; phoneNumber?: string; email?: string }>();
 	const [avatarSrc, setAvatarSrc] = useState("");
+	const [avatarPreviewVisible, setAvatarPreviewVisible] = useState(false);
 	const [modalUserInfo, setModalUserInfo] = useState<UserInfo>();
 	const userInfo = modalUserInfo;
 	const avatarText = userInfo?.nickName?.slice(0, 1) || userInfo?.userName?.slice(0, 1) || "-";
@@ -148,7 +149,15 @@ const InfoModal = (props: Props) => {
 
 	const handleCancel = () => {
 		void cleanupUnsavedAvatar();
+		setAvatarPreviewVisible(false);
 		setModalVisible(false);
+	};
+
+	const handleAvatarPreviewKeyDown = (event: KeyboardEvent<HTMLSpanElement>) => {
+		if (event.key === "Enter" || event.key === " ") {
+			event.preventDefault();
+			setAvatarPreviewVisible(true);
+		}
 	};
 
 	const beforeAvatarUpload = async (file: RcFile) => {
@@ -272,7 +281,16 @@ const InfoModal = (props: Props) => {
 				<Spin spinning={loading}>
 					<Form form={form}>
 						<div className="user-info-profile">
-							<UserAvatar className="user-info-avatar" size={72} src={avatarSrc}>
+							<UserAvatar
+								className={`user-info-avatar${avatarSrc ? " user-info-avatar-previewable" : ""}`}
+								size={72}
+								src={avatarSrc}
+								onClick={avatarSrc ? () => setAvatarPreviewVisible(true) : undefined}
+								onKeyDown={avatarSrc ? handleAvatarPreviewKeyDown : undefined}
+								role={avatarSrc ? "button" : undefined}
+								tabIndex={avatarSrc ? 0 : undefined}
+								aria-label={avatarSrc ? "点击预览头像" : undefined}
+							>
 								{avatarText}
 							</UserAvatar>
 							<div className="user-info-main">
@@ -303,6 +321,22 @@ const InfoModal = (props: Props) => {
 						</div>
 					</Form>
 				</Spin>
+			</Modal>
+			<Modal
+				title="头像预览"
+				open={avatarPreviewVisible}
+				footer={null}
+				onCancel={() => setAvatarPreviewVisible(false)}
+				destroyOnHidden={true}
+				centered
+				width="auto"
+			>
+				<Image
+					src={avatarSrc}
+					alt={userInfo?.nickName || userInfo?.userName || "用户头像"}
+					preview={false}
+					style={{ display: "block", maxWidth: "min(70vw, 560px)", maxHeight: "70vh", objectFit: "contain" }}
+				/>
 			</Modal>
 			<Modal
 				title="身份验证"

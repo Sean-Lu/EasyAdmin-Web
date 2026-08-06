@@ -75,6 +75,14 @@
 		object-fit: cover;
 	}
 }
+.user-info-avatar-previewable {
+	cursor: pointer;
+	transition: opacity 0.2s;
+	&:hover,
+	&:focus-visible {
+		opacity: 0.82;
+	}
+}
 .user-info-main {
 	flex: 1;
 	min-width: 0;

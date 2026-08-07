@@ -83,6 +83,13 @@ export interface StockHoldingList {
 	summary: StockHoldingSummary;
 }
 
+export interface StockHoldingPriceRefreshResult {
+	/** 更新数量 */
+	updatedCount: number;
+	/** 刷新失败的股票名称 */
+	failedNames: string[];
+}
+
 /**
  * 股票持仓管理 API
  */
@@ -110,6 +117,16 @@ export class StockHoldingService {
 	/** 更新当前价格 */
 	static async updateCurrentPrice(accountId: BackendIdInput, id: BackendIdInput, currentPrice: number) {
 		return request.post<boolean>(`/StockHolding/UpdateCurrentPrice`, { accountId, id, currentPrice });
+	}
+
+	/** 刷新账户持仓价格 */
+	static async refreshCurrentPrices(accountId: BackendIdInput) {
+		return request.post<StockHoldingPriceRefreshResult>(`/StockHolding/RefreshCurrentPrices`, { accountId });
+	}
+
+	/** 刷新单个持仓价格 */
+	static async refreshCurrentPrice(accountId: BackendIdInput, id: BackendIdInput) {
+		return request.post<boolean>(`/StockHolding/RefreshCurrentPrice`, { accountId, id });
 	}
 
 	/** 更新启用状态 */

@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+	ArrowLeftOutlined,
+	DeleteOutlined,
+	EditOutlined,
+	InfoCircleOutlined,
+	PlusOutlined,
+	ReloadOutlined
+} from "@ant-design/icons";
 import {
 	Button,
 	Card,
@@ -92,6 +99,8 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 	const [editingAccountId, setEditingAccountId] = useState<BackendId | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [accountLoading, setAccountLoading] = useState(false);
+	const [priceRefreshLoading, setPriceRefreshLoading] = useState(false);
+	const [refreshingPriceIds, setRefreshingPriceIds] = useState<Set<BackendId>>(new Set());
 	const [accountInitialized, setAccountInitialized] = useState(false);
 	const [priceDrafts, setPriceDrafts] = useState<Record<string, number>>({});
 	const holdingRequestSeq = useRef(0);
@@ -351,6 +360,50 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 		}
 	};
 
+	const handleRefreshCurrentPrices = async () => {
+		if (!selectedAccountId || priceRefreshLoading) return;
+
+		setPriceRefreshLoading(true);
+		try {
+			const response = await StockHoldingService.refreshCurrentPrices(selectedAccountId);
+			if (!response.success) return;
+
+			const result = response.data;
+			if (!result?.updatedCount) {
+				message.warning("未获取到可用的股票行情");
+				return;
+			}
+
+			if (result.failedNames.length > 0) {
+				message.warning(`已刷新 ${result.updatedCount} 只股票，${result.failedNames.join("、")} 刷新失败`);
+			} else {
+				message.success(`已刷新 ${result.updatedCount} 只股票的当前价格`);
+			}
+			await loadHoldings(selectedAccountId, keyword);
+		} finally {
+			setPriceRefreshLoading(false);
+		}
+	};
+
+	const handleRefreshCurrentPrice = async (record: StockHolding) => {
+		if (!selectedAccountId || refreshingPriceIds.has(record.id)) return;
+
+		setRefreshingPriceIds(ids => new Set(ids).add(record.id));
+		try {
+			const response = await StockHoldingService.refreshCurrentPrice(record.accountId, record.id);
+			if (!response.success) return;
+
+			message.success(`已刷新${record.name}的当前价格`);
+			await loadHoldings(selectedAccountId, keyword);
+		} finally {
+			setRefreshingPriceIds(ids => {
+				const nextIds = new Set(ids);
+				nextIds.delete(record.id);
+				return nextIds;
+			});
+		}
+	};
+
 	const handleToggleEnabled = async (record: StockHolding, isEnabled: boolean) => {
 		if (!selectedAccountId) return;
 		if (togglingEnabledIds.current.has(record.id)) return;
@@ -402,16 +455,26 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			key: "currentPrice",
 			width: 150,
 			render: (value: number, record) => (
-				<InputNumber
-					min={0}
-					precision={3}
-					value={priceDrafts[record.id] ?? value}
-					prefix="¥"
-					className="current-price-input"
-					onChange={nextValue => handleCurrentPriceChange(record.id, nextValue)}
-					onBlur={() => handleCurrentPriceCommit(record)}
-					onPressEnter={() => handleCurrentPriceCommit(record)}
-				/>
+				<Space.Compact block>
+					<InputNumber
+						min={0}
+						precision={3}
+						value={priceDrafts[record.id] ?? value}
+						prefix="¥"
+						className="current-price-input"
+						onChange={nextValue => handleCurrentPriceChange(record.id, nextValue)}
+						onBlur={() => handleCurrentPriceCommit(record)}
+						onPressEnter={() => handleCurrentPriceCommit(record)}
+					/>
+					<Tooltip title="刷新当前价格">
+						<Button
+							type="default"
+							icon={<ReloadOutlined />}
+							loading={refreshingPriceIds.has(record.id)}
+							onClick={() => handleRefreshCurrentPrice(record)}
+						/>
+					</Tooltip>
+				</Space.Compact>
 			)
 		},
 		{
@@ -633,6 +696,9 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 									新增持仓
 								</Button>
 							</Space>
+							<Button icon={<ReloadOutlined />} loading={priceRefreshLoading} onClick={handleRefreshCurrentPrices}>
+								刷新当前价格
+							</Button>
 							<Input.Search
 								allowClear
 								placeholder="按股票名称/代码搜索"

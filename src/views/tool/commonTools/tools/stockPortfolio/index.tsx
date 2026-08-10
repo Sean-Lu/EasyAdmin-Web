@@ -215,6 +215,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			remark: record.remark,
 			costPrice: record.costPrice,
 			quantity: record.quantity,
+			targetProfitAmount: record.targetProfitAmount ?? undefined,
 			currentPrice: record.currentPrice,
 			isEnabled: record.isEnabled,
 			sortOrder: record.sortOrder
@@ -299,6 +300,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			code: values.code.trim(),
 			name: values.name.trim(),
 			remark: values.remark?.trim() || undefined,
+			targetProfitAmount: normalizeOptionalNumber(values.targetProfitAmount),
 			sortOrder: values.sortOrder ?? 0
 		};
 
@@ -476,6 +478,39 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 					</Tooltip>
 				</Space.Compact>
 			)
+		},
+		{
+			title: "盈利目标",
+			key: "profitTarget",
+			width: 180,
+			align: "right",
+			render: (_value, record) => {
+				if (record.targetProfitAmount === null || record.targetPrice === null) return "-";
+
+				const isTargetReached = record.currentPrice >= record.targetPrice;
+				const targetIncreaseRatio = record.currentPrice > 0 ? (record.targetPrice / record.currentPrice - 1) * 100 : undefined;
+
+				return (
+					<Space orientation="vertical" size={0} align="end" className="profit-target">
+						<span>{compactCurrencyFormatter(record.targetProfitAmount)}</span>
+						<span className="target-price">
+							目标价 {priceFormatter(record.targetPrice)}
+							{targetIncreaseRatio === undefined && (
+								<Tooltip title="当前价为0，无法计算所需涨幅">
+									<InfoCircleOutlined className="target-help-icon" tabIndex={0} />
+								</Tooltip>
+							)}
+						</span>
+						{isTargetReached ? (
+							<Tag color="success" className="target-status">
+								已达成
+							</Tag>
+						) : targetIncreaseRatio !== undefined ? (
+							<span className="target-progress">还需上涨 {targetIncreaseRatio.toFixed(2)}%</span>
+						) : null}
+					</Space>
+				);
+			}
 		},
 		{
 			title: "持仓市值",
@@ -794,9 +829,18 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 							</Form.Item>
 						</Col>
 					</Row>
-					<Form.Item name="currentPrice" label="当前价格" rules={[{ required: true, message: "请输入当前价格" }]}>
-						<InputNumber min={0} precision={3} prefix="¥" className="form-number-input" />
-					</Form.Item>
+					<Row gutter={16}>
+						<Col span={12}>
+							<Form.Item name="currentPrice" label="当前价格" rules={[{ required: true, message: "请输入当前价格" }]}>
+								<InputNumber min={0} precision={3} prefix="¥" className="form-number-input" />
+							</Form.Item>
+						</Col>
+						<Col span={12}>
+							<Form.Item name="targetProfitAmount" label="目标盈利金额">
+								<InputNumber min={0.01} precision={2} prefix="¥" placeholder="10000" className="form-number-input" />
+							</Form.Item>
+						</Col>
+					</Row>
 					<Form.Item name="remark" label="备注">
 						<Input.TextArea maxLength={500} showCount rows={3} />
 					</Form.Item>

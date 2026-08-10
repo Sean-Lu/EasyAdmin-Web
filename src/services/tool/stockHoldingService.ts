@@ -19,6 +19,8 @@ export interface StockHolding extends DtoBase {
 	costPrice: number;
 	/** 持仓数量 */
 	quantity: number;
+	/** 目标盈利金额 */
+	targetProfitAmount: number | null;
 	/** 当前价格 */
 	currentPrice: number;
 	/** 是否启用 */
@@ -33,6 +35,8 @@ export interface StockHolding extends DtoBase {
 	profitAmount: number;
 	/** 盈亏比例，公式：（当前价格 - 持仓成本）/ 持仓成本 × 100 */
 	profitRatio: number;
+	/** 目标价格，按目标盈利金额反推并向上保留三位小数 */
+	targetPrice: number | null;
 }
 
 /** 创建/编辑股票持仓 */
@@ -51,6 +55,8 @@ export interface StockHoldingPayload {
 	costPrice: number;
 	/** 持仓数量 */
 	quantity: number;
+	/** 目标盈利金额 */
+	targetProfitAmount?: number | null;
 	/** 当前价格 */
 	currentPrice: number;
 	/** 是否启用 */

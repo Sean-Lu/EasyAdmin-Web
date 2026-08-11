@@ -480,7 +480,14 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			)
 		},
 		{
-			title: "盈利目标",
+			title: (
+				<Space size={4}>
+					<span>盈利目标</span>
+					<Tooltip title="盈利目标及目标价的计算不包含佣金等交易费用">
+						<InfoCircleOutlined className="profit-target-help-icon" tabIndex={0} />
+					</Tooltip>
+				</Space>
+			),
 			key: "profitTarget",
 			width: 180,
 			align: "right",

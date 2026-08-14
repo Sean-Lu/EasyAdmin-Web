@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button, Card, Divider, Image, Input, Spin, Tag, Typography, message } from "antd";
@@ -19,6 +19,7 @@ import { captureLoginRedirect } from "@/utils/authRedirect";
 import "../user/note/note.less";
 import "./share.less";
 import { isPreviewableImage } from "./filePreview";
+import NoteOutline from "../user/note/NoteOutline";
 
 const formatSize = (size: number) =>
 	size < 1024 ? `${size} B` : size < 1024 * 1024 ? `${(size / 1024).toFixed(2)} KB` : `${(size / 1024 / 1024).toFixed(2)} MB`;
@@ -38,6 +39,8 @@ const SharePage = () => {
 	const [filePreviewUrl, setFilePreviewUrl] = useState("");
 	const [note, setNote] = useState<PublicShareNoteDto>();
 	const [error, setError] = useState("");
+	const noteContentRef = useRef<HTMLDivElement>(null);
+	const [outlineTriggerHost, setOutlineTriggerHost] = useState<HTMLSpanElement | null>(null);
 
 	const loadContent = async (type: ShareTargetType) => {
 		if (type === ShareTargetType.File) {
@@ -181,22 +184,25 @@ const SharePage = () => {
 	return (
 		<div
 			className={`share-page${isDark ? " share-page-dark note-dark" : ""}`}
-			style={{ maxWidth: 900, margin: "0 auto", padding: "48px 20px 0" }}
+			style={{ maxWidth: 1180, margin: "0 auto", padding: "48px 20px 0" }}
 		>
 			<Card className="share-card">
 				<div className={`share-actions${file ? " share-actions-file" : ""}`}>
 					<Button icon={<HomeOutlined />} href="/">
 						返回首页
 					</Button>
-					{!loading && !error && (file || note) && (
-						<Button
-							loading={favoriteLoading}
-							icon={favoriteId ? <StarFilled style={{ color: "#faad14" }} /> : <StarOutlined />}
-							onClick={() => void toggleFavorite()}
-						>
-							{favoriteId ? "取消收藏" : token ? "收藏" : "登录后收藏"}
-						</Button>
-					)}
+					<div className="share-actions-end">
+						{!loading && !error && (file || note) && (
+							<Button
+								loading={favoriteLoading}
+								icon={favoriteId ? <StarFilled style={{ color: "#faad14" }} /> : <StarOutlined />}
+								onClick={() => void toggleFavorite()}
+							>
+								{favoriteId ? "取消收藏" : token ? "收藏" : "登录后收藏"}
+							</Button>
+						)}
+						{note && <span ref={setOutlineTriggerHost} className="note-outline-trigger-host" />}
+					</div>
 				</div>
 				{loading && (
 					<div style={{ textAlign: "center", padding: 64 }}>
@@ -274,7 +280,20 @@ const SharePage = () => {
 							</div>
 						</header>
 						<Divider />
-						<div className="note-preview share-note-content" dangerouslySetInnerHTML={{ __html: note.contentHtml || "" }} />
+						<div className="share-note-outline-layout">
+							<div
+								ref={noteContentRef}
+								className="note-preview share-note-content"
+								dangerouslySetInnerHTML={{ __html: note.contentHtml || "" }}
+							/>
+							<NoteOutline
+								contentRef={noteContentRef}
+								contentVersion={note.contentHtml}
+								idPrefix="shared-note-heading"
+								isDark={isDark}
+								triggerHost={outlineTriggerHost}
+							/>
+						</div>
 					</article>
 				)}
 			</Card>

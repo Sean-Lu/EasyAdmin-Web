@@ -5,6 +5,7 @@ import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import NoteOutline from "./NoteOutline";
 
 interface MarkdownEditorProps {
 	value: string;
@@ -50,7 +51,9 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 	resolveImageUrl
 }) => {
 	const editorRef = useRef<ReactCodeMirrorRef>(null);
+	const previewRef = useRef<HTMLDivElement>(null);
 	const [view, setView] = useState<MarkdownView>(readonly ? "preview" : "split");
+	const [outlineTriggerHost, setOutlineTriggerHost] = useState<HTMLSpanElement | null>(null);
 
 	const insert = (prefix: string, suffix = prefix, placeholder = "文本") => {
 		const editor = editorRef.current?.view;
@@ -78,7 +81,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 	};
 
 	const preview = (
-		<div className="note-markdown-preview">
+		<div ref={previewRef} className="note-markdown-preview">
 			<ReactMarkdown
 				remarkPlugins={[remarkGfm]}
 				transformImageUri={url => (url.startsWith("note-file:") ? url : "")}
@@ -88,9 +91,24 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 			</ReactMarkdown>
 		</div>
 	);
+	const viewSwitcher = (
+		<Segmented
+			value={view}
+			onChange={value => setView(value as MarkdownView)}
+			options={
+				readonly
+					? [{ label: "预览", value: "preview" }]
+					: [
+							{ label: "编辑", value: "edit" },
+							{ label: "预览", value: "preview" },
+							{ label: "分屏", value: "split" }
+					  ]
+			}
+		/>
+	);
 
 	return (
-		<div className="note-markdown-editor">
+		<div className={`note-markdown-editor note-markdown-editor-${view}`}>
 			<div className="note-markdown-toolbar">
 				{!readonly && (
 					<Space>
@@ -102,19 +120,15 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 						</Upload>
 					</Space>
 				)}
-				<Segmented
-					value={view}
-					onChange={value => setView(value as MarkdownView)}
-					options={
-						readonly
-							? [{ label: "预览", value: "preview" }]
-							: [
-									{ label: "编辑", value: "edit" },
-									{ label: "预览", value: "preview" },
-									{ label: "分屏", value: "split" }
-							  ]
-					}
-				/>
+				{readonly && viewSwitcher}
+				{readonly ? (
+					<span ref={setOutlineTriggerHost} className="note-outline-trigger-host" />
+				) : (
+					<Space>
+						{viewSwitcher}
+						<span ref={setOutlineTriggerHost} className="note-outline-trigger-host" />
+					</Space>
+				)}
 			</div>
 			<div className={`note-markdown-body note-markdown-${view}`}>
 				{view !== "preview" && (
@@ -128,7 +142,19 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 						onChange={next => onChange?.(next)}
 					/>
 				)}
-				{view !== "edit" && preview}
+				{view !== "edit" && (
+					<div className="note-markdown-preview-pane">
+						{preview}
+						<NoteOutline
+							contentRef={previewRef}
+							contentVersion={value}
+							idPrefix="note-markdown-heading"
+							isDark={isDark}
+							scrollContainerRef={previewRef}
+							triggerHost={outlineTriggerHost}
+						/>
+					</div>
+				)}
 			</div>
 		</div>
 	);

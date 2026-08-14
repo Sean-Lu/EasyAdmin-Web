@@ -36,6 +36,7 @@ import {
 } from "@/services/tool/noteService";
 import { downloadMarkdownExport, downloadNoteExport } from "./noteExport";
 import MarkdownEditor from "./MarkdownEditor";
+import NoteOutline from "./NoteOutline";
 import { extractNoteImageIds } from "./markdownUtils";
 import ShareDialog from "@/components/ShareDialog";
 import { ShareTargetType } from "@/services/share/shareService";
@@ -119,6 +120,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 	const [contentType, setContentType] = useState<NoteContentType>(NoteContentType.Markdown);
 	const [contentMarkdown, setContentMarkdown] = useState("");
 	const [activeNoteId, setActiveNoteId] = useState(noteId);
+	const [outlineTriggerHost, setOutlineTriggerHost] = useState<HTMLSpanElement | null>(null);
 
 	useEffect(() => {
 		void init();
@@ -708,6 +710,9 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 							编辑
 						</Button>
 					)}
+					{readonly && contentType !== NoteContentType.Markdown && (
+						<span ref={setOutlineTriggerHost} className="note-outline-trigger-host" />
+					)}
 					{!readonly && (
 						<Button type="primary" icon={<SaveOutlined />} loading={saving || loading} title="保存（Ctrl+S）" onClick={save}>
 							保存
@@ -890,7 +895,17 @@ const NoteDetail: React.FC<NoteDetailProps> = ({
 				<MarkdownEditor value={contentMarkdown} readonly isDark={isDark} resolveImageUrl={getFileObjectUrl} />
 			)}
 			{readonly && contentType !== NoteContentType.Markdown && (
-				<div ref={previewRef} className="note-preview" dangerouslySetInnerHTML={{ __html: note?.contentHtml || "" }} />
+				<div className="note-preview-outline-layout">
+					<div ref={previewRef} className="note-preview" dangerouslySetInnerHTML={{ __html: note?.contentHtml || "" }} />
+					<NoteOutline
+						contentRef={previewRef}
+						contentVersion={note?.contentHtml}
+						idPrefix="note-rich-text-heading"
+						isDark={isDark}
+						scrollContainerRef={previewRef}
+						triggerHost={outlineTriggerHost}
+					/>
+				</div>
 			)}
 			{activeNoteId && (
 				<ShareDialog

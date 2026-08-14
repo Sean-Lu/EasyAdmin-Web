@@ -139,6 +139,10 @@
 .note-detail-panel > .note-editor-toolbar {
 	flex-shrink: 0;
 }
+.note-detail-panel > .note-preview-outline-layout {
+	flex: 1 1 0;
+	min-height: 0;
+}
 .note-detail-panel .note-editor-shell {
 	display: flex;
 	flex: 1 1 0;
@@ -277,11 +281,15 @@
 .note-markdown-split {
 	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
-.note-markdown-body > .note-markdown-codemirror,
-.note-markdown-body > .note-markdown-preview {
+.note-markdown-body > .note-markdown-codemirror {
 	min-width: 0;
 	min-height: 0;
 	overflow: auto;
+}
+.note-markdown-body > .note-markdown-preview-pane {
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
 }
 .note-markdown-split > .note-markdown-codemirror {
 	border-right: 1px solid #eef2f7;
@@ -290,6 +298,106 @@
 	padding: 16px;
 	line-height: 1.7;
 	word-break: break-word;
+}
+.note-preview-outline-layout,
+.note-markdown-preview-pane {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 220px;
+	gap: 16px;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+.note-preview-outline-layout:not(:has(> .note-outline-panel)),
+.note-markdown-preview-pane:not(:has(> .note-outline-panel)) {
+	grid-template-columns: minmax(0, 1fr);
+}
+.note-preview-outline-layout > .note-preview,
+.note-markdown-preview-pane > .note-markdown-preview {
+	min-width: 0;
+	min-height: 0;
+	overflow: auto;
+}
+.note-outline-panel {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	max-height: 100%;
+	padding-left: 12px;
+	overflow: hidden;
+	border-left: 1px solid #eef2f7;
+}
+.note-outline-title {
+	flex-shrink: 0;
+	padding: 4px 12px 10px;
+	font-weight: 600;
+	color: #334155;
+}
+.note-outline-list {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	padding: 0;
+	margin: 0;
+	overflow: auto;
+}
+.note-outline-item {
+	width: 100%;
+	padding-block: 7px;
+	padding-right: 8px;
+	overflow: hidden;
+	font: inherit;
+	font-size: 13px;
+	line-height: 20px;
+	color: #64748b;
+	text-align: left;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	cursor: pointer;
+	background: transparent;
+	border: 0;
+	border-left: 2px solid transparent;
+}
+.note-outline-item:hover {
+	color: #1677ff;
+	background: #f5f9ff;
+}
+.note-outline-item-active {
+	font-weight: 500;
+	color: #1677ff;
+	background: #e6f4ff;
+	border-left-color: #1677ff;
+}
+.note-outline-mobile-trigger {
+	display: none;
+}
+.note-outline-trigger-host {
+	display: inline-flex;
+}
+.note-outline-drawer-dark {
+	.ant-drawer-content,
+	.ant-drawer-header {
+		color: #d9d9d9;
+		background: #141414;
+		border-color: #303030;
+	}
+	.ant-drawer-title,
+	.ant-drawer-close {
+		color: #f0f0f0;
+	}
+	.note-outline-item {
+		color: #8c8c8c;
+	}
+	.note-outline-item:hover {
+		color: #69b1ff;
+		background: #111b26;
+	}
+	.note-outline-item-active {
+		color: #69b1ff;
+		background: #112a45;
+		border-left-color: #1677ff;
+	}
 }
 .note-preview img,
 .note-markdown-preview img {
@@ -459,6 +567,24 @@
 		background: #141414;
 		border-color: #303030;
 	}
+	.note-outline-panel {
+		border-left-color: #303030;
+	}
+	.note-outline-title {
+		color: #f0f0f0;
+	}
+	.note-outline-item {
+		color: #8c8c8c;
+	}
+	.note-outline-item:hover {
+		color: #69b1ff;
+		background: #111b26;
+	}
+	.note-outline-item-active {
+		color: #69b1ff;
+		background: #112a45;
+		border-left-color: #1677ff;
+	}
 	.note-editor:focus {
 		border-color: #1677ff;
 		box-shadow: 0 0 0 2px rgb(22 119 255 / 20%);
@@ -497,11 +623,28 @@
 	}
 }
 
+@media (width <= 1100px) {
+	.note-preview-outline-layout,
+	.note-markdown-preview-pane {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.note-outline-panel {
+		display: none;
+	}
+	.note-outline-mobile-trigger {
+		display: inline-flex;
+		align-items: center;
+	}
+}
+
 @media (width <= 900px) {
+	.note-markdown-editor-split .note-outline-trigger-host {
+		display: none;
+	}
 	.note-markdown-split {
 		grid-template-columns: 1fr;
 	}
-	.note-markdown-split > .note-markdown-preview {
+	.note-markdown-split > .note-markdown-preview-pane {
 		display: none;
 	}
 }

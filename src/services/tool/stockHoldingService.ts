@@ -101,8 +101,8 @@ export interface StockHoldingPriceRefreshResult {
  */
 export class StockHoldingService {
 	/** 获取账户持仓列表 */
-	static async getList(accountId: BackendIdInput, keyword?: string) {
-		return request.get<StockHoldingList>(`/StockHolding/List`, { accountId, keyword });
+	static async getList(accountId: BackendIdInput, keyword?: string, isEnabled?: boolean) {
+		return request.get<StockHoldingList>(`/StockHolding/List`, { accountId, keyword, isEnabled });
 	}
 
 	/** 新增持仓 */

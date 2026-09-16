@@ -40,6 +40,7 @@ interface StockPortfolioProps {
 
 type HoldingFormValues = Omit<StockHoldingPayload, "accountId">;
 type AccountFormValues = StockAccountPayload;
+type HoldingStatusFilter = "all" | "enabled" | "disabled";
 
 const currencyFormatter = (value: number) =>
 	`¥${value.toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -82,6 +83,7 @@ const emptySummary: StockHoldingSummary = {
 };
 
 const normalizeOptionalNumber = (value?: number | null) => (value === null || value === undefined ? undefined : value);
+const getIsEnabledParam = (status: HoldingStatusFilter) => (status === "all" ? undefined : status === "enabled");
 
 // 股票持仓管理
 const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
@@ -93,6 +95,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 	const [holdings, setHoldings] = useState<StockHolding[]>([]);
 	const [summary, setSummary] = useState<StockHoldingSummary>(emptySummary);
 	const [keyword, setKeyword] = useState("");
+	const [statusFilter, setStatusFilter] = useState<HoldingStatusFilter>("enabled");
 	const [modalOpen, setModalOpen] = useState(false);
 	const [accountModalOpen, setAccountModalOpen] = useState(false);
 	const [editingId, setEditingId] = useState<BackendId | null>(null);
@@ -122,7 +125,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 	}, []);
 
 	const loadHoldings = useCallback(
-		async (accountId?: BackendId, searchKeyword = "") => {
+		async (accountId?: BackendId, searchKeyword = "", isEnabled?: boolean) => {
 			// 防止旧请求覆盖当前账户数据
 			const requestSeq = ++holdingRequestSeq.current;
 
@@ -134,7 +137,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 
 			setLoading(true);
 			try {
-				const response = await StockHoldingService.getList(accountId, searchKeyword.trim());
+				const response = await StockHoldingService.getList(accountId, searchKeyword.trim(), isEnabled);
 				if (requestSeq !== holdingRequestSeq.current) return;
 
 				if (response.success) {
@@ -158,7 +161,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 	);
 
 	const loadAccounts = useCallback(
-		async (preferredAccountId?: BackendId, searchKeyword = "") => {
+		async (preferredAccountId?: BackendId, searchKeyword = "", isEnabled?: boolean) => {
 			// 先确定账户，再加载持仓
 			const requestSeq = ++accountRequestSeq.current;
 
@@ -178,7 +181,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 				setSelectedAccountId(nextSelectedAccountId);
 
 				if (nextSelectedAccountId) {
-					loadHoldings(nextSelectedAccountId, searchKeyword);
+					loadHoldings(nextSelectedAccountId, searchKeyword, isEnabled);
 				} else {
 					loadHoldings();
 				}
@@ -193,7 +196,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 	);
 
 	useEffect(() => {
-		loadAccounts();
+		loadAccounts(undefined, "", true);
 	}, [loadAccounts]);
 
 	const tableTitle = useMemo(() => (keyword.trim() ? `搜索结果：${keyword.trim()}` : "持仓列表"), [keyword]);
@@ -245,7 +248,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 
 	const handleAccountChange = (accountId: BackendId) => {
 		setSelectedAccountId(accountId);
-		loadHoldings(accountId, keyword);
+		loadHoldings(accountId, keyword, getIsEnabledParam(statusFilter));
 	};
 
 	const handleSaveAccount = async () => {
@@ -266,7 +269,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 
 		message.success(editingAccountId ? "账户已更新" : "账户已新增");
 		setAccountModalOpen(false);
-		loadAccounts(editingAccountId || selectedAccountId, keyword);
+		loadAccounts(editingAccountId || selectedAccountId, keyword, getIsEnabledParam(statusFilter));
 	};
 
 	const handleDeleteAccount = async () => {
@@ -287,7 +290,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 		setKeyword("");
 		clearHoldings();
 		setLoading(false);
-		loadAccounts(undefined, "");
+		loadAccounts(undefined, "", getIsEnabledParam(statusFilter));
 	};
 
 	const handleSave = async () => {
@@ -312,7 +315,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 
 		message.success(editingId ? "持仓已更新" : "持仓已新增");
 		setModalOpen(false);
-		loadHoldings(selectedAccountId, keyword);
+		loadHoldings(selectedAccountId, keyword, getIsEnabledParam(statusFilter));
 	};
 
 	const handleDelete = async (record: StockHolding) => {
@@ -323,7 +326,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 
 		message.success("持仓已删除");
 		if (record.accountId === selectedAccountId) {
-			loadHoldings(selectedAccountId, keyword);
+			loadHoldings(selectedAccountId, keyword, getIsEnabledParam(statusFilter));
 		}
 	};
 
@@ -343,7 +346,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 		if (!selectedAccountId) return;
 		if (record.accountId !== selectedAccountId) {
 			// 旧行数据不提交，刷新当前账户
-			loadHoldings(selectedAccountId, keyword);
+			loadHoldings(selectedAccountId, keyword, getIsEnabledParam(statusFilter));
 			return;
 		}
 
@@ -356,7 +359,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			const response = await StockHoldingService.updateCurrentPrice(record.accountId, record.id, currentPrice);
 			if (!response.success) return;
 
-			loadHoldings(selectedAccountId, keyword);
+			loadHoldings(selectedAccountId, keyword, getIsEnabledParam(statusFilter));
 		} finally {
 			savingPriceIds.current.delete(record.id);
 		}
@@ -381,7 +384,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			} else {
 				message.success(`已刷新 ${result.updatedCount} 只股票的当前价格`);
 			}
-			await loadHoldings(selectedAccountId, keyword);
+			await loadHoldings(selectedAccountId, keyword, getIsEnabledParam(statusFilter));
 		} finally {
 			setPriceRefreshLoading(false);
 		}
@@ -396,7 +399,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			if (!response.success) return;
 
 			message.success(`已刷新${record.name}的当前价格`);
-			await loadHoldings(selectedAccountId, keyword);
+			await loadHoldings(selectedAccountId, keyword, getIsEnabledParam(statusFilter));
 		} finally {
 			setRefreshingPriceIds(ids => {
 				const nextIds = new Set(ids);
@@ -415,7 +418,7 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 			const response = await StockHoldingService.updateIsEnabled(record.accountId, record.id, isEnabled);
 			if (!response.success) return;
 
-			loadHoldings(selectedAccountId, keyword);
+			loadHoldings(selectedAccountId, keyword, getIsEnabledParam(statusFilter));
 		} finally {
 			togglingEnabledIds.current.delete(record.id);
 		}
@@ -737,24 +740,39 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 								<Button type="primary" icon={<PlusOutlined />} onClick={openCreateModal}>
 									新增持仓
 								</Button>
+								<Button icon={<ReloadOutlined />} loading={priceRefreshLoading} onClick={handleRefreshCurrentPrices}>
+									刷新当前价格
+								</Button>
 							</Space>
-							<Button icon={<ReloadOutlined />} loading={priceRefreshLoading} onClick={handleRefreshCurrentPrices}>
-								刷新当前价格
-							</Button>
-							<Input.Search
-								allowClear
-								placeholder="按股票名称/代码搜索"
-								value={keyword}
-								onChange={event => {
-									const nextKeyword = event.target.value;
-									setKeyword(nextKeyword);
-									if (!nextKeyword) {
-										loadHoldings(selectedAccountId, "");
-									}
-								}}
-								onSearch={value => loadHoldings(selectedAccountId, value)}
-								className="portfolio-search"
-							/>
+							<Space wrap className="portfolio-filters">
+								<Select<HoldingStatusFilter>
+									value={statusFilter}
+									options={[
+										{ label: "全部", value: "all" },
+										{ label: "已启用", value: "enabled" },
+										{ label: "已禁用", value: "disabled" }
+									]}
+									onChange={value => {
+										setStatusFilter(value);
+										loadHoldings(selectedAccountId, keyword, getIsEnabledParam(value));
+									}}
+									className="portfolio-status-filter"
+								/>
+								<Input.Search
+									allowClear
+									placeholder="按股票名称/代码搜索"
+									value={keyword}
+									onChange={event => {
+										const nextKeyword = event.target.value;
+										setKeyword(nextKeyword);
+										if (!nextKeyword) {
+											loadHoldings(selectedAccountId, "", getIsEnabledParam(statusFilter));
+										}
+									}}
+									onSearch={value => loadHoldings(selectedAccountId, value, getIsEnabledParam(statusFilter))}
+									className="portfolio-search"
+								/>
+							</Space>
 						</div>
 
 						<Table

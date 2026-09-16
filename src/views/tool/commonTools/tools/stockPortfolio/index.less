@@ -23,7 +23,7 @@
 		display: flex;
 		gap: 16px;
 		align-items: center;
-		justify-content: flex-end;
+		justify-content: space-between;
 		margin-bottom: 16px;
 	}
 	.portfolio-table-title {
@@ -32,7 +32,12 @@
 	}
 	.portfolio-search {
 		width: min(320px, 100%);
+	}
+	.portfolio-filters {
 		margin-left: auto;
+	}
+	.portfolio-status-filter {
+		width: 120px;
 	}
 	.stock-name {
 		font-weight: 600;
@@ -192,7 +197,13 @@
 		}
 		.portfolio-search {
 			width: 100%;
+		}
+		.portfolio-filters {
+			width: 100%;
 			margin-left: 0;
+		}
+		.portfolio-status-filter {
+			width: 100%;
 		}
 	}
 }

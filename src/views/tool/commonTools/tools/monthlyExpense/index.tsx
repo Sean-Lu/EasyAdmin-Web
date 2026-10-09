@@ -117,6 +117,8 @@ const MonthlyExpense: React.FC<MonthlyExpenseProps> = ({ onBack }) => {
 			name: record.name,
 			amount: record.amount,
 			cycle: record.cycle,
+			sort: record.sort ?? 0,
+			remark: record.remark ?? "",
 			isEnabled: record.isEnabled
 		});
 		setModalOpen(true);
@@ -128,6 +130,8 @@ const MonthlyExpense: React.FC<MonthlyExpenseProps> = ({ onBack }) => {
 			name: values.name.trim(),
 			amount: values.amount,
 			cycle: values.cycle,
+			sort: values.sort ?? 0,
+			remark: values.remark?.trim() || null,
 			isEnabled: values.isEnabled ?? true
 		};
 
@@ -235,6 +239,14 @@ const MonthlyExpense: React.FC<MonthlyExpenseProps> = ({ onBack }) => {
 			)
 		},
 		{
+			title: "备注",
+			dataIndex: "remark",
+			key: "remark",
+			width: 200,
+			ellipsis: true,
+			render: (remark?: string | null) => remark ?? ""
+		},
+		{
 			title: "操作",
 			key: "action",
 			width: 112,
@@ -309,7 +321,7 @@ const MonthlyExpense: React.FC<MonthlyExpenseProps> = ({ onBack }) => {
 				<Form
 					form={form}
 					layout="vertical"
-					initialValues={{ amount: undefined, cycle: FixedExpenseCycle.Monthly, isEnabled: true }}
+					initialValues={{ amount: undefined, cycle: FixedExpenseCycle.Monthly, sort: 0, remark: "", isEnabled: true }}
 				>
 					<Form.Item name="name" label="支出名称" rules={[{ required: true, whitespace: true, message: "请输入支出名称" }]}>
 						<Input ref={nameInputRef} placeholder="如：房租、水费、交通、吃饭" maxLength={100} />
@@ -334,8 +346,20 @@ const MonthlyExpense: React.FC<MonthlyExpenseProps> = ({ onBack }) => {
 							</Form.Item>
 						</Col>
 					</Row>
-					<Form.Item name="isEnabled" label="是否启用" valuePropName="checked">
-						<Switch checkedChildren="启用" unCheckedChildren="禁用" />
+					<Row gutter={16}>
+						<Col span={12}>
+							<Form.Item name="sort" label="排序" tooltip="数值越小越靠前">
+								<InputNumber min={-2147483648} max={2147483647} precision={0} className="form-number-input" />
+							</Form.Item>
+						</Col>
+						<Col span={12}>
+							<Form.Item name="isEnabled" label="是否启用" valuePropName="checked">
+								<Switch checkedChildren="启用" unCheckedChildren="禁用" />
+							</Form.Item>
+						</Col>
+					</Row>
+					<Form.Item name="remark" label="备注" rules={[{ max: 200, message: "备注不能超过200字" }]}>
+						<Input.TextArea placeholder="请输入备注" maxLength={200} showCount rows={3} />
 					</Form.Item>
 				</Form>
 			</Modal>

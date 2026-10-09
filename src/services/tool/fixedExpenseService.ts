@@ -24,6 +24,10 @@ export interface FixedExpenseItem extends DtoBase {
 	amount: number;
 	/** 计费周期 */
 	cycle: FixedExpenseCycle;
+	/** 排序 */
+	sort: number;
+	/** 备注 */
+	remark?: string | null;
 	/** 是否启用 */
 	isEnabled: boolean;
 }
@@ -38,6 +42,10 @@ export interface FixedExpenseItemPayload {
 	amount: number;
 	/** 计费周期 */
 	cycle: FixedExpenseCycle;
+	/** 排序 */
+	sort: number;
+	/** 备注 */
+	remark?: string | null;
 	/** 是否启用 */
 	isEnabled: boolean;
 }

@@ -1,0 +1,117 @@
+.monthly-expense-page {
+	.expense-toolbar {
+		display: flex;
+		gap: 16px;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 16px;
+	}
+	.expense-table-title {
+		font-weight: 600;
+		color: #1f2937;
+	}
+	.expense-name {
+		font-weight: 600;
+		color: #1f2937;
+	}
+	.monthly-amount {
+		font-weight: 600;
+		color: #1f2937;
+	}
+	.monthly-amount-help-icon {
+		color: #8c8c8c;
+		cursor: help;
+	}
+	.expense-total-bar {
+		display: flex;
+		gap: 16px;
+		align-items: baseline;
+		justify-content: space-between;
+		padding: 16px 4px 0;
+		margin-top: 16px;
+		border-top: 1px solid #f0f0f0;
+	}
+	.expense-total-label {
+		font-size: 13px;
+		color: #64748b;
+	}
+	.expense-total-value {
+		font-size: 22px;
+		font-weight: 700;
+		color: #cf1322;
+	}
+	.expense-total-unit {
+		margin-left: 4px;
+		font-size: 13px;
+		font-weight: 400;
+		color: #8c8c8c;
+	}
+	&.monthly-expense-dark {
+		.expense-table-title,
+		.expense-name,
+		.monthly-amount {
+			color: #d9d9d9;
+		}
+		.ant-table {
+			color: #d9d9d9;
+			background: #141414;
+		}
+		.ant-table-container,
+		.ant-table-content,
+		.ant-table-thead > tr > th,
+		.ant-table-tbody > tr > td {
+			border-color: #303030;
+		}
+		.ant-table-thead > tr > th {
+			color: #f0f0f0;
+			background: #1f1f1f;
+		}
+		.ant-table-tbody > tr > td,
+		.ant-table-tbody > tr.ant-table-row:hover > td {
+			background: #141414;
+		}
+		.ant-pagination-total-text,
+		.ant-pagination-item-link {
+			color: #d9d9d9;
+		}
+		.expense-total-bar {
+			border-top-color: #303030;
+		}
+		.expense-total-label {
+			color: #8c8c8c;
+		}
+		.expense-total-value {
+			color: #ff4d4f;
+		}
+		.expense-total-unit {
+			color: #8c8c8c;
+		}
+	}
+}
+
+/* 弹窗通过 Portal 渲染到 body，需置于顶层作用域才能生效 */
+.form-number-input,
+.form-cycle-select {
+	width: 100%;
+}
+.expense-row-disabled td {
+	color: rgb(0 0 0 / 35%) !important;
+}
+.monthly-expense-dark .expense-row-disabled td {
+	color: rgb(255 255 255 / 30%) !important;
+}
+
+@media (width <= 768px) {
+	.monthly-expense-page {
+		.expense-toolbar {
+			align-items: stretch;
+			justify-content: stretch;
+			.ant-space {
+				width: 100%;
+			}
+		}
+		.expense-total-bar {
+			flex-wrap: wrap;
+		}
+	}
+}

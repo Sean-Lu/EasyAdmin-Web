@@ -869,12 +869,18 @@ const StockPortfolio: React.FC<StockPortfolioProps> = ({ onBack }) => {
 					<Form.Item name="remark" label="备注">
 						<Input.TextArea maxLength={500} showCount rows={3} />
 					</Form.Item>
-					<Form.Item name="isEnabled" label="是否启用" valuePropName="checked">
-						<Switch checkedChildren="启用" unCheckedChildren="禁用" />
-					</Form.Item>
-					<Form.Item name="sortOrder" label="排序顺序">
-						<InputNumber min={0} precision={0} className="form-number-input" placeholder="数值越小越靠前，默认 0" />
-					</Form.Item>
+					<Row gutter={16}>
+						<Col span={12}>
+							<Form.Item name="isEnabled" label="是否启用" valuePropName="checked">
+								<Switch checkedChildren="启用" unCheckedChildren="禁用" />
+							</Form.Item>
+						</Col>
+						<Col span={12}>
+							<Form.Item name="sortOrder" label="排序顺序">
+								<InputNumber min={0} precision={0} className="form-number-input" placeholder="数值越小越靠前，默认 0" />
+							</Form.Item>
+						</Col>
+					</Row>
 				</Form>
 			</Modal>
 		</div>

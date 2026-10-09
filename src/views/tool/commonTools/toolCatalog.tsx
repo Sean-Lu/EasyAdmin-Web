@@ -1,5 +1,6 @@
 import React from "react";
 import {
+	AccountBookOutlined,
 	ApiOutlined,
 	BarChartOutlined,
 	ClockCircleOutlined,
@@ -35,7 +36,8 @@ export type ToolKey =
 	| "cronTester"
 	| "timer"
 	| "countdown"
-	| "flipClock";
+	| "flipClock"
+	| "monthlyExpense";
 
 export interface ToolItem {
 	id: BackendId;
@@ -190,6 +192,14 @@ export const tools: ToolItem[] = [
 		description: "专注展示当前时间与屏保式时钟",
 		tag: "life_tools",
 		icon: <FieldTimeOutlined />
+	},
+	{
+		id: "19",
+		key: "monthlyExpense",
+		title: "月度支出统计",
+		description: "统计每月固定支出预估",
+		tag: "finance_tools",
+		icon: <AccountBookOutlined />
 	}
 ];
 

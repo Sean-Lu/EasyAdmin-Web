@@ -15,6 +15,7 @@ import JsonParser from "./tools/jsonParser";
 import JsonToTable from "./tools/jsonToTable";
 import JwtParser from "./tools/jwtParser";
 import Lottery from "./tools/lottery";
+import MonthlyExpense from "./tools/monthlyExpense";
 import QrCode from "./tools/qrCode";
 import RandomDecision from "./tools/randomDecision";
 import RandomPassword from "./tools/randomPassword";
@@ -153,6 +154,7 @@ const CommonTools: React.FC = () => {
 	if (activeTool === "timer") return <Timer onBack={() => setSearchParams({})} />;
 	if (activeTool === "countdown") return <Countdown onBack={() => setSearchParams({})} />;
 	if (activeTool === "flipClock") return <FlipClock onBack={() => setSearchParams({})} />;
+	if (activeTool === "monthlyExpense") return <MonthlyExpense onBack={() => setSearchParams({})} />;
 
 	return (
 		<DndProvider backend={HTML5Backend}>

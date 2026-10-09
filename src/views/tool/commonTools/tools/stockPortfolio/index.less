@@ -47,8 +47,7 @@
 		font-size: 12px;
 		color: #8c8c8c;
 	}
-	.current-price-input,
-	.form-number-input {
+	.current-price-input {
 		width: 100%;
 	}
 	.profit-up {
@@ -206,6 +205,11 @@
 			width: 100%;
 		}
 	}
+}
+
+/* 弹窗通过 Portal 渲染到 body，需置于顶层作用域才能生效 */
+.form-number-input {
+	width: 100%;
 }
 .holding-row-disabled td {
 	color: rgb(0 0 0 / 35%) !important;

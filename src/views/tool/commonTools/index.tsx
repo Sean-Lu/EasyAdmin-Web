@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
-import { Empty, Input, Row, Typography, message } from "antd";
+import { Empty, Input, Row, Spin, Tabs, Typography, message } from "antd";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useSearchParams } from "react-router-dom";
@@ -28,6 +28,8 @@ import UrlCodec from "./tools/urlCodec";
 import WebSocketTester from "./tools/webSocketTester";
 import DraggableToolCard from "./DraggableToolCard";
 import {
+	TOOL_CATEGORIES,
+	ToolCategory,
 	ToolItem,
 	ToolKey,
 	VALID_TOOL_KEYS,
@@ -37,6 +39,12 @@ import {
 	tools
 } from "./toolCatalog";
 import "./index.less";
+
+const Minesweeper = React.lazy(() => import("./tools/minesweeper"));
+
+const Nonogram = React.lazy(() => import("./tools/nonogram"));
+const LightUp = React.lazy(() => import("./tools/lightUp"));
+const Slitherlink = React.lazy(() => import("./tools/slitherlink"));
 
 const CommonTools: React.FC = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -50,6 +58,21 @@ const CommonTools: React.FC = () => {
 	const toolParam = searchParams.get("tool");
 	const activeTool: ToolKey | null = toolParam && VALID_TOOL_KEYS.has(toolParam) ? (toolParam as ToolKey) : null;
 	const keyword = searchParams.get("q") ?? "";
+	const categoryParam = searchParams.get("category") ?? "all";
+	const category: ToolCategory | "all" = Object.prototype.hasOwnProperty.call(TOOL_CATEGORIES, categoryParam)
+		? (categoryParam as ToolCategory)
+		: "all";
+	const updateFilters = (values: Record<string, string>) => {
+		setSearchParams(previous => {
+			const next = new URLSearchParams(previous);
+			for (const [key, value] of Object.entries(values)) {
+				if (value && !(key === "category" && value === "all")) next.set(key, value);
+				else next.delete(key);
+			}
+			return next;
+		});
+	};
+	const backToToolbox = () => updateFilters({ tool: "" });
 
 	useLayoutEffect(() => {
 		if (!activeTool) return;
@@ -99,8 +122,8 @@ const CommonTools: React.FC = () => {
 
 	const favoriteIds = useMemo(() => new Set(favoriteMap.keys()), [favoriteMap]);
 	const filteredTools = useMemo(
-		() => filterAndPrioritizeTools(keyword, favoriteIds, orderedTools),
-		[favoriteIds, keyword, orderedTools]
+		() => filterAndPrioritizeTools(keyword, favoriteIds, orderedTools, category),
+		[favoriteIds, keyword, orderedTools, category]
 	);
 	const dragDisabled = loadingToolboxState || Boolean(keyword.trim()) || savingOrder;
 
@@ -117,7 +140,7 @@ const CommonTools: React.FC = () => {
 		async (draggedId: BackendId, targetId: BackendId) => {
 			if (dragDisabled) return;
 			const previous = orderedTools;
-			const next = reorderToolWithinGroup(previous, favoriteIds, draggedId, targetId);
+			const next = reorderToolWithinGroup(previous, favoriteIds, draggedId, targetId, category);
 			if (!next) return;
 			const scrollContainer = pageRef.current?.closest<HTMLElement>(".ant-layout-content");
 			pendingDropScrollTopRef.current = scrollContainer?.scrollTop ?? null;
@@ -133,28 +156,44 @@ const CommonTools: React.FC = () => {
 				setSavingOrder(false);
 			}
 		},
-		[dragDisabled, favoriteIds, orderedTools]
+		[dragDisabled, favoriteIds, orderedTools, category]
 	);
 
-	if (activeTool === "sqlToTable") return <SqlToTable onBack={() => setSearchParams({})} />;
-	if (activeTool === "urlCodec") return <UrlCodec onBack={() => setSearchParams({})} />;
-	if (activeTool === "jsonToTable") return <JsonToTable onBack={() => setSearchParams({})} />;
-	if (activeTool === "jsonParser") return <JsonParser onBack={() => setSearchParams({})} />;
-	if (activeTool === "qrCode") return <QrCode onBack={() => setSearchParams({})} />;
-	if (activeTool === "randomDecision") return <RandomDecision onBack={() => setSearchParams({})} />;
-	if (activeTool === "randomPassword") return <RandomPassword onBack={() => setSearchParams({})} />;
-	if (activeTool === "jwtParser") return <JwtParser onBack={() => setSearchParams({})} />;
-	if (activeTool === "webSocketTester") return <WebSocketTester onBack={() => setSearchParams({})} />;
-	if (activeTool === "lottery") return <Lottery onBack={() => setSearchParams({})} />;
-	if (activeTool === "stockPortfolio") return <StockPortfolio onBack={() => setSearchParams({})} />;
-	if (activeTool === "timestamp") return <Timestamp onBack={() => setSearchParams({})} />;
-	if (activeTool === "crypto") return <Crypto onBack={() => setSearchParams({})} />;
-	if (activeTool === "regexTester") return <RegexTester onBack={() => setSearchParams({})} />;
-	if (activeTool === "cronTester") return <CronTester onBack={() => setSearchParams({})} />;
-	if (activeTool === "timer") return <Timer onBack={() => setSearchParams({})} />;
-	if (activeTool === "countdown") return <Countdown onBack={() => setSearchParams({})} />;
-	if (activeTool === "flipClock") return <FlipClock onBack={() => setSearchParams({})} />;
-	if (activeTool === "monthlyExpense") return <MonthlyExpense onBack={() => setSearchParams({})} />;
+	if (activeTool === "sqlToTable") return <SqlToTable onBack={backToToolbox} />;
+	if (activeTool === "urlCodec") return <UrlCodec onBack={backToToolbox} />;
+	if (activeTool === "jsonToTable") return <JsonToTable onBack={backToToolbox} />;
+	if (activeTool === "jsonParser") return <JsonParser onBack={backToToolbox} />;
+	if (activeTool === "qrCode") return <QrCode onBack={backToToolbox} />;
+	if (activeTool === "randomDecision") return <RandomDecision onBack={backToToolbox} />;
+	if (activeTool === "randomPassword") return <RandomPassword onBack={backToToolbox} />;
+	if (activeTool === "jwtParser") return <JwtParser onBack={backToToolbox} />;
+	if (activeTool === "webSocketTester") return <WebSocketTester onBack={backToToolbox} />;
+	if (activeTool === "lottery") return <Lottery onBack={backToToolbox} />;
+	if (activeTool === "stockPortfolio") return <StockPortfolio onBack={backToToolbox} />;
+	if (activeTool === "timestamp") return <Timestamp onBack={backToToolbox} />;
+	if (activeTool === "crypto") return <Crypto onBack={backToToolbox} />;
+	if (activeTool === "regexTester") return <RegexTester onBack={backToToolbox} />;
+	if (activeTool === "cronTester") return <CronTester onBack={backToToolbox} />;
+	if (activeTool === "timer") return <Timer onBack={backToToolbox} />;
+	if (activeTool === "countdown") return <Countdown onBack={backToToolbox} />;
+	if (activeTool === "flipClock") return <FlipClock onBack={backToToolbox} />;
+	if (activeTool === "monthlyExpense") return <MonthlyExpense onBack={backToToolbox} />;
+	if (activeTool === "minesweeper") {
+		return (
+			<Suspense fallback={<Spin />}>
+				<Minesweeper onBack={backToToolbox} />
+			</Suspense>
+		);
+	}
+
+	if (activeTool === "nonogram" || activeTool === "lightUp" || activeTool === "slitherlink") {
+		const Game = activeTool === "nonogram" ? Nonogram : activeTool === "lightUp" ? LightUp : Slitherlink;
+		return (
+			<Suspense fallback={<Spin />}>
+				<Game onBack={backToToolbox} />
+			</Suspense>
+		);
+	}
 
 	return (
 		<DndProvider backend={HTML5Backend}>
@@ -172,7 +211,7 @@ const CommonTools: React.FC = () => {
 							value={keyword}
 							onChange={event => {
 								const value = event.target.value;
-								setSearchParams(value ? { q: value } : {});
+								updateFilters({ q: value });
 							}}
 							className="tool-search"
 						/>
@@ -181,6 +220,18 @@ const CommonTools: React.FC = () => {
 					</div>
 				</div>
 
+				<Tabs
+					aria-label="工具分类"
+					activeKey={category}
+					onChange={value => updateFilters({ category: value })}
+					items={[
+						{ key: "all", label: `全部 (${tools.length})` },
+						...Object.entries(TOOL_CATEGORIES).map(([key, label]) => ({
+							key,
+							label: `${label} (${tools.filter(tool => tool.tag === key).length})`
+						}))
+					]}
+				/>
 				{filteredTools.length > 0 ? (
 					<Row gutter={[24, 24]}>
 						{filteredTools.map(tool => (
@@ -192,7 +243,7 @@ const CommonTools: React.FC = () => {
 								favoriteDisabled={loadingToolboxState}
 								dragDisabled={dragDisabled}
 								onFavoriteChange={handleFavoriteChange}
-								onOpen={item => setSearchParams({ tool: item.key })}
+								onOpen={item => updateFilters({ tool: item.key })}
 								onDrop={handleDrop}
 							/>
 						))}

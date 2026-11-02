@@ -1,0 +1,233 @@
+.minesweeper-page {
+	--mine-cell-size: 32px;
+	--mine-surface: #f1f5f9;
+	--mine-border: #cbd5e1;
+	--mine-hidden: #e2e8f0;
+	--mine-hover: #dbeafe;
+	--mine-open: #ffffff;
+	--mine-text: #334155;
+	--mine-muted: #64748b;
+
+	max-width: 1160px;
+	margin: 0 auto;
+	.minesweeper-toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px;
+		align-items: center;
+		justify-content: space-between;
+		padding-bottom: 20px;
+		border-bottom: 1px solid var(--mine-border);
+	}
+	.minesweeper-stats {
+		display: flex;
+		gap: 24px;
+		align-items: center;
+		justify-content: center;
+		padding-top: 24px;
+	}
+	.minesweeper-stat {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		min-width: 100px;
+		text-align: center;
+		strong {
+			font-family: Consolas, SFMono-Regular, monospace;
+			font-size: 30px;
+			font-variant-numeric: tabular-nums;
+			line-height: 1.2;
+			color: var(--mine-text);
+		}
+	}
+	.minesweeper-stat-label {
+		font-size: 12px;
+		color: var(--mine-muted);
+	}
+	.minesweeper-status-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 52px;
+		height: 52px;
+		font-size: 28px;
+		color: #1677ff;
+		background: var(--mine-surface);
+		border-radius: 50%;
+	}
+	.minesweeper-status {
+		min-height: 24px;
+		margin: 16px 0;
+		color: var(--mine-muted);
+		text-align: center;
+	}
+	.minesweeper-status-won {
+		color: #389e0d;
+	}
+	.minesweeper-status-lost {
+		color: #cf1322;
+	}
+	.minesweeper-board-scroll {
+		padding: 4px;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+	}
+	.minesweeper-record {
+		margin: 0 0 16px;
+		font-size: 12px;
+		text-align: center;
+	}
+	.minesweeper-board {
+		box-sizing: border-box;
+		display: grid;
+		gap: 3px;
+		max-width: 100%;
+		padding: 10px;
+		margin: 0 auto;
+		background: var(--mine-surface);
+		border: 1px solid var(--mine-border);
+		border-radius: 10px;
+	}
+	.minesweeper-cell {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 1;
+		padding: 0;
+		font-family: Consolas, SFMono-Regular, monospace;
+		font-size: 18px;
+		font-weight: 700;
+		line-height: 1;
+		color: var(--mine-text);
+		cursor: pointer;
+		user-select: none;
+		background: var(--mine-hidden);
+		border: 1px solid var(--mine-border);
+		border-radius: 4px;
+		box-shadow: inset 0 2px 0 rgb(255 255 255 / 45%);
+		transition: background-color 0.12s;
+		-webkit-touch-callout: none;
+		.anticon {
+			font-size: 15px;
+			color: #d4380d;
+		}
+		&:hover:not([aria-disabled="true"]) {
+			background: var(--mine-hover);
+		}
+		&:focus-visible {
+			z-index: 1;
+			outline: 2px solid #1677ff;
+			outline-offset: 1px;
+		}
+		&.is-revealed {
+			background: var(--mine-open);
+			border-color: transparent;
+			box-shadow: none;
+		}
+		&.is-exploded {
+			color: #ffffff;
+			background: #cf1322;
+		}
+		&.is-wrong-flag {
+			color: #cf1322;
+			background: #fff1f0;
+		}
+		&[aria-disabled="true"] {
+			cursor: default;
+		}
+		&[data-number="1"] {
+			color: #1677ff;
+		}
+		&[data-number="2"] {
+			color: #389e0d;
+		}
+		&[data-number="3"] {
+			color: #cf1322;
+		}
+		&[data-number="4"] {
+			color: #531dab;
+		}
+		&[data-number="5"] {
+			color: #ad4e00;
+		}
+		&[data-number="6"] {
+			color: #08979c;
+		}
+		&[data-number="7"] {
+			color: var(--mine-text);
+		}
+		&[data-number="8"] {
+			color: var(--mine-muted);
+		}
+	}
+	.minesweeper-board-footer {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		align-items: center;
+		justify-content: center;
+		margin-top: 20px;
+	}
+	&.minesweeper-dark {
+		--mine-surface: #1d2530;
+		--mine-border: #3b4758;
+		--mine-hidden: #344256;
+		--mine-hover: #304e78;
+		--mine-open: #151c25;
+		--mine-text: #e2e8f0;
+		--mine-muted: #94a3b8;
+		.minesweeper-cell {
+			box-shadow: inset 0 2px 0 rgb(255 255 255 / 6%);
+			&.is-revealed {
+				box-shadow: none;
+			}
+			&.is-wrong-flag {
+				color: #ff7875;
+				background: #4c2024;
+			}
+			&[data-number="1"] {
+				color: #69b1ff;
+			}
+			&[data-number="2"] {
+				color: #95de64;
+			}
+			&[data-number="3"] {
+				color: #ff7875;
+			}
+			&[data-number="4"] {
+				color: #b37feb;
+			}
+			&[data-number="5"] {
+				color: #ffc069;
+			}
+			&[data-number="6"] {
+				color: #5cdbd3;
+			}
+		}
+		.minesweeper-status-won {
+			color: #95de64;
+		}
+		.minesweeper-status-lost {
+			color: #ff7875;
+		}
+	}
+}
+
+@media (width <= 576px) {
+	.minesweeper-page {
+		--mine-cell-size: 28px;
+		.minesweeper-stats {
+			gap: 12px;
+		}
+		.minesweeper-stat {
+			min-width: 80px;
+		}
+		.minesweeper-board {
+			&:not(.is-beginner) {
+				max-width: none;
+			}
+		}
+	}
+}

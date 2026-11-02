@@ -1,0 +1,243 @@
+.logic-game-page {
+	--puzzle-surface: #ffffff;
+	--puzzle-soft: #f1f5f9;
+	--puzzle-line: #cbd5e1;
+	--puzzle-text: #334155;
+	--puzzle-ink: #334155;
+	--puzzle-lit: #fff7cc;
+	--puzzle-error: #fff1f0;
+
+	max-width: 1160px;
+	margin: 0 auto;
+	.logic-game-heading {
+		display: flex;
+		gap: 16px;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 24px;
+		> div {
+			text-align: center;
+		}
+		h2 {
+			margin-bottom: 4px;
+		}
+	}
+	.logic-game-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 20px;
+		align-items: start;
+	}
+	.logic-game-toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		justify-content: space-between;
+		.ant-select {
+			min-width: 170px;
+		}
+	}
+	.logic-game-status {
+		margin: 24px 0 20px;
+		color: #64748b;
+		text-align: center;
+		&.is-solved {
+			font-weight: 600;
+			color: #389e0d;
+		}
+	}
+	.logic-game-board-scroll {
+		min-width: 0;
+		padding: 4px;
+		margin: 0;
+		overflow-x: auto;
+		border: 0;
+	}
+	.logic-game-record {
+		margin-bottom: 16px;
+		font-size: 13px;
+		color: var(--puzzle-text);
+		text-align: center;
+	}
+	.logic-game-controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		justify-content: center;
+		margin-top: 20px;
+	}
+	.logic-game-stats {
+		display: flex;
+		gap: 24px;
+		justify-content: center;
+		margin-top: 20px;
+		font-variant-numeric: tabular-nums;
+		color: #64748b;
+	}
+	.logic-game-help {
+		ol {
+			padding-left: 20px;
+			margin: 0 0 16px;
+		}
+		li {
+			margin-bottom: 12px;
+			line-height: 1.8;
+		}
+	}
+	.puzzle-cell {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+		min-height: 32px;
+		padding: 0;
+		font-size: 17px;
+		font-weight: 600;
+		color: var(--puzzle-text);
+		cursor: pointer;
+		background: var(--puzzle-surface);
+		border: 1px solid var(--puzzle-line);
+		&:focus-visible {
+			position: relative;
+			z-index: 1;
+			outline: 2px solid #1677ff;
+			outline-offset: 1px;
+		}
+		&[aria-disabled="true"] {
+			cursor: default;
+		}
+	}
+	.nonogram-board {
+		--nonogram-clue-width: 58px;
+
+		display: grid;
+		width: max-content;
+
+		/* 右侧预留与行线索等宽的空间，使填格区域与下方操作区居中对齐 */
+		padding-right: var(--nonogram-clue-width);
+		margin: 0 auto;
+	}
+	.nonogram-clue {
+		display: flex;
+		gap: 5px;
+		align-items: center;
+		justify-content: flex-end;
+		padding: 4px 7px;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--puzzle-text);
+		&.is-column {
+			flex-direction: column;
+			justify-content: flex-end;
+			padding: 6px 0;
+		}
+		&.is-complete {
+			color: #389e0d;
+		}
+	}
+	.nonogram-cell {
+		aspect-ratio: 1;
+		&.is-filled {
+			color: #ffffff;
+			background: var(--puzzle-ink);
+		}
+		&.is-empty {
+			color: #94a3b8;
+			background: var(--puzzle-soft);
+		}
+	}
+	.light-up-board {
+		display: grid;
+		width: max-content;
+		margin: 0 auto;
+		border: 2px solid var(--puzzle-line);
+	}
+	.light-up-cell {
+		aspect-ratio: 1;
+		&.is-wall {
+			color: #ffffff;
+			cursor: default;
+			background: #334155;
+			border-color: #475569;
+		}
+		&.is-lit {
+			background: var(--puzzle-lit);
+		}
+		&.is-error {
+			color: #cf1322;
+			background: var(--puzzle-error);
+		}
+	}
+	.slitherlink-board {
+		display: grid;
+		width: max-content;
+		margin: 0 auto;
+	}
+	.loop-dot {
+		z-index: 1;
+		place-self: center center;
+		width: 6px;
+		height: 6px;
+		pointer-events: none;
+		background: var(--puzzle-text);
+		border-radius: 50%;
+	}
+	.loop-clue {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 19px;
+		color: var(--puzzle-text);
+		&.is-error {
+			color: #cf1322;
+			background: var(--puzzle-error);
+		}
+		&.is-complete {
+			color: #389e0d;
+		}
+	}
+	.loop-edge {
+		place-self: stretch stretch;
+		min-width: 0;
+		min-height: 0;
+		padding: 0;
+		color: #94a3b8;
+		cursor: pointer;
+		background: var(--puzzle-soft);
+		border: 0;
+		border-radius: 4px;
+		&.is-line {
+			background: #1677ff;
+		}
+		&:focus-visible {
+			z-index: 2;
+			outline: 2px solid #1677ff;
+			outline-offset: 2px;
+		}
+	}
+	&.logic-game-dark {
+		--puzzle-surface: #17202b;
+		--puzzle-soft: #273444;
+		--puzzle-line: #475569;
+		--puzzle-text: #e2e8f0;
+		--puzzle-ink: #426b9c;
+		--puzzle-lit: #51441b;
+		--puzzle-error: #4c2024;
+	}
+}
+
+@media (width <= 576px) {
+	.logic-game-page {
+		.logic-game-heading {
+			flex-wrap: wrap;
+			> div {
+				order: 1;
+				width: 100%;
+			}
+		}
+		.logic-game-card > .ant-card-body {
+			padding: 16px 10px;
+		}
+	}
+}

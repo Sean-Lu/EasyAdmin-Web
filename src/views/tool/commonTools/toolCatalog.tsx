@@ -6,6 +6,7 @@ import {
 	ClockCircleOutlined,
 	CodeOutlined,
 	CompassOutlined,
+	ExperimentOutlined,
 	FileTextOutlined,
 	FundProjectionScreenOutlined,
 	FieldTimeOutlined,
@@ -37,14 +38,28 @@ export type ToolKey =
 	| "timer"
 	| "countdown"
 	| "flipClock"
-	| "monthlyExpense";
+	| "monthlyExpense"
+	| "minesweeper"
+	| "nonogram"
+	| "lightUp"
+	| "slitherlink";
+
+/** 工具分类标识与显示名称的映射 */
+export const TOOL_CATEGORIES = {
+	developer_tools: "开发工具",
+	image_tools: "图片工具",
+	life_tools: "生活工具",
+	finance_tools: "理财工具",
+	game_tools: "休闲游戏"
+};
+export type ToolCategory = keyof typeof TOOL_CATEGORIES;
 
 export interface ToolItem {
 	id: BackendId;
 	key: ToolKey;
 	title: string;
 	description: string;
-	tag: string;
+	tag: ToolCategory;
 	icon: React.ReactNode;
 }
 
@@ -200,6 +215,38 @@ export const tools: ToolItem[] = [
 		description: "统计每月固定支出预估",
 		tag: "finance_tools",
 		icon: <AccountBookOutlined />
+	},
+	{
+		id: "20",
+		key: "minesweeper",
+		title: "扫雷",
+		description: "经典扫雷，首击安全与多种难度",
+		tag: "game_tools",
+		icon: <ExperimentOutlined />
+	},
+	{
+		id: "21",
+		key: "nonogram",
+		title: "数织",
+		description: "根据行列数字填出像素图案",
+		tag: "game_tools",
+		icon: <BarChartOutlined />
+	},
+	{
+		id: "22",
+		key: "lightUp",
+		title: "点灯",
+		description: "用灯光照亮棋盘，破解数字约束",
+		tag: "game_tools",
+		icon: <ExperimentOutlined />
+	},
+	{
+		id: "23",
+		key: "slitherlink",
+		title: "数回",
+		description: "根据数字连出唯一一条闭合回路",
+		tag: "game_tools",
+		icon: <LinkOutlined />
 	}
 ];
 
@@ -223,12 +270,16 @@ export function applyToolOrder(toolIds: BackendId[] | undefined): ToolItem[] {
 export function filterAndPrioritizeTools(
 	keyword: string,
 	favoriteIds: ReadonlySet<BackendId>,
-	orderedTools: ToolItem[] = tools
+	orderedTools: ToolItem[] = tools,
+	category: ToolCategory | "all" = "all"
 ): ToolItem[] {
 	const normalizedKeyword = keyword.trim().toLowerCase();
-	const filtered = normalizedKeyword
-		? orderedTools.filter(tool => `${tool.title} ${tool.description}`.toLowerCase().includes(normalizedKeyword))
-		: orderedTools;
+	// 分类与关键词共同筛选，收藏置顶只发生在筛选结果内
+	const filtered = orderedTools.filter(
+		tool =>
+			(category === "all" || tool.tag === category) &&
+			(!normalizedKeyword || `${tool.title} ${tool.description}`.toLowerCase().includes(normalizedKeyword))
+	);
 	return [...filtered.filter(tool => favoriteIds.has(tool.id)), ...filtered.filter(tool => !favoriteIds.has(tool.id))];
 }
 
@@ -236,7 +287,8 @@ export function reorderToolWithinGroup(
 	orderedTools: ToolItem[],
 	favoriteIds: ReadonlySet<BackendId>,
 	draggedId: BackendId,
-	targetId: BackendId
+	targetId: BackendId,
+	category: ToolCategory | "all" = "all"
 ): ToolItem[] | null {
 	const draggedIndex = orderedTools.findIndex(tool => tool.id === draggedId);
 	const targetIndex = orderedTools.findIndex(tool => tool.id === targetId);
@@ -245,8 +297,13 @@ export function reorderToolWithinGroup(
 	}
 
 	const isFavoriteGroup = favoriteIds.has(draggedId);
+	if (category !== "all" && (orderedTools[draggedIndex].tag !== category || orderedTools[targetIndex].tag !== category))
+		return null;
+	// 分类内拖动仅替换可见组的位置，其他分类的相对位置保持不变
 	const groupIndexes = orderedTools
-		.map((tool, index) => (favoriteIds.has(tool.id) === isFavoriteGroup ? index : -1))
+		.map((tool, index) =>
+			favoriteIds.has(tool.id) === isFavoriteGroup && (category === "all" || tool.tag === category) ? index : -1
+		)
 		.filter(index => index >= 0);
 	const groupTools = groupIndexes.map(index => orderedTools[index]);
 	const draggedGroupIndex = groupTools.findIndex(tool => tool.id === draggedId);

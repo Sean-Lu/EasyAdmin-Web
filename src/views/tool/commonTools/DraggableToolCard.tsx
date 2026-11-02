@@ -5,7 +5,7 @@ import { useDrag, useDrop } from "react-dnd";
 import FavoriteButton from "@/components/FavoriteButton";
 import { BackendId, BackendIdInput } from "@/api/interface";
 import { FavoriteTargetType } from "@/services/user/favoriteService";
-import { ToolItem } from "./toolCatalog";
+import { ToolItem, TOOL_CATEGORIES } from "./toolCatalog";
 
 const TOOL_CARD_DND_TYPE = "toolbox-tool-card";
 
@@ -124,7 +124,7 @@ const DraggableToolCard = ({
 					<Typography.Title level={4}>{tool.title}</Typography.Title>
 					<Typography.Text type="secondary">{tool.description}</Typography.Text>
 					<div className="tool-card-footer">
-						<Tag>{tool.tag}</Tag>
+						<Tag>{TOOL_CATEGORIES[tool.tag]}</Tag>
 						<Tooltip title={dragDisabled ? "清空搜索或等待保存完成后可调整排序" : "拖拽调整排序"}>
 							<Button
 								ref={handleRef}

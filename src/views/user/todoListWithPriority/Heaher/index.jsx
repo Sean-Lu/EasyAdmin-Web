@@ -27,9 +27,27 @@ export default class TodoHeader extends Component {
 		this.setState({ priority: value });
 	};
 
+	handleKeyDown = e => {
+		if (e.key !== "Enter" || e.isComposing || e.nativeEvent?.isComposing || e.keyCode === 229) return;
+		e.preventDefault();
+		if (e.ctrlKey || e.metaKey) {
+			const target = e.currentTarget;
+			const { inputValue } = this.state;
+			const { selectionStart = inputValue.length, selectionEnd = selectionStart } = target;
+			const nextValue = `${inputValue.slice(0, selectionStart)}\n${inputValue.slice(selectionEnd)}`;
+			if (nextValue.length > 500) return;
+			this.setState({ inputValue: nextValue }, () => {
+				target.selectionStart = selectionStart + 1;
+				target.selectionEnd = selectionStart + 1;
+			});
+		} else {
+			this.handleEnter();
+		}
+	};
+
 	handleEnter = () => {
 		const { inputValue, priority } = this.state;
-		if (inputValue === "") {
+		if (!inputValue.trim()) {
 			return;
 		}
 		const todoObj = {
@@ -45,12 +63,13 @@ export default class TodoHeader extends Component {
 
 	render() {
 		return (
-			<div className="todo-header" style={{ display: "flex", alignItems: "center" }}>
-				<Input
-					placeholder="按回车创建待办任务"
+			<div className="todo-header" style={{ display: "flex", alignItems: "flex-start" }}>
+				<Input.TextArea
+					placeholder="Enter 创建待办，Ctrl/⌘+Enter 换行"
 					value={this.state.inputValue}
 					onChange={this.handleChange}
-					onPressEnter={this.handleEnter}
+					onKeyDown={this.handleKeyDown}
+					autoSize={{ minRows: 1, maxRows: 6 }}
 					maxLength={500}
 					allowClear
 					style={{ flex: 1, marginRight: 8 }}

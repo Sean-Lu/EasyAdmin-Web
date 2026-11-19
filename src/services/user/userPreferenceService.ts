@@ -16,7 +16,7 @@ export interface MinesweeperScore {
 	achievedAt: string;
 }
 
-export type PuzzleGame = "nonogram" | "lightUp" | "slitherlink";
+export type PuzzleGame = "nonogram" | "lightUp" | "slitherlink" | "game2048" | "maze" | "guessNumber";
 
 /** 关卡最佳成绩；最佳用时与最少步数独立记录，可来自不同次通关 */
 export interface PuzzleScore {

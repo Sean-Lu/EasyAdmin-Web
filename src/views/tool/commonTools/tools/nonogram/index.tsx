@@ -36,6 +36,15 @@ export default function Nonogram({ onBack }: { onBack: () => void }) {
 			moves={session.moves}
 			canUndo={session.canUndo}
 			records={session.records}
+			unsolvedHint="不必着急，从确定的线索开始"
+			solvedHint="挑战完成！所有线索都满足了"
+			helpNote={
+				<>
+					支持鼠标、触屏和键盘 Tab / Enter / 空格。选错了可撤销，切换关卡会重新开始。
+					步数包括落子、标记和撤销。最佳用时和最少步数分别记录，可能来自不同次通关。
+				</>
+			}
+			categoryTag="逻辑推理"
 			rules={[
 				"目标：根据棋盘上方和左侧的数字，填出全部黑格。填对黑格即可完成，空格不必全部打叉。",
 				"数字按顺序表示连续黑格的长度。例如 2、1 表示先有连续 2 格，再有 1 格，两组之间至少空一格。",

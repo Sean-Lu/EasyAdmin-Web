@@ -2,6 +2,7 @@ import React from "react";
 import {
 	AccountBookOutlined,
 	ApiOutlined,
+	AppstoreOutlined,
 	BarChartOutlined,
 	ClockCircleOutlined,
 	CodeOutlined,
@@ -10,10 +11,12 @@ import {
 	FileTextOutlined,
 	FundProjectionScreenOutlined,
 	FieldTimeOutlined,
+	GatewayOutlined,
 	GiftOutlined,
 	HourglassOutlined,
 	LinkOutlined,
 	LockOutlined,
+	NumberOutlined,
 	QrcodeOutlined,
 	SafetyCertificateOutlined
 } from "@ant-design/icons";
@@ -42,7 +45,10 @@ export type ToolKey =
 	| "minesweeper"
 	| "nonogram"
 	| "lightUp"
-	| "slitherlink";
+	| "slitherlink"
+	| "game2048"
+	| "maze"
+	| "guessNumber";
 
 /** 工具分类标识与显示名称的映射 */
 export const TOOL_CATEGORIES = {
@@ -247,6 +253,30 @@ export const tools: ToolItem[] = [
 		description: "根据数字连出唯一一条闭合回路",
 		tag: "game_tools",
 		icon: <LinkOutlined />
+	},
+	{
+		id: "24",
+		key: "game2048",
+		title: "2048",
+		description: "滑动合并数字，每局随机盘面",
+		tag: "game_tools",
+		icon: <AppstoreOutlined />
+	},
+	{
+		id: "25",
+		key: "maze",
+		title: "随机迷宫",
+		description: "每局生成全新迷宫找出口",
+		tag: "game_tools",
+		icon: <GatewayOutlined />
+	},
+	{
+		id: "26",
+		key: "guessNumber",
+		title: "猜数字",
+		description: "1A2B 反馈推理随机密码",
+		tag: "game_tools",
+		icon: <NumberOutlined />
 	}
 ];
 

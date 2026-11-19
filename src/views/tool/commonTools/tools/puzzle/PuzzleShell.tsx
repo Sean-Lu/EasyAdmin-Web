@@ -70,6 +70,14 @@ interface PuzzleShellProps {
 	records: ReturnType<typeof usePuzzleScores>;
 	rules: string[];
 	controls?: React.ReactNode;
+	/** 未通关时的状态提示，由各游戏自己指定 */
+	unsolvedHint: string;
+	/** 通关时的状态提示，由各游戏自己指定 */
+	solvedHint: string;
+	/** 玩法说明底部的操作提示，由各游戏自己指定 */
+	helpNote: React.ReactNode;
+	/** 标题旁的分类标签，不传则不显示 */
+	categoryTag?: string;
 	children: React.ReactNode;
 }
 
@@ -86,7 +94,7 @@ export default function PuzzleShell(props: PuzzleShellProps) {
 					<Typography.Title level={2}>{props.title}</Typography.Title>
 					<Typography.Text type="secondary">{props.description}</Typography.Text>
 				</div>
-				<Tag color="blue">逻辑推理</Tag>
+				{props.categoryTag && <Tag color="blue">{props.categoryTag}</Tag>}
 			</div>
 			<div className="logic-game-layout">
 				<Card className="logic-game-card">
@@ -110,7 +118,7 @@ export default function PuzzleShell(props: PuzzleShellProps) {
 						</Space>
 					</div>
 					<div className={`logic-game-status${props.solved ? " is-solved" : ""}`} role="status">
-						{props.solved ? "挑战完成！所有线索都满足了" : "不必着急，从确定的线索开始"}
+						{props.solved ? props.solvedHint : props.unsolvedHint}
 					</div>
 					<div className="logic-game-record">
 						<Space wrap>
@@ -154,10 +162,7 @@ export default function PuzzleShell(props: PuzzleShellProps) {
 						<span>操作 {props.moves} 步</span>
 					</div>
 				</Card>
-				<GameHelp rules={props.rules}>
-					支持鼠标、触屏和键盘 Tab / Enter / 空格。选错了可撤销，切换关卡会重新开始。
-					步数包括落子、标记和撤销。最佳用时和最少步数分别记录，可能来自不同次通关。
-				</GameHelp>
+				<GameHelp rules={props.rules}>{props.helpNote}</GameHelp>
 			</div>
 		</div>
 	);

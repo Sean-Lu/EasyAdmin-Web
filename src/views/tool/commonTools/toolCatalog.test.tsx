@@ -4,14 +4,22 @@ import { applyToolOrder, filterAndPrioritizeTools, reorderToolWithinGroup, tools
 describe("toolCatalog", () => {
 	it("combines category, keyword and favorites without leaking other categories", () => {
 		const result = filterAndPrioritizeTools("数", new Set(["23", "1"]), tools, "game_tools");
-		expect(result.map(tool => tool.key)).toEqual(["slitherlink", "nonogram", "lightUp"]);
+		expect(result.map(tool => tool.key)).toEqual(["slitherlink", "nonogram", "lightUp", "game2048", "guessNumber"]);
 		expect(filterAndPrioritizeTools("JSON", new Set(), tools, "game_tools")).toEqual([]);
 	});
 
 	it("keeps hidden category positions when reordering visible tools", () => {
 		const reordered = reorderToolWithinGroup(tools, new Set(), "23", "20", "game_tools")!;
 		expect(reordered.filter(tool => tool.tag !== "game_tools")).toEqual(tools.filter(tool => tool.tag !== "game_tools"));
-		expect(reordered.filter(tool => tool.tag === "game_tools").map(tool => tool.id)).toEqual(["23", "20", "21", "22"]);
+		expect(reordered.filter(tool => tool.tag === "game_tools").map(tool => tool.id)).toEqual([
+			"23",
+			"20",
+			"21",
+			"22",
+			"24",
+			"25",
+			"26"
+		]);
 		expect(reorderToolWithinGroup(tools, new Set(), "1", "20", "game_tools")).toBeNull();
 	});
 	it("applies a stored order and appends tools unknown to an older preference", () => {

@@ -1,0 +1,41 @@
+.guess-number-history {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	width: min(360px, 100%);
+	max-height: 420px;
+	padding: 8px;
+	margin: 0 auto;
+	overflow-y: auto;
+	text-align: center;
+}
+.guess-number-row {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	padding: 6px 10px;
+	background: var(--puzzle-soft, #f1f5f9);
+	border-radius: 8px;
+}
+.guess-number-order {
+	font-size: 12px;
+	color: var(--puzzle-muted, #64748b);
+}
+.guess-number-digits {
+	display: flex;
+	gap: 6px;
+	font-family: Consolas, SFMono-Regular, monospace;
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--puzzle-text, #334155);
+	letter-spacing: 2px;
+}
+.guess-number-reveal {
+	display: block;
+	margin-top: 8px;
+	text-align: center;
+}
+.guess-number-input {
+	max-width: 200px;
+}

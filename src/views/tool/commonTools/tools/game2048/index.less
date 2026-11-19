@@ -1,0 +1,99 @@
+.game-2048-board {
+	display: grid;
+	gap: 6px;
+	width: min(420px, 100%);
+	padding: 10px;
+	margin: 0 auto;
+	background: #bbada0;
+	border-radius: 10px;
+	&:focus-visible {
+		outline: 2px solid #1677ff;
+		outline-offset: 2px;
+	}
+}
+.game-2048-cell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	aspect-ratio: 1;
+	font-family: Consolas, SFMono-Regular, monospace;
+	font-size: 26px;
+	font-weight: 700;
+	color: #64748b;
+	background: #d3c0b2;
+	border-radius: 6px;
+	&.is-tile {
+		color: #f9f6f2;
+	}
+}
+.game-2048-cell.tile-2 {
+	color: #645444;
+	background: #eee4da;
+}
+.game-2048-cell.tile-4 {
+	color: #645444;
+	background: #ede0c8;
+}
+.game-2048-cell.tile-8 {
+	background: #f2b179;
+}
+.game-2048-cell.tile-16 {
+	background: #f59563;
+}
+.game-2048-cell.tile-32 {
+	background: #f67c5f;
+}
+.game-2048-cell.tile-64 {
+	background: #f65e3b;
+}
+.game-2048-cell.tile-128,
+.game-2048-cell.tile-256 {
+	font-size: 24px;
+	background: #edcf72;
+}
+.game-2048-cell.tile-512 {
+	font-size: 24px;
+	background: #edc850;
+}
+.game-2048-cell.tile-1024 {
+	font-size: 20px;
+	background: #edc53f;
+}
+.game-2048-cell.tile-2048 {
+	font-size: 20px;
+	background: #edc22e;
+	box-shadow: 0 0 10px rgb(237 194 46 / 60%);
+}
+
+/* 方块沿用经典配色，暗黑模式只调暗棋盘底、空格和 2048 光晕，避免覆盖 tile-N 配色 */
+.logic-game-dark {
+	.game-2048-board {
+		background: #3b3229;
+	}
+	.game-2048-cell:not(.is-tile) {
+		color: #8a94a6;
+		background: #4a4238;
+	}
+	.game-2048-cell.tile-2048 {
+		box-shadow: 0 0 10px rgb(237 194 46 / 45%);
+	}
+}
+
+@media (width <= 576px) {
+	.game-2048-board {
+		gap: 4px;
+		padding: 8px;
+	}
+	.game-2048-cell {
+		font-size: 20px;
+	}
+	.game-2048-cell.tile-128,
+	.game-2048-cell.tile-256,
+	.game-2048-cell.tile-512 {
+		font-size: 18px;
+	}
+	.game-2048-cell.tile-1024,
+	.game-2048-cell.tile-2048 {
+		font-size: 15px;
+	}
+}

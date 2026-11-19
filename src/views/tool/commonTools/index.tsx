@@ -45,6 +45,9 @@ const Minesweeper = React.lazy(() => import("./tools/minesweeper"));
 const Nonogram = React.lazy(() => import("./tools/nonogram"));
 const LightUp = React.lazy(() => import("./tools/lightUp"));
 const Slitherlink = React.lazy(() => import("./tools/slitherlink"));
+const Game2048 = React.lazy(() => import("./tools/game2048"));
+const Maze = React.lazy(() => import("./tools/maze"));
+const GuessNumber = React.lazy(() => import("./tools/guessNumber"));
 
 const CommonTools: React.FC = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -188,6 +191,15 @@ const CommonTools: React.FC = () => {
 
 	if (activeTool === "nonogram" || activeTool === "lightUp" || activeTool === "slitherlink") {
 		const Game = activeTool === "nonogram" ? Nonogram : activeTool === "lightUp" ? LightUp : Slitherlink;
+		return (
+			<Suspense fallback={<Spin />}>
+				<Game onBack={backToToolbox} />
+			</Suspense>
+		);
+	}
+
+	if (activeTool === "game2048" || activeTool === "maze" || activeTool === "guessNumber") {
+		const Game = activeTool === "game2048" ? Game2048 : activeTool === "maze" ? Maze : GuessNumber;
 		return (
 			<Suspense fallback={<Spin />}>
 				<Game onBack={backToToolbox} />

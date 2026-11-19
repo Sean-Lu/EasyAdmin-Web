@@ -82,6 +82,15 @@ export default function Slitherlink({ onBack }: { onBack: () => void }) {
 			moves={session.moves}
 			canUndo={session.canUndo}
 			records={session.records}
+			unsolvedHint="不必着急，从确定的线索开始"
+			solvedHint="挑战完成！所有线索都满足了"
+			helpNote={
+				<>
+					支持鼠标、触屏和键盘 Tab / Enter / 空格。选错了可撤销，切换关卡会重新开始。
+					步数包括落子、标记和撤销。最佳用时和最少步数分别记录，可能来自不同次通关。
+				</>
+			}
+			categoryTag="逻辑推理"
 			rules={[
 				"目标：连接相邻圆点，画出一条闭合回路。线不能分叉、交叉，也不能出现多个独立小环。",
 				"每格数字表示该格四条边中，恰好有几条属于回路。例如 0 的四边都不能连，3 则需要连上三边。",

@@ -37,6 +37,15 @@ export default function LightUp({ onBack }: { onBack: () => void }) {
 			moves={session.moves}
 			canUndo={session.canUndo}
 			records={session.records}
+			unsolvedHint="不必着急，从确定的线索开始"
+			solvedHint="挑战完成！所有线索都满足了"
+			helpNote={
+				<>
+					支持鼠标、触屏和键盘 Tab / Enter / 空格。选错了可撤销，切换关卡会重新开始。
+					步数包括落子、标记和撤销。最佳用时和最少步数分别记录，可能来自不同次通关。
+				</>
+			}
+			categoryTag="逻辑推理"
 			rules={[
 				"目标：在白格中放灯泡，让所有白格都被照亮。灯泡会照亮自身，以及横竖方向上直到黑墙为止的格子。",
 				"任意两盏灯不能直接互相照到，冲突的灯泡会变红。光线经过已标空的白格时不会被阻挡。",

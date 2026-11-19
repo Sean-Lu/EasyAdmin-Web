@@ -1,5 +1,6 @@
 import request from "@/api/index";
 import { BackendId } from "@/api/interface";
+import type { PuzzleGame } from "./puzzleGame";
 
 /** 百宝箱工具排序 */
 export interface ToolboxToolOrderDto {
@@ -16,7 +17,8 @@ export interface MinesweeperScore {
 	achievedAt: string;
 }
 
-export type PuzzleGame = "nonogram" | "lightUp" | "slitherlink" | "game2048" | "maze" | "guessNumber";
+/** 关卡游戏标识与运行时白名单的单一数据源见 puzzleGame.ts */
+export type { PuzzleGame };
 
 /** 关卡最佳成绩；最佳用时与最少步数独立记录，可来自不同次通关 */
 export interface PuzzleScore {

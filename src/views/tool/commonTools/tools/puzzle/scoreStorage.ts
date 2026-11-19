@@ -1,4 +1,5 @@
-import type { PuzzleGame, PuzzleScore } from "@/services/user/userPreferenceService";
+import { PUZZLE_GAMES, type PuzzleGame } from "@/services/user/puzzleGame";
+import type { PuzzleScore } from "@/services/user/userPreferenceService";
 
 export interface LocalPuzzleScore extends PuzzleScore {
 	pending: boolean;
@@ -6,10 +7,9 @@ export interface LocalPuzzleScore extends PuzzleScore {
 export type PuzzleScores = Record<string, LocalPuzzleScore>;
 export const puzzleStorageKey = (owner: string) => `easyadmin:puzzle:scores:${owner}`;
 export const puzzleScoreKey = (game: PuzzleGame, level: string) => `${game}:${level}`;
-const games: PuzzleGame[] = ["nonogram", "lightUp", "slitherlink"];
 
 function isValid(score: PuzzleScore): boolean {
-	if (!score || !games.includes(score.game) || !/^v1-[123]$/.test(score.level)) return false;
+	if (!score || !PUZZLE_GAMES.includes(score.game) || !/^v1-[123]$/.test(score.level)) return false;
 	const first = Date.parse(score.firstCompletedAt);
 	return (
 		Number.isInteger(score.bestSeconds) &&
